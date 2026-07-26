@@ -9,7 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.align import align
+from backend.align import align, embed_concepts
 from backend.config import (
     MAX_EXPLANATION_CHARS,
     MAX_SOURCE_CHARS,
@@ -53,6 +53,7 @@ async def _prewarm() -> None:
         return
     if concepts:
         _concept_cache[_cache_key(source)] = concepts
+        await asyncio.to_thread(embed_concepts, concepts)
 
 
 @asynccontextmanager
