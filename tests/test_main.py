@@ -42,6 +42,23 @@ def test_corrupt_model_output_is_visible_error_not_all_grey(monkeypatch) -> None
     assert "flags" not in response.json()
 
 
+def test_prewarm_does_not_block_health_endpoint(monkeypatch) -> None:
+    started = False
+
+    async def slow_prewarm() -> None:
+        nonlocal started
+        started = True
+        await main.asyncio.Event().wait()
+
+    monkeypatch.setattr(main, "_prewarm", slow_prewarm)
+    with TestClient(main.app) as client:
+        response = client.get("/api/health")
+
+    assert started
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 def test_pipeline_returns_anchored_non_green_flags(monkeypatch) -> None:
     source = (
         "The pump moves three sodium ions out and two potassium ions into the cell. "
