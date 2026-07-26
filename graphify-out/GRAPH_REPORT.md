@@ -1,16 +1,16 @@
-# Graph Report - Explain-Back  (2026-07-25)
+# Graph Report - Explain-Back  (2026-07-26)
 
 ## Corpus Check
-- 39 files · ~14,387 words
+- 39 files · ~14,457 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 225 nodes · 434 edges · 25 communities (16 shown, 9 thin omitted)
+- 227 nodes · 436 edges · 25 communities (16 shown, 9 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e3f27190`
+- Built from commit: `c4d3b554`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -80,8 +80,8 @@ Cohesion: 0.40
 Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo layout, 3. Data model, Explain-Back — Complete Build Blueprint
 
 ### Community 3 - "main.py"
-Cohesion: 0.18
-Nodes (23): extract_concepts(), analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _validate_lengths(), match() (+15 more)
+Cohesion: 0.17
+Nodes (21): analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _validate_lengths(), match(), AnalyzeRequest (+13 more)
 
 ### Community 4 - "package.json"
 Cohesion: 0.09
@@ -93,15 +93,15 @@ Nodes (11): analyze(), API_BASE, App(), STAGES, ConceptList(), groupById(), Foll
 
 ### Community 13 - "llm.py"
 Cohesion: 0.16
-Nodes (24): call_json(), _client_call(), _configuration(), LLMConfigurationError, LLMResponseError, LLMTimeoutError, parse_json(), Any (+16 more)
+Nodes (25): call_json(), _client_call(), _configuration(), LLMConfigurationError, LLMResponseError, LLMTimeoutError, parse_json(), Any (+17 more)
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.22
 Nodes (14): call_a_prompt(), call_b_prompt(), call_c_prompt(), concept_prompt(), _items_text(), proposition_prompt(), Any, LLM prompt contracts for Explain-Back.  The prompt templates preserve the respon (+6 more)
 
 ### Community 15 - "extract.py"
-Cohesion: 0.32
-Nodes (12): _certainty(), _dedupe_overlaps(), extract_propositions(), locate_concept_anchors(), locate_spans(), Any, _type(), Proposition (+4 more)
+Cohesion: 0.30
+Nodes (13): _certainty(), _dedupe_overlaps(), extract_concepts(), extract_propositions(), locate_concept_anchors(), locate_spans(), Any, _type() (+5 more)
 
 ### Community 16 - "test_resolve.py"
 Cohesion: 0.41
@@ -112,15 +112,15 @@ Cohesion: 0.25
 Nodes (7): Architecture, Calibration and gates, Deployment, Explain-Back, Limitations, Local setup, Why this design
 
 ### Community 19 - "vercel.json"
-Cohesion: 0.40
-Nodes (4): buildCommand, framework, outputDirectory, $schema
+Cohesion: 0.33
+Nodes (5): buildCommand, framework, installCommand, outputDirectory, $schema
 
 ### Community 24 - "embed"
 Cohesion: 0.24
 Nodes (7): align(), embed(), _embedding_model(), main(), ndarray, SentenceTransformer, test_alignment_embeds_student_justification_with_claim()
 
 ## Knowledge Gaps
-- **61 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+56 more)
+- **62 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+57 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -131,10 +131,10 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Why does `resolve()` connect `test_resolve.py` to `main.py`, `extract.py`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `Concept` connect `main.py` to `embed`, `llm.py`, `extract.py`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `Concept` connect `llm.py` to `embed`, `main.py`, `extract.py`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _61 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _62 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
