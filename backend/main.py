@@ -154,7 +154,7 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
             source, propositions, concepts, alignment
         )
         verification_ms = (time.perf_counter() - verification_started_at) * 1000
-        logger.info(
+        logger.warning(
             "analysis_timing cache_hit=%s concepts_ms=%.1f "
             "propositions_ms=%.1f alignment_ms=%.1f verification_ms=%.1f "
             "total_ms=%.1f concepts=%d propositions=%d",
