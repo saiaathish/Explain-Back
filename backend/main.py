@@ -1,7 +1,8 @@
+import asyncio
 import hashlib
 import logging
 import os
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -31,6 +32,7 @@ from backend.verify import verify
 
 logger = logging.getLogger(__name__)
 _concept_cache: dict[str, list[Concept]] = {}
+_prewarm_task: asyncio.Task[None] | None = None
 
 
 def _cache_key(source: str) -> str:
@@ -54,8 +56,16 @@ async def _prewarm() -> None:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    await _prewarm()
-    yield
+    global _prewarm_task
+    _prewarm_task = asyncio.create_task(_prewarm())
+    try:
+        yield
+    finally:
+        if _prewarm_task and not _prewarm_task.done():
+            _prewarm_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await _prewarm_task
+        _prewarm_task = None
 
 
 app = FastAPI(title="Explain-Back", lifespan=lifespan)
