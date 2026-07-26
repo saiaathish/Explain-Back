@@ -26,7 +26,12 @@ def align(
 ) -> dict[str, tuple[str, float]]:
     if not propositions or not concepts:
         return {}
-    proposition_vectors = embed([item.claim_span for item in propositions])
+    proposition_vectors = embed(
+        [
+            " ".join([item.claim_span, *item.justification_spans])
+            for item in propositions
+        ]
+    )
     concept_vectors = embed(
         [f"{item.label}. {item.anchor}" for item in concepts]
     )

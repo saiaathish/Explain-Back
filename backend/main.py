@@ -88,7 +88,7 @@ def compute_coverage(concepts: list[Concept], flags: list[Flag]) -> Coverage:
     state_rank = {"green": 3, "yellow": 2, "red": 2, "grey": 1}
     best: dict[str, int] = {}
     for flag in flags:
-        if flag.concept_id:
+        if flag.concept_id and flag.similarity >= T_LOW:
             best[flag.concept_id] = max(
                 best.get(flag.concept_id, 0), state_rank[flag.state]
             )

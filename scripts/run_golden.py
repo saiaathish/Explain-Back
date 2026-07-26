@@ -26,7 +26,11 @@ async def main() -> int:
     matched = 0
     total = 0
     sample_states: dict[str, list[str]] = {}
-    for filename, expected_items in golden.items():
+    sample_interval = max(
+        0.0, float(os.getenv("GATE_SAMPLE_INTERVAL_SECONDS", "0"))
+    )
+    samples = list(golden.items())
+    for sample_index, (filename, expected_items) in enumerate(samples, start=1):
         explanation = (
             ROOT / "samples" / "explanations" / filename
         ).read_text(encoding="utf-8").strip()
@@ -55,6 +59,8 @@ async def main() -> int:
                 f"{expected['state']:6s} {expected['span']!r} "
                 f"actual={actual.state if actual else 'missing'}"
             )
+        if sample_interval and sample_index < len(samples):
+            await asyncio.sleep(sample_interval)
 
     score = matched / total if total else 0
     all_states = {state for states in sample_states.values() for state in states}

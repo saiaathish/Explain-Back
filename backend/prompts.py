@@ -61,8 +61,10 @@ Rules, in order of importance:
    empty array. Do not supply the reason yourself. Do not pull reasons
    from the PASSAGE. An empty justification array is a correct and
    expected output.
-3. SPLIT AGGRESSIVELY. If two statements could be true or false
-   independently, they are two propositions, even inside one sentence.
+3. SPLIT INDEPENDENT FACTS, PRESERVE CAUSAL LINKS. Separate coordinated
+   facts that could independently be true or false, but attach every
+   student-written cause, mechanism, or consequence to the claim it
+   explains. The justification may be inside the same sentence.
 4. NON-ADJACENT JUSTIFICATIONS. A justification may appear anywhere in the
    explanation, including several sentences away from its claim. Collect
    all of them. There is no adjacency requirement.
@@ -74,6 +76,11 @@ Rules, in order of importance:
    "certainty": "low" — but include it only when the student's own words
    contain a possible reason, mechanism, or causal link. Uncertainty never
    permits borrowing words from the PASSAGE.
+7. CAUSAL CONSEQUENCES COUNT. A student can demonstrate why/how a claim
+   matters by stating its mechanism or direct consequence. Attach a
+   "because", "by", "which", or "so" clause to the originating claim when
+   that clause explains the claim's mechanism or consequence. Do not return
+   the connector word alone; copy the complete explanatory clause.
 
 MANDATORY JUSTIFICATION EVIDENCE GATE:
 Before adding any justification span, ask: "Did the student write words
@@ -137,6 +144,39 @@ CORRECT JSON:
 ]
 Include a justification only because the student's own words state a mechanism.
 
+Example 4 — a following consequence justifies the originating claim:
+PASSAGE:
+"ATP phosphorylation changes the pump's shape."
+STUDENT EXPLANATION:
+"ATP phosphorylates the pump, which changes its shape and exposes sodium outside."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "ATP phosphorylates the pump",
+    "justification_spans": ["which changes its shape and exposes sodium outside"],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+The "which" clause is student-written causal evidence for what phosphorylation does.
+
+Example 5 — keep a mechanistic "by" clause as the justification:
+PASSAGE:
+"The pump maintains ion gradients."
+STUDENT EXPLANATION:
+"The pump maintains ion gradients by moving ions across the membrane."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The pump maintains ion gradients",
+    "justification_spans": ["by moving ions across the membrane"],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+
 FINAL SELF-CHECK:
 - For every non-empty justification_spans array, point to the exact student
   words that answer why/how. If no such words exist, use [].
@@ -165,15 +205,19 @@ SOURCE PASSAGE:
 {source}
 """
 
-For each numbered item below, you are given a student statement and the
-sentence from the source it most closely relates to.
+For each numbered item below, you are given a student statement, any
+student-written justification for it, and the source span it most closely
+relates to.
 
 {items}
 
 For each item decide:
-- "entails": the source supports the student statement
-- "contradicts": the source states something incompatible with it
-- "neutral": the source neither supports nor contradicts it
+- "entails": the source supports the student statement and, when supplied,
+  the causal link expressed by its student justification
+- "contradicts": the source states something incompatible with the student
+  statement or its supplied justification
+- "neutral": the source neither supports nor contradicts the statement, or
+  supports the statement but not the supplied causal link
 
 Confidence rules:
 - Use "high" only when the statement is specific and unambiguous
@@ -228,6 +272,8 @@ def _items_text(items: str | list[dict[str, Any]]) -> str:
                 (
                     f"{number}. prop_id: {item.get('prop_id', '')}",
                     f"   STUDENT STATEMENT: {item.get('claim', '')}",
+                    "   STUDENT JUSTIFICATIONS: "
+                    + " | ".join(item.get("justifications", [])),
                     f"   SOURCE ANCHOR: {item.get('source_anchor', '')}",
                 )
             )

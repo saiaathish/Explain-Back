@@ -9,9 +9,10 @@ maps formative guidance over the student's own words:
 - Red: contradicts the supplied source
 - Grey: the system is not confident
 
-Every non-green flag includes an exact sentence from the supplied source and
+Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question aimed at
-the weakest point. There are no scores, accounts, or stored submissions.
+the weakest point. There are no learner-facing scores, accounts, or stored
+submissions.
 
 ## Why this design
 
@@ -28,7 +29,7 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 ## Architecture
 
 The browser holds input and results in React state. A FastAPI process performs
-three constrained model calls around deterministic validation:
+up to three constrained model calls around deterministic validation:
 
 1. Extract source concepts; cache them by source hash in process memory.
 2. Extract propositions from the student's exact text.
@@ -37,8 +38,9 @@ three constrained model calls around deterministic validation:
 5. Verify all propositions in one batched model call.
 6. Resolve green/yellow/red/grey in deterministic Python.
 
-`backend/llm.py` is the only runtime network boundary. Malformed model output
-raises after three total attempts; it never becomes an empty result that could
+`backend/llm.py` is the only backend boundary to the configured model provider.
+Malformed or incomplete model output raises visibly; unparseable output is
+retried for three total attempts and never becomes an empty result that could
 masquerade as an all-grey analysis.
 
 ## Local setup
@@ -47,7 +49,8 @@ Requires Python 3.11 and Node.js 20+.
 
 ```bash
 cp .env.example .env
-# Set LLM_API_KEY and LLM_MODEL in .env.
+# Set LLM_API_KEY, LLM_MODEL, and the provider's OpenAI-compatible
+# LLM_BASE_URL in .env.
 
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
@@ -75,6 +78,7 @@ Open `http://localhost:5173`.
 PYTHONPATH=. .venv/bin/python calibrate/run.py
 PYTHONPATH=. .venv/bin/python scripts/run_gate1.py
 PYTHONPATH=. .venv/bin/python scripts/run_golden.py
+PYTHONPATH=. .venv/bin/python scripts/run_determinism.py
 .venv/bin/python -m pytest -q
 cd frontend && npm test && npm run build
 ```
@@ -87,7 +91,8 @@ values. They exit as blocked rather than replacing live evidence with fixtures.
 `render.yaml` and `Dockerfile` define the FastAPI service. The Docker build
 bakes the embedding model into the image so `align.py` makes no runtime
 download. Set `LLM_API_KEY`, `LLM_MODEL`, and the deployed Vercel origin as
-`FRONTEND_ORIGIN` in Render.
+`FRONTEND_ORIGIN` in Render. Also set `LLM_BASE_URL` to the configured
+provider's OpenAI-compatible base URL.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
 service before building the Vercel deployment.

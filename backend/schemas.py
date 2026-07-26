@@ -44,7 +44,7 @@ class Flag(BaseModel):
     hint: str | None = None
     misconception: str | None = None
     refutation: str | None = None
-    similarity: float
+    similarity: float = Field(exclude=True)
 
 
 class AnalyzeRequest(BaseModel):

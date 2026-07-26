@@ -3,8 +3,8 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from backend import llm, main
-from backend.main import _validate_lengths
-from backend.schemas import Concept, Proposition, Verdict
+from backend.main import _validate_lengths, compute_coverage
+from backend.schemas import Concept, Flag, Proposition, Verdict
 
 
 @pytest.mark.parametrize(
@@ -142,7 +142,31 @@ def test_pipeline_returns_anchored_non_green_flags(monkeypatch) -> None:
     ]
     for flag in payload["flags"]:
         assert explanation[flag["start"] : flag["end"]]
+        assert "similarity" not in flag
         if flag["state"] != "green":
             assert flag["anchor"] in source
             assert flag["hint"]
             assert len(flag["hint"].split()) <= 20
+
+
+def test_low_similarity_claim_does_not_count_as_concept_coverage() -> None:
+    concepts = [
+        Concept(id="K1", label="First", anchor="First source span."),
+        Concept(id="K2", label="Second", anchor="Second source span."),
+    ]
+    flags = [
+        Flag(
+            prop_id="P1",
+            state="grey",
+            start=0,
+            end=5,
+            concept_id="K1",
+            similarity=0.20,
+        )
+    ]
+
+    coverage = compute_coverage(concepts, flags)
+
+    assert coverage.covered == []
+    assert coverage.partial == []
+    assert coverage.missing == ["K1", "K2"]

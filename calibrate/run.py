@@ -24,16 +24,16 @@ def main() -> None:
             f"{label:8s} n={len(ordered):2d} min={ordered[0]:.3f} "
             f"med={np.median(ordered):.3f} max={ordered[-1]:.3f}"
         )
-    # Joint conservative cuts: low excludes observed off-topic pairs; high
-    # excludes observed partial pairs. Completeness is not linearly separable
-    # from topical similarity, so independent percentiles can invert the cuts.
+    # Relevance and completeness overlap in embedding space. Keep low just above
+    # observed off-topic pairs, while high follows the requested 10th percentile
+    # of clear matches. Justification spans enforce completeness downstream.
     low = min(
         float(min(similarities["clear"])),
         float(max(similarities["off"])) + 0.002,
     )
     high = max(
         low + 0.01,
-        float(max(similarities["partial"])) + 0.005,
+        float(np.percentile(similarities["clear"], 10)),
     )
     print(f"\nSuggested: T_HIGH={high:.3f} T_LOW={low:.3f}")
 

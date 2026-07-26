@@ -11,10 +11,10 @@ services:
       - key: LLM_MODEL
         sync: false
       - key: LLM_BASE_URL
-        value: https://api.openai.com/v1
+        sync: false
       - key: FRONTEND_ORIGIN
         sync: false
       - key: T_HIGH
-        value: "0.870"
+        value: "0.732"
       - key: T_LOW
         value: "0.680"

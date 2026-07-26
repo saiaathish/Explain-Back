@@ -18,6 +18,9 @@ async def main() -> int:
         return 2
     files = sorted((ROOT / "samples" / "explanations").glob("*.txt"))
     runs = files + [files[0]]
+    request_interval = max(
+        0.0, float(os.getenv("GATE_REQUEST_INTERVAL_SECONDS", "0"))
+    )
     output: dict[str, list[dict]] = {}
     for run_index, path in enumerate(runs, start=1):
         explanation = path.read_text(encoding="utf-8").strip()
@@ -39,6 +42,8 @@ async def main() -> int:
         key = f"{path.name}#run{run_index}" if path == files[0] else path.name
         output[key] = [item.model_dump() for item in propositions]
         print(f"\n{key}\n{json.dumps(output[key], indent=2)}")
+        if request_interval and run_index < len(runs):
+            await asyncio.sleep(request_interval)
 
     first_runs = [value for key, value in output.items() if key.startswith("01_")]
     if any(item["justification_spans"] for run in first_runs for item in run):
