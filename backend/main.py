@@ -2,6 +2,7 @@ import asyncio
 import hashlib
 import logging
 import os
+import time
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
@@ -120,28 +121,51 @@ async def health() -> dict[str, str]:
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
+    started_at = time.perf_counter()
     source = request_body.source.strip()
     explanation = request_body.explanation.strip()
     _validate_lengths(source, explanation)
     try:
         key = _cache_key(source)
         concepts = _concept_cache.get(key)
+        concept_cache_hit = concepts is not None
+        concepts_started_at = time.perf_counter()
         if concepts is None:
             concepts = await extract_concepts(source)
             if concepts:
                 _concept_cache[key] = concepts
+        concepts_ms = (time.perf_counter() - concepts_started_at) * 1000
         if not concepts:
             raise HTTPException(
                 422, "Could not identify source concepts. Try a clearer passage."
             )
+        propositions_started_at = time.perf_counter()
         propositions = await extract_propositions(source, explanation)
+        propositions_ms = (time.perf_counter() - propositions_started_at) * 1000
         if not propositions:
             raise HTTPException(
                 422, "Could not parse the explanation. Try writing in full sentences."
             )
+        alignment_started_at = time.perf_counter()
         alignment = align(propositions, concepts)
+        alignment_ms = (time.perf_counter() - alignment_started_at) * 1000
+        verification_started_at = time.perf_counter()
         verdicts, follow_up = await verify(
             source, propositions, concepts, alignment
+        )
+        verification_ms = (time.perf_counter() - verification_started_at) * 1000
+        logger.info(
+            "analysis_timing cache_hit=%s concepts_ms=%.1f "
+            "propositions_ms=%.1f alignment_ms=%.1f verification_ms=%.1f "
+            "total_ms=%.1f concepts=%d propositions=%d",
+            concept_cache_hit,
+            concepts_ms,
+            propositions_ms,
+            alignment_ms,
+            verification_ms,
+            (time.perf_counter() - started_at) * 1000,
+            len(concepts),
+            len(propositions),
         )
     except LLMTimeoutError as exc:
         raise HTTPException(504, "The model timed out. Please try again.") from exc

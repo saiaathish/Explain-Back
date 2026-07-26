@@ -45,7 +45,7 @@ async def _client_call(prompt: str, timeout: float = 20.0) -> str:
                     "model": model,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0,
-                    "reasoning_effort": "low",
+                    "reasoning_effort": "minimal",
                 },
                 headers={"Authorization": f"Bearer {api_key}"},
             )
