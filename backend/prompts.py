@@ -1,8 +1,8 @@
-"""LLM prompt contracts for Explain-Back.
+"""LLM prompt templates for Explain-Back.
 
-The prompt templates preserve the response shapes defined in the blueprint.
-The caller supplies source text, explanation text, and Call C items without
-changing the JSON schema expected by the downstream validators.
+The templates state the intended response shapes from the blueprint. Runtime
+parsing and validators make those shapes binding before model output reaches
+the deterministic pipeline.
 """
 
 from __future__ import annotations
@@ -81,6 +81,13 @@ Rules, in order of importance:
    "because", "by", "which", or "so" clause to the originating claim when
    that clause explains the claim's mechanism or consequence. Do not return
    the connector word alone; copy the complete explanatory clause.
+
+8. NON-ADJACENT QUANTITATIVE CONSEQUENCES. When a later student sentence
+explicitly derives a consequence from the same quantity or direction as an
+earlier claim (for example, "three charges leave while two enter" or "one more
+positive charge leaves than enters"), attach that exact later causal sentence
+as a justification for the earlier quantitative claim. A general statement
+that the claim is useful or important is not enough.
 
 MANDATORY JUSTIFICATION EVIDENCE GATE:
 Before adding any justification span, ask: "Did the student write words
@@ -172,6 +179,67 @@ CORRECT JSON:
     "id": "P1",
     "claim_span": "The pump maintains ion gradients",
     "justification_spans": ["by moving ions across the membrane"],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+
+Example 6 — a later quantitative consequence justifies an earlier claim:
+PASSAGE:
+"The pump exports three positive ions and imports two, creating a net outward
+positive current."
+STUDENT EXPLANATION:
+"The pump moves three ions out and two ions in. This creates an imbalance
+because three positive charges leave while only two positive charges enter."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The pump moves three ions out and two ions in.",
+    "justification_spans": [
+      "This creates an imbalance because three positive charges leave while only two positive charges enter"
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "This creates an imbalance",
+    "justification_spans": [
+      "because three positive charges leave while only two positive charges enter"
+    ],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+The later sentence supplies a specific quantitative consequence. In contrast,
+"The resulting gradient is important for signaling" only names importance and
+must not justify the earlier transport claim.
+
+Example 7 — a derived net-charge consequence supports the earlier ratio:
+PASSAGE:
+"The pump exports three sodium ions and imports two potassium ions, producing
+a net outward movement of one positive charge."
+STUDENT EXPLANATION:
+"The pump moves three sodium ions out and two potassium ions in. The inside
+becomes slightly negative because one more positive charge leaves than enters."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The pump moves three sodium ions out and two potassium ions in.",
+    "justification_spans": [
+      "The inside becomes slightly negative because one more positive charge leaves than enters"
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "The inside becomes slightly negative",
+    "justification_spans": [
+      "because one more positive charge leaves than enters"
+    ],
     "type": "causal",
     "certainty": "high"
   }

@@ -1,6 +1,6 @@
 const ITEMS = [
-  ["green", "Green = understood"],
-  ["yellow", "Yellow = memorized"],
+  ["green", "Green = supported and justified"],
+  ["yellow", "Yellow = supported, not justified"],
   ["red", "Red = contradicts source"],
   ["grey", "Grey = uncertain"],
 ];

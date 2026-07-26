@@ -54,9 +54,65 @@ def test_prewarm_does_not_block_health_endpoint(monkeypatch) -> None:
     with TestClient(main.app) as client:
         response = client.get("/api/health")
 
-    assert started
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+        assert started
+        assert response.status_code == 200
+        assert response.json() == {"status": "ok"}
+
+
+def test_prewarm_loads_all_demo_sources(monkeypatch) -> None:
+    seen: list[str] = []
+
+    async def concepts(source: str):
+        seen.append(source)
+        return []
+
+    monkeypatch.setenv("LLM_API_KEY", "configured")
+    monkeypatch.setenv("LLM_MODEL", "configured")
+    monkeypatch.setattr(main, "extract_concepts", concepts)
+    main.asyncio.run(main._prewarm())
+
+    samples = main.Path(main.__file__).parents[1] / "samples"
+    expected = {
+        (samples / filename).read_text(encoding="utf-8").strip()
+        for filename in main.PREWARM_SOURCE_FILES
+    }
+    assert set(seen) == expected
+
+
+def test_rate_limit_returns_clean_429(monkeypatch) -> None:
+    async def no_prewarm() -> None:
+        return None
+
+    monkeypatch.setattr(main, "_prewarm", no_prewarm)
+    main._rate_limit_events.clear()
+    main._rate_limit_last_cleanup = 0.0
+    payload = {"source": "A" * 120, "explanation": "ATP"}
+    origin = main.os.getenv("FRONTEND_ORIGIN", "http://localhost:5173").split(",")[0]
+    try:
+        with TestClient(main.app) as client:
+            responses = [
+                client.post(
+                    "/api/analyze",
+                    json=payload,
+                    headers={
+                        "Origin": origin,
+                        "X-Forwarded-For": "spoofed, real-client",
+                    },
+                )
+                for _ in range(main.RATE_LIMIT_MAX_REQUESTS + 1)
+            ]
+        assert all(response.status_code == 400 for response in responses[:-1])
+        assert responses[-1].status_code == 429
+        assert responses[-1].json() == {
+            "detail": "Too many submissions. Please try again shortly."
+        }
+        assert int(responses[-1].headers["retry-after"]) > 0
+        assert responses[-1].headers["access-control-allow-origin"] == origin
+        assert "real-client" in main._rate_limit_events
+        assert "spoofed" not in main._rate_limit_events
+    finally:
+        main._rate_limit_events.clear()
+        main._rate_limit_last_cleanup = 0.0
 
 
 def test_pipeline_returns_anchored_non_green_flags(monkeypatch) -> None:

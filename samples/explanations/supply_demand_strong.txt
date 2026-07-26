@@ -1,0 +1,5 @@
+In a competitive market, demand slopes downward and supply slopes upward. A lower price increases quantity demanded, while a higher price increases quantity supplied, and their intersection determines the equilibrium price and quantity.
+
+When a government sets a binding price ceiling below equilibrium, the lower allowed price makes buyers want more than firms are willing to sell. That difference creates a shortage, so goods may be allocated through queues rather than price. The policy moves the market along the curves instead of shifting either curve.
+
+A tax on sellers drives a wedge between the buyer's price and the seller's net price. Buyers pay more, sellers keep less, and fewer units are traded. The seller may send the tax to the government, but the economic burden is shared according to the relative elasticities of demand and supply.

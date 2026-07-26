@@ -51,6 +51,6 @@ def test_no_persistence_or_auth_implementation() -> None:
 def test_footer_contract_is_present() -> None:
     text = (ROOT / "frontend" / "src" / "App.jsx").read_text(encoding="utf-8")
     assert (
-        "Formative guidance only. Not a grade. Nothing you type is stored."
+        "Formative guidance only. Not a grade. Explain-Back does not persist"
         in text
     )

@@ -1,4 +1,4 @@
-"""Only outbound network boundary in Explain-Back."""
+"""Sole backend network boundary to the configured model provider."""
 
 import asyncio
 import json

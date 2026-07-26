@@ -4,22 +4,23 @@ Explain-Back inverts the usual AI study tool. Instead of explaining material
 to a student, it asks the student to explain a short source passage and then
 maps formative guidance over the student's own words:
 
-- Green: understood and justified
-- Yellow: stated but not justified
+- Green: supported by the source and justified
+- Yellow: supported by the source but not justified
 - Red: contradicts the supplied source
 - Grey: the system is not confident
 
 Every non-green flag includes an exact contiguous span from the supplied source and
-a short revision hint. The response ends with one follow-up question aimed at
-the weakest point. There are no learner-facing scores, accounts, or stored
-submissions.
+a short revision hint. The response ends with one follow-up question generated
+from the analyzed gaps. There are no learner-facing scores or accounts.
+Explain-Back does not persist submissions; inputs are sent to the configured
+model provider under that provider's data-handling policy.
 
 ## Why this design
 
-Self-explanation prompting has reported meta-analytic support around
-`g ≈ 0.55` across roughly 64 studies. Explain-Back uses that learning activity
+Self-explanation prompting is a studied learning activity. Explain-Back uses it
 as its interaction model: the student produces the explanation before seeing
-feedback.
+feedback. This project has not established that Explain-Back itself improves
+learning.
 
 Grey is an intentional state, not a missing result. Misconception detection at
 realistic prevalence can create costly false positives, and model confidence is
@@ -29,7 +30,8 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 ## Architecture
 
 The browser holds input and results in React state. A FastAPI process performs
-up to three constrained model calls around deterministic validation:
+two or three logical model stages around deterministic validation. Each stage
+can retry malformed output for up to three total attempts:
 
 1. Extract source concepts; cache them by source hash in process memory.
 2. Extract propositions from the student's exact text.
@@ -104,6 +106,9 @@ service before building the Vercel deployment.
   set, and it does not support a general accuracy claim.
 - The cosine thresholds are specific to the configured embedding model and
   this membrane-transport calibration set; no paper supplies these cuts.
+- Exploratory supply/demand and photosynthesis checks completed structurally,
+  but correct explanations were mostly yellow or grey and many errors remained
+  grey. Performance outside membrane transport is not calibrated or validated.
 - Source verification is model-assisted and can still miss errors or produce
   false alarms. Grey exists to expose uncertainty, not erase it.
 - Exact source anchors show what text informed a flag; they are not model
