@@ -1,0 +1,9 @@
+import os
+
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+T_HIGH = float(os.getenv("T_HIGH", "0.870"))
+T_LOW = float(os.getenv("T_LOW", "0.680"))
+MAX_SOURCE_CHARS = 6000
+MAX_EXPLANATION_CHARS = 4000
+MIN_SOURCE_CHARS = 100
+MIN_EXPLANATION_CHARS = 40

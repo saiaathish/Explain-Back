@@ -1,0 +1,24 @@
+[
+  {"claim": "The pump exports three sodium ions and imports two potassium ions per cycle.", "concept": "Pump stoichiometry. The sodium-potassium pump moves three sodium ions out of the cell and two potassium ions into the cell during each transport cycle.", "label": "clear"},
+  {"claim": "Three positive charges leave while two positive charges enter.", "concept": "Electrogenic transport. Because three positive charges leave while only two enter, each cycle contributes a small net negative charge inside the cell.", "label": "clear"},
+  {"claim": "Both ions are transported against their concentration gradients.", "concept": "Active transport. Sodium ions are moved against their concentration gradient, and potassium ions are also moved against their concentration gradient.", "label": "clear"},
+  {"claim": "ATP phosphorylates the pump and changes its shape.", "concept": "Phosphorylation mechanism. ATP binds to the pump and transfers a phosphate group to it; phosphorylation changes the pump's shape.", "label": "clear"},
+  {"claim": "Potassium binds after sodium is released.", "concept": "Binding order. After sodium is released, potassium binds from outside the cell.", "label": "clear"},
+  {"claim": "Removing phosphate returns the pump to its original conformation.", "concept": "Dephosphorylation. The phosphate group then leaves the pump, causing it to return to its original shape.", "label": "clear"},
+  {"claim": "The gradients maintained by the pump support electrical signaling.", "concept": "Gradient function. Repeating this cycle maintains the ion gradients that support the resting membrane potential, secondary active transport, and electrical signaling.", "label": "clear"},
+
+  {"claim": "The pump moves sodium and potassium across the membrane.", "concept": "Pump stoichiometry. The sodium-potassium pump moves three sodium ions out of the cell and two potassium ions into the cell during each transport cycle.", "label": "partial"},
+  {"claim": "The cycle affects the charge inside the cell.", "concept": "Electrogenic transport. Because three positive charges leave while only two enter, each cycle contributes a small net negative charge inside the cell.", "label": "partial"},
+  {"claim": "The pump needs cellular energy.", "concept": "Active transport. Both ion species move against their concentration gradients, so the transport cannot proceed without an energy source.", "label": "partial"},
+  {"claim": "ATP interacts with the transporter.", "concept": "Phosphorylation mechanism. ATP binds to the pump and transfers a phosphate group to it.", "label": "partial"},
+  {"claim": "The pump changes which side of the membrane it faces.", "concept": "Conformational change. Phosphorylation changes the pump's shape and exposes the sodium-binding sites to the outside.", "label": "partial"},
+  {"claim": "Potassium participates later in the cycle.", "concept": "Binding order. After sodium is released, potassium binds from outside the cell.", "label": "partial"},
+  {"claim": "Ion gradients are useful to the cell.", "concept": "Gradient function. Ion gradients support the resting membrane potential, secondary active transport, and electrical signaling.", "label": "partial"},
+
+  {"claim": "Ribosomes translate messenger RNA into protein.", "concept": "Pump stoichiometry. The pump moves three sodium ions out and two potassium ions in.", "label": "off"},
+  {"claim": "Mitochondria contain their own DNA.", "concept": "Electrogenic transport. Each pump cycle contributes a small net negative charge inside the cell.", "label": "off"},
+  {"claim": "Water crosses membranes by osmosis.", "concept": "Phosphorylation mechanism. ATP transfers a phosphate group to the sodium-potassium pump.", "label": "off"},
+  {"claim": "Chromosomes duplicate before mitosis.", "concept": "Binding order. Potassium binds after sodium is released.", "label": "off"},
+  {"claim": "Enzymes lower activation energy.", "concept": "Gradient function. Ion gradients support electrical signaling.", "label": "off"},
+  {"claim": "Phospholipids form a bilayer with hydrophobic tails inward.", "concept": "Dephosphorylation. Phosphate release returns the pump to its original shape.", "label": "off"}
+]

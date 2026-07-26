@@ -1,0 +1,1 @@
+The sodium-potassium pump maintains different sodium and potassium concentrations across the cell membrane. It moves three sodium ions out of the cell and two potassium ions into the cell. It uses ATP and changes shape during the transport cycle. The resulting gradients support the resting membrane potential and electrical signaling.

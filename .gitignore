@@ -1,0 +1,13 @@
+.env
+.venv/
+.codex/
+.DS_Store
+__pycache__/
+.pytest_cache/
+*.pyc
+frontend/node_modules/
+frontend/dist/
+graphify-out/cache/
+graphify-out/*.previous
+graphify-out/.*
+graphify-out/[0-9]*/

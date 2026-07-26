@@ -1,0 +1,59 @@
+{
+  "01_fluent_unjustified.txt": [
+    {"span": "The sodium-potassium pump maintains different sodium and potassium concentrations across the cell membrane.", "state": "yellow"},
+    {"span": "It moves three sodium ions out of the cell and two potassium ions into the cell.", "state": "yellow"},
+    {"span": "It uses ATP and changes shape during the transport cycle.", "state": "yellow"},
+    {"span": "The resulting gradients support the resting membrane potential and electrical signaling.", "state": "yellow"}
+  ],
+  "02_reversed_stoich.txt": [
+    {"span": "The pump moves three potassium ions into the cell and two sodium ions out during each cycle.", "state": "red"},
+    {"span": "more positive potassium charge enters than sodium charge leaves", "state": "red"}
+  ],
+  "03_passive_conflation.txt": [
+    {"span": "Sodium and potassium diffuse through the pump down their concentration gradients.", "state": "red"},
+    {"span": "The process is passive", "state": "red"},
+    {"span": "ATP is present in the cell but is not necessary for this movement.", "state": "red"}
+  ],
+  "04_hedged.txt": [
+    {"span": "The pump usually moves sodium outward and tends to bring potassium inward.", "state": "grey"},
+    {"span": "It might use ATP to change shape", "state": "grey"},
+    {"span": "These gradients may sometimes contribute to the membrane potential.", "state": "grey"}
+  ],
+  "05_offtopic.txt": [
+    {"span": "Cells have many important structures that work together.", "state": "grey"},
+    {"span": "Mitochondria make energy for the cell", "state": "grey"},
+    {"span": "ribosomes build proteins from amino acids", "state": "grey"},
+    {"span": "The nucleus stores genetic information and controls many activities.", "state": "grey"}
+  ],
+  "06_correct.txt": [
+    {"span": "The pump exports three sodium ions and imports two potassium ions per cycle.", "state": "green"},
+    {"span": "This creates a small electrical imbalance", "state": "green"},
+    {"span": "The transport requires ATP", "state": "green"},
+    {"span": "ATP phosphorylates the pump", "state": "green"},
+    {"span": "Potassium binding and phosphate release then return the pump to its original shape", "state": "green"}
+  ],
+  "07_mixed_missing_mechanism.txt": [
+    {"span": "The pump sends three sodium ions outside and brings two potassium ions inside.", "state": "yellow"},
+    {"span": "It requires ATP.", "state": "yellow"},
+    {"span": "The ion gradients are important for neurons", "state": "yellow"},
+    {"span": "I have not explained how the pump changes shape.", "state": "grey"}
+  ],
+  "08_mixed_wrong_direction.txt": [
+    {"span": "ATP adds a phosphate group to the pump", "state": "green"},
+    {"span": "Sodium is then released inside the cell.", "state": "red"},
+    {"span": "Potassium binds outside", "state": "yellow"},
+    {"span": "phosphate release returns the pump to its first shape.", "state": "yellow"}
+  ],
+  "09_mixed_partial.txt": [
+    {"span": "The pump maintains sodium and potassium gradients by moving ions across the membrane.", "state": "green"},
+    {"span": "ATP matters because phosphorylation changes the protein's shape.", "state": "green"},
+    {"span": "The gradients help electrical signaling", "state": "yellow"},
+    {"span": "the exact numbers of ions moved are not stated here.", "state": "grey"}
+  ],
+  "10_mixed_justification.txt": [
+    {"span": "The pump moves three sodium ions out and two potassium ions in.", "state": "green"},
+    {"span": "It is active transport", "state": "green"},
+    {"span": "The cycle makes the inside slightly negative", "state": "green"},
+    {"span": "potassium is released before phosphate leaves.", "state": "red"}
+  ]
+}
