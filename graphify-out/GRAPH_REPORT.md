@@ -1,16 +1,16 @@
-# Graph Report - Explain-Back  (2026-07-26)
+# Graph Report - Explain-Back  (2026-07-27)
 
 ## Corpus Check
-- 39 files · ~14,535 words
+- 39 files · ~15,312 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 227 nodes · 436 edges · 25 communities (16 shown, 9 thin omitted)
+- 240 nodes · 462 edges · 25 communities (16 shown, 9 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5748c9af`
+- Built from commit: `01f18c96`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -43,24 +43,24 @@
 2. `Concept` - 19 edges
 3. `analyze()` - 17 edges
 4. `resolve()` - 14 edges
-5. `LLMResponseError` - 12 edges
-6. `verify()` - 12 edges
-7. `call_json()` - 11 edges
-8. `Verdict` - 11 edges
-9. `Flag` - 10 edges
-10. `locate_spans()` - 9 edges
+5. `locate_spans()` - 13 edges
+6. `LLMResponseError` - 12 edges
+7. `verify()` - 12 edges
+8. `call_json()` - 11 edges
+9. `Verdict` - 11 edges
+10. `find_normalized()` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `main()` --calls--> `embed()`  [EXTRACTED]
   calibrate/run.py → backend/align.py
 - `test_alignment_embeds_student_justification_with_claim()` --indirect_call--> `align()`  [INFERRED]
   tests/test_align.py → backend/align.py
-- `test_fabricated_claim_and_justification_are_discarded()` --calls--> `locate_spans()`  [EXTRACTED]
+- `test_find_normalized_missing_returns_minus_one()` --calls--> `find_normalized()`  [EXTRACTED]
   tests/test_extract.py → backend/extract.py
-- `test_concept_anchor_must_be_verbatim()` --calls--> `locate_concept_anchors()`  [EXTRACTED]
+- `test_find_normalized_respects_cursor()` --calls--> `find_normalized()`  [EXTRACTED]
   tests/test_extract.py → backend/extract.py
-- `main()` --calls--> `extract_propositions()`  [EXTRACTED]
-  scripts/run_gate1.py → backend/extract.py
+- `test_claim_span_resolves_across_wraps_and_stored_raw()` --calls--> `locate_spans()`  [EXTRACTED]
+  tests/test_extract.py → backend/extract.py
 
 ## Import Cycles
 - None detected.
@@ -80,8 +80,8 @@ Cohesion: 0.40
 Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo layout, 3. Data model, Explain-Back — Complete Build Blueprint
 
 ### Community 3 - "main.py"
-Cohesion: 0.17
-Nodes (21): analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _validate_lengths(), match(), AnalyzeRequest (+13 more)
+Cohesion: 0.15
+Nodes (20): analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _validate_lengths(), match(), AnalyzeRequest (+12 more)
 
 ### Community 4 - "package.json"
 Cohesion: 0.09
@@ -92,20 +92,20 @@ Cohesion: 0.13
 Nodes (11): analyze(), API_BASE, App(), STAGES, ConceptList(), groupById(), FollowUp(), ITEMS (+3 more)
 
 ### Community 13 - "llm.py"
-Cohesion: 0.16
-Nodes (25): call_json(), _client_call(), _configuration(), LLMConfigurationError, LLMResponseError, LLMTimeoutError, parse_json(), Any (+17 more)
+Cohesion: 0.22
+Nodes (15): extract_propositions(), call_json(), _client_call(), _configuration(), LLMConfigurationError, LLMResponseError, LLMTimeoutError, parse_json() (+7 more)
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.22
 Nodes (14): call_a_prompt(), call_b_prompt(), call_c_prompt(), concept_prompt(), _items_text(), proposition_prompt(), Any, LLM prompt contracts for Explain-Back.  The prompt templates preserve the respon (+6 more)
 
 ### Community 15 - "extract.py"
-Cohesion: 0.30
-Nodes (13): _certainty(), _dedupe_overlaps(), extract_concepts(), extract_propositions(), locate_concept_anchors(), locate_spans(), Any, _type() (+5 more)
+Cohesion: 0.17
+Nodes (23): _certainty(), _dedupe_overlaps(), extract_concepts(), find_normalized(), _flatten(), locate_concept_anchors(), locate_spans(), _norm() (+15 more)
 
 ### Community 16 - "test_resolve.py"
-Cohesion: 0.41
-Nodes (13): is_specific(), resolve(), Verdict, proposition(), test_categorical_transport_claims_are_specific(), test_hedged_contradiction_is_grey(), test_hedged_entailment_is_grey(), test_low_confidence_entailment_is_grey() (+5 more)
+Cohesion: 0.43
+Nodes (12): is_specific(), resolve(), proposition(), test_categorical_transport_claims_are_specific(), test_hedged_contradiction_is_grey(), test_hedged_entailment_is_grey(), test_low_confidence_entailment_is_grey(), test_specific_high_confidence_contradiction_is_red() (+4 more)
 
 ### Community 17 - "Explain-Back"
 Cohesion: 0.25
@@ -116,8 +116,8 @@ Cohesion: 0.33
 Nodes (5): buildCommand, framework, installCommand, outputDirectory, $schema
 
 ### Community 24 - "embed"
-Cohesion: 0.24
-Nodes (7): align(), embed(), _embedding_model(), main(), ndarray, SentenceTransformer, test_alignment_embeds_student_justification_with_claim()
+Cohesion: 0.18
+Nodes (22): align(), embed(), _embedding_model(), Concept, Proposition, Verdict, _cap_hint(), _follow_up() (+14 more)
 
 ## Knowledge Gaps
 - **62 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+57 more)
@@ -127,11 +127,11 @@ Nodes (7): align(), embed(), _embedding_model(), main(), ndarray, SentenceTransf
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Proposition` connect `extract.py` to `embed`, `test_resolve.py`, `main.py`, `llm.py`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `resolve()` connect `test_resolve.py` to `main.py`, `extract.py`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `Concept` connect `llm.py` to `embed`, `main.py`, `extract.py`?**
+- **Why does `Proposition` connect `embed` to `test_resolve.py`, `main.py`, `llm.py`, `extract.py`?**
+  _High betweenness centrality (0.051) - this node is a cross-community bridge._
+- **Why does `Concept` connect `embed` to `main.py`, `extract.py`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `resolve()` connect `test_resolve.py` to `embed`, `main.py`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
   _62 weakly-connected nodes found - possible documentation gaps or missing edges._
