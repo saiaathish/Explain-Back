@@ -22,6 +22,8 @@ ORIGINAL_FILES = {
         (10, "mixed_justification"),
     )
 }
+ORIGINAL_BASELINE_MATCHED = 32
+EXPANDED_BASELINE_SCORE = 0.80
 
 
 def overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
@@ -94,7 +96,17 @@ async def main() -> int:
     )
     print(f"Expanded golden agreement: {matched}/{total} = {score:.1%}")
     print(f"States observed: {sorted(all_states)}")
-    if score < 0.80:
+    if original_matched < ORIGINAL_BASELINE_MATCHED:
+        print(
+            "FAIL: original golden regressed below "
+            f"{ORIGINAL_BASELINE_MATCHED}/{original_total}."
+        )
+        return 1
+    if score < EXPANDED_BASELINE_SCORE:
+        print(
+            "FAIL: expanded golden regressed below "
+            f"{EXPANDED_BASELINE_SCORE:.0%}."
+        )
         return 1
     if hedged_red:
         print("FAIL: 04_hedged.txt produced red.")

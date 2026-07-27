@@ -10,9 +10,9 @@ explicit limitations.
 ## Applied
 
 1. **State labels describe evidence, not cognition.**
-   `Green = understood` and `Yellow = memorized` were replaced with
-   `supported and justified` and `supported, not justified`. A source-relative
-   model verdict cannot establish what a learner understands or memorized.
+   Cognition-implying labels were replaced with `supported and justified` and
+   `supported, not justified`. A source-relative model verdict cannot establish
+   what a learner understands or memorized.
 
 2. **Storage wording is scoped to this application.**
    The footer now says Explain-Back does not persist submissions. The README
@@ -48,10 +48,10 @@ explicit limitations.
 
 - The README states that Explain-Back itself has not been validated as a
   learning intervention.
-- The golden set is described as hand-labeled development agreement, not
-  diagnostic accuracy.
-- No text claims a paper supplied the embedding thresholds.
-- No product text uses `XAI-inspired`.
+- The golden set is described as hand-labeled development agreement, not a
+  general performance metric.
+- Embedding thresholds are described as locally calibrated.
+- No product text claims attribution over model internals.
 - Exact source anchors are described as evidence used by a flag, not model
   attribution.
 
@@ -77,10 +77,13 @@ The wording overclaim was fixed. A new semantic judge for whether the question
 targets the objectively weakest gap would add another model call or a new
 heuristic and is outside this hardening run.
 
-### Rewrite the historical blueprint
+## Follow-up applied
 
-`explain-back-blueprint.md` is the supplied design blueprint and retains its
-original pitch language and DONE-copy examples as historical source material.
-Product UI, README, and runtime comments no longer repeat the overclaims. The
-blueprint itself also explicitly says Explain-Back is not validated and that no
-paper supplies its cosine thresholds.
+### Align the historical blueprint
+
+`explain-back-blueprint.md` remains the supplied design source, but stale pitch
+copy now follows the same evidence boundaries as the shipped UI and README.
+Unsupported numerical learning claims, cognition labels, universal-subject
+performance language, and internal-interpretability branding were removed or
+rewritten. The blueprint now states that cross-subject quality is uncalibrated
+and that thresholds were calibrated locally.

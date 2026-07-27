@@ -14,10 +14,9 @@ Production remained live throughout the run:
 - Backend: `https://explain-back.onrender.com`
 - Live production SHA during hardening: `84c86e9`
 
-The branch is not yet eligible to merge because rendered 390px verification is
-still unproven. The selected in-app browser cannot resize, desktop control is
-prohibited from accessing the Codex window, and Browser security policy blocked
-the same-browser mobile harness and prohibited an alternate browser workaround.
+The branch completed rendered desktop and 390px preview verification in the
+selected in-app browser. Production remained on `84c86e9` while the branch
+awaited final CI and merge.
 
 ## Golden progression
 
@@ -126,6 +125,9 @@ Applied the Luna High findings that were supported by the architecture:
 - README model-stage wording now distinguishes logical stages from retries.
 - Prompt and egress comments identify validators and the backend provider
   boundary precisely.
+- The historical blueprint now uses the same evidence boundaries as the product:
+  no cognition labels, unsupported numerical learning claims, universal-subject
+  performance claim, or internal-interpretability branding.
 
 Partial span loss remains an explicit unresolved issue. Fabricated spans are
 still discarded before color assignment, but exposing a partial drop requires a
@@ -136,8 +138,15 @@ new response warning or extraction-level retry contract. See
 
 Render confirms the backend is a Free instance that sleeps after inactivity.
 The measured cold health request took 122.29 seconds. The branch prewarms
-concepts for all three demo sources asynchronously, and
+concepts for all three demo sources sequentially in a background task, and
 `docs/demo-operations.md` documents a pre-demo wake and judging-window ping.
+
+A final normal-environment backend run exposed a native crash when the original
+background task launched three shared-model `SentenceTransformer` encodes
+concurrently during TestClient shutdown. Serializing the source warms removed
+the crash. The full suite then passed 40/40 repeatedly, including without
+thread-limiting environment overrides, and the prewarm regression test asserts
+maximum concurrency remains one.
 
 Ten fresh-tab production runs after wake all succeeded:
 
@@ -146,10 +155,40 @@ Ten fresh-tab production runs after wake all succeeded:
 - Every run: five diagnostics, no alert, no console warning/error
 - Runs over 10 seconds: zero
 
-Rendered 390px verification remains blocked by the selected Browser
-capabilities and security policy. Static CSS includes a 720px one-column
-breakpoint, but that is not treated as rendered proof and no mobile layout
-change was made without evidence.
+The protected branch preview initially failed its analysis request because
+Render allowed only the production Vercel origin. Network evidence isolated the
+failure to `PreflightMissingAllowOriginHeader`; the frontend had correctly baked
+`https://explain-back.onrender.com` into the bundle. Render's comma-separated
+origin allowlist now retains production and also permits the immutable
+hardening preview plus its stable branch alias. The configuration rebuild kept
+the existing live instance available, then passed health and explicit preflight
+checks.
+
+The checked-in correct demo then completed through the rendered preview in
+4.335 seconds with HTTP 200, coverage, inline diagnostics, and a follow-up
+question, with no alert.
+
+For mobile verification, the same selected in-app browser used supported Chrome
+DevTools device metrics at **390 × 844 CSS pixels**. The rendered page had a
+390px scroll width, no horizontal overflow, 354px stacked result regions,
+readable 14px/28px diagnostic text, and a keyboard-focusable 273px-wide
+source-anchor/revision tooltip contained within the viewport. No mobile layout
+change was necessary.
+
+### Final gate hardening
+
+The independent Luna High release audit found that the executable gate scripts
+were weaker than the written merge contract even though earlier manual runs had
+produced acceptable evidence. The scripts now enforce the contract directly:
+
+- Original golden agreement cannot fall below 32/37.
+- Expanded agreement cannot fall below 80%.
+- Determinism runs the same analysis five times and requires all five exact
+  `(start, end, state)` signatures to match.
+- Every warm determinism run must finish below eight seconds.
+
+Offline regression tests pin these constants and prove state or span drift
+changes the determinism signature.
 
 ## Architectural invariants
 
@@ -165,7 +204,7 @@ change was made without evidence.
 
 | Gate | Evidence | Status |
 | --- | --- | --- |
-| Backend tests and invariants | 40 passed | Pass |
+| Backend tests and invariants | 42 passed in normal environment, including gate and prewarm regressions | Pass |
 | Frontend tests | 4 passed | Pass |
 | Frontend production build | Vite build completed | Pass |
 | Python compilation | `compileall` completed | Pass |
@@ -173,8 +212,16 @@ change was made without evidence.
 | Expanded golden | Final paced run 44/55 (80.0%) | Pass |
 | Determinism | Final run 5/5 state agreement (100%) | Pass |
 | Warm analysis | Determinism run 3.072s; reverse-order repeat 2.824s; production average 4.817s | Pass |
-| Desktop browser demo | 10/10, no errors | Pass |
-| 390px rendered browser demo | Browser capability/policy blocker | Not proven |
+| Desktop browser demo | 10/10 production; branch preview HTTP 200 in 4.335s with no alert | Pass |
+| 390px rendered browser demo | 390 × 844, no horizontal overflow, readable diagnostics and focus tooltip | Pass |
+
+A fresh post-mobile golden invocation was attempted, but the provider returned
+HTTP 429 and the wrapper correctly surfaced a visible 502 instead of degrading
+to grey. The last complete paced scores remain 35/37 original and 44/55
+expanded at `87a78be`; changes after that evidence are limited to sequential
+startup prewarming, its regression assertion, reports, and generated Graphify
+artifacts. No extraction, verification, resolution, schema, prompt, threshold,
+or golden-fixture file changed after the complete run.
 
 ## Unresolved issues
 
@@ -187,7 +234,6 @@ change was made without evidence.
 - The rate limiter is per process, not distributed across future multi-instance
   deployments.
 - Render Free sleep remains operationally mitigated, not eliminated.
-- Rendered 390px QA is pending.
 - One expanded-golden reverse-order run logged an isolated 8.059s warm latency;
   the immediate same-case repeat was 2.824s and the deterministic warm run was
   3.072s.

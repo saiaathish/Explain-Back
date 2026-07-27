@@ -61,9 +61,16 @@ def test_prewarm_does_not_block_health_endpoint(monkeypatch) -> None:
 
 def test_prewarm_loads_all_demo_sources(monkeypatch) -> None:
     seen: list[str] = []
+    active = 0
+    max_active = 0
 
     async def concepts(source: str):
+        nonlocal active, max_active
+        active += 1
+        max_active = max(max_active, active)
+        await main.asyncio.sleep(0)
         seen.append(source)
+        active -= 1
         return []
 
     monkeypatch.setenv("LLM_API_KEY", "configured")
@@ -77,6 +84,7 @@ def test_prewarm_loads_all_demo_sources(monkeypatch) -> None:
         for filename in main.PREWARM_SOURCE_FILES
     }
     assert set(seen) == expected
+    assert max_active == 1
 
 
 def test_rate_limit_returns_clean_429(monkeypatch) -> None:

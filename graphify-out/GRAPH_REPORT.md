@@ -1,16 +1,16 @@
 # Graph Report - Explain-Back  (2026-07-26)
 
 ## Corpus Check
-- 48 files · ~22,917 words
+- 49 files · ~23,734 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 317 nodes · 572 edges · 31 communities (22 shown, 9 thin omitted)
+- 324 nodes · 580 edges · 32 communities (23 shown, 9 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `84c86e9c`
+- Built from commit: `87a78be4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -51,9 +51,9 @@
 3. `analyze()` - 20 edges
 4. `resolve()` - 14 edges
 5. `call_json()` - 13 edges
-6. `run()` - 13 edges
-7. `LLMResponseError` - 12 edges
-8. `Flag` - 12 edges
+6. `Flag` - 13 edges
+7. `run()` - 13 edges
+8. `LLMResponseError` - 12 edges
 9. `AnalyzeRequest` - 12 edges
 10. `verify()` - 12 edges
 
@@ -72,7 +72,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (31 total, 9 thin omitted)
+## Communities (32 total, 9 thin omitted)
 
 ### Community 0 - "11. Five-day schedule"
 Cohesion: 0.12
@@ -88,7 +88,7 @@ Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo lay
 
 ### Community 3 - "main.py"
 Cohesion: 0.12
-Nodes (27): analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _prewarm_source(), rate_limit_analyze(), _validate_lengths() (+19 more)
+Nodes (28): analyze(), _cache_key(), compute_coverage(), lifespan(), _prewarm(), _prewarm_source(), rate_limit_analyze(), _validate_lengths() (+20 more)
 
 ### Community 4 - "package.json"
 Cohesion: 0.09
@@ -104,7 +104,7 @@ Nodes (24): call_json(), _client_call(), _configuration(), LLMConfigurationError
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.11
-Nodes (17): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Five original misses, Golden progression, Phase A — diagnosis, Phase B — extraction recall (+9 more)
+Nodes (18): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Final gate hardening, Five original misses, Golden progression, Phase A — diagnosis (+10 more)
 
 ### Community 15 - "extract.py"
 Cohesion: 0.13
@@ -135,8 +135,8 @@ Cohesion: 0.33
 Nodes (11): Namespace, best_flag(), best_proposition(), overlap(), parse_args(), Any, Repeat the five known golden misses and capture Call B diagnostics.  This is an, raw_match() (+3 more)
 
 ### Community 26 - "Overclaim and silent-failure audit"
-Cohesion: 0.22
-Nodes (8): Add semantic validation for the follow-up question, Already compliant, Applied, Make every partially discarded model response visible, Method, Overclaim and silent-failure audit, Rejected or deferred, Rewrite the historical blueprint
+Cohesion: 0.20
+Nodes (9): Add semantic validation for the follow-up question, Align the historical blueprint, Already compliant, Applied, Follow-up applied, Make every partially discarded model response visible, Method, Overclaim and silent-failure audit (+1 more)
 
 ### Community 27 - "Production adversarial evaluation"
 Cohesion: 0.25
@@ -147,15 +147,15 @@ Cohesion: 0.29
 Nodes (6): Alignment and state assignment, Concept extraction, Conclusion, Cross-subject evaluation, Results, Scope and method
 
 ### Community 29 - "Demo-path operations"
-Cohesion: 0.33
-Nodes (5): Demo-path operations, Judging-window workaround, Mobile verification, Production demo timings, Render sleep and prewarm
+Cohesion: 0.29
+Nodes (6): Branch preview smoke, Demo-path operations, Judging-window workaround, Mobile verification, Production demo timings, Render sleep and prewarm
 
 ### Community 30 - "run_adversarial.py"
 Cohesion: 0.83
 Nodes (3): _js_slice(), main(), _read()
 
 ## Knowledge Gaps
-- **104 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+99 more)
+- **106 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+101 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -163,16 +163,16 @@ Nodes (3): _js_slice(), main(), _read()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Proposition` connect `embed` to `main.py`, `llm.py`, `extract.py`, `test_resolve.py`, `diagnose_misses.py`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Why does `Concept` connect `embed` to `main.py`, `llm.py`, `extract.py`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `resolve()` connect `test_resolve.py` to `embed`, `main.py`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _104 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _106 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Should `main.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.1214574898785425 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11923076923076924 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._

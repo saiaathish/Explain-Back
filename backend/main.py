@@ -69,12 +69,8 @@ async def _prewarm() -> None:
         logger.warning("Concept cache prewarm skipped: LLM credentials are not configured.")
         return
     samples = Path(__file__).parents[1] / "samples"
-    await asyncio.gather(
-        *(
-            _prewarm_source(samples / filename)
-            for filename in PREWARM_SOURCE_FILES
-        )
-    )
+    for filename in PREWARM_SOURCE_FILES:
+        await _prewarm_source(samples / filename)
 
 
 @asynccontextmanager

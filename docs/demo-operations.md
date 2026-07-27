@@ -12,14 +12,21 @@ An actual cold `GET /api/health` on 2026-07-26 took **122.29 seconds** before
 returning 200. The Vercel frontend remained available and returned 200 in
 0.17 seconds.
 
-The branch starts concept-cache prewarming asynchronously for all checked-in
-demo sources:
+The branch starts concept-cache prewarming in the background, one source at a
+time, for all checked-in demo sources:
 
 - `source_sodium_pump.txt`
 - `source_supply_demand.txt`
 - `source_photosynthesis.txt`
 
 Health remains non-blocking while those calls run.
+
+Sequential warming matters because the embedding model is shared. A final
+normal-environment test run exposed a native crash when all three
+`SentenceTransformer` encodes ran concurrently during TestClient shutdown.
+Serializing the three background warms eliminated the crash; the full backend
+suite passed 42/42 in the normal environment, and a
+regression assertion now caps prewarm concurrency at one.
 
 ### Judging-window workaround
 
@@ -75,10 +82,36 @@ No run exceeded the 10-second demo gate.
 
 Static CSS has a 720px breakpoint that collapses the workspace and result grid
 to one column, stacks progress stages, removes cross-column borders, and
-left-aligns feedback cards. A rendered 390px verification remains unproven:
-the in-app browser exposes a fixed 1280px viewport and no resize command,
-desktop control is prohibited from accessing the Codex window, and Browser
-security policy rejected a 390px iframe harness. The policy explicitly
-prohibited retrying through an alternate browser surface.
+left-aligns feedback cards.
 
-No mobile visual change was made without rendered evidence.
+The Vercel preview for hardening commit `87a78be` was rendered in the selected
+in-app browser with Chrome DevTools device metrics set to **390 × 844 CSS
+pixels**. The measured document width and scroll width were both 390px, no
+element crossed the viewport boundary, and all three result regions rendered as
+354px-wide stacked sections. Diagnostic text rendered at 14px with a 28px line
+height. The colored underlines were readable, keyboard focus opened a visible
+273px-wide source-anchor/revision tooltip, and the tooltip remained within the
+viewport.
+
+No mobile layout change was necessary.
+
+## Branch preview smoke
+
+The protected Vercel preview initially rendered but submission failed because
+Render's `FRONTEND_ORIGIN` allowed only the production frontend. Browser network
+evidence showed the correct request to
+`https://explain-back.onrender.com/api/analyze`, followed by
+`PreflightMissingAllowOriginHeader`.
+
+Render's comma-separated origin allowlist was expanded to retain
+`https://explain-back.vercel.app` and add both the immutable hardening preview
+origin and its stable branch alias. Render rebuilt the existing production
+`main` SHA `84c86e9`; the previous live instance remained available during the
+build. After deployment:
+
+- `GET /api/health` returned 200.
+- The preview-origin preflight returned 200 with the exact
+  `Access-Control-Allow-Origin` value and `POST, GET` methods.
+- The checked-in correct demo completed in **4.335 seconds**, returned HTTP 200,
+  rendered concept coverage, inline diagnostics, and a follow-up question, and
+  showed no alert.

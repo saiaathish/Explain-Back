@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "explain-back-blueprint.md": {
-    "mtime": 1785025070.0724103,
-    "ast_hash": "ccde17d3cd80ddf3358f32341a0252ab",
+    "mtime": 1785112862.757169,
+    "ast_hash": "0d792cdb6cae7e95fdf505245092b811",
     "semantic_hash": ""
   },
   "backend/__init__.py": {
@@ -35,8 +35,8 @@
     "semantic_hash": ""
   },
   "backend/main.py": {
-    "mtime": 1785091718.7301586,
-    "ast_hash": "efa5f2d5e05990be3018086d7ccf1b37",
+    "mtime": 1785095318.462624,
+    "ast_hash": "889b5106d8e911ebef16c679731c99f8",
     "semantic_hash": ""
   },
   "backend/misconceptions.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "scripts/run_golden.py": {
-    "mtime": 1785087643.605171,
-    "ast_hash": "368470064b9ceaf0f785cb7dff1fe565",
+    "mtime": 1785112741.6153848,
+    "ast_hash": "673a702c6a2eabb2cdf50b1e8ce8c6ac",
     "semantic_hash": ""
   },
   "tests/test_extract.py": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "tests/test_main.py": {
-    "mtime": 1785091736.9231036,
-    "ast_hash": "a26abc0d3d90e3f7c1571df8c9e5f5e7",
+    "mtime": 1785095374.0804296,
+    "ast_hash": "2cb449fe4fca407a15939c9c1802a2da",
     "semantic_hash": ""
   },
   "tests/test_resolve.py": {
@@ -255,8 +255,8 @@
     "semantic_hash": ""
   },
   "scripts/run_determinism.py": {
-    "mtime": 1785032560.435804,
-    "ast_hash": "9038564ba4081b05e6972296c70a457b",
+    "mtime": 1785113006.4797325,
+    "ast_hash": "30b263bb137a37583cd4d4c92dfeda00",
     "semantic_hash": ""
   },
   "tests/test_align.py": {
@@ -295,8 +295,8 @@
     "semantic_hash": ""
   },
   "docs/demo-operations.md": {
-    "mtime": 1785091023.1870477,
-    "ast_hash": "62383c2fc025ec24a4be941ed907045e",
+    "mtime": 1785113224.2177308,
+    "ast_hash": "0a5d5d13faa88c84981b9c6ce9baffbd",
     "semantic_hash": ""
   },
   "docs/golden-analysis.md": {
@@ -305,13 +305,13 @@
     "semantic_hash": ""
   },
   "docs/hardening-report.md": {
-    "mtime": 1785091623.8524513,
-    "ast_hash": "9a8ef7db4e663b4c91434d4e75560686",
+    "mtime": 1785113190.8409498,
+    "ast_hash": "fcd9451cad9a0f4fab45896ad69ee065",
     "semantic_hash": ""
   },
   "docs/overclaim-audit.md": {
-    "mtime": 1785091090.5439434,
-    "ast_hash": "cab2fc2b75cc6d24a2c0714a29024020",
+    "mtime": 1785112913.9677756,
+    "ast_hash": "e0d65a68b269a583766258a0d2712c39",
     "semantic_hash": ""
   },
   "samples/explanations/11_two_sentences.txt": {
@@ -367,6 +367,11 @@
   "samples/source_supply_demand.txt": {
     "mtime": 1785088885.3895853,
     "ast_hash": "cb6f16787b5eeba124be85bafada2db5",
+    "semantic_hash": ""
+  },
+  "tests/test_gate_scripts.py": {
+    "mtime": 1785113030.3114994,
+    "ast_hash": "f158acb43226a86ae764d6706e88d70e",
     "semantic_hash": ""
   }
 }
