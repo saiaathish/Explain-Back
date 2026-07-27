@@ -1,16 +1,16 @@
 # Graph Report - Explain-Back  (2026-07-26)
 
 ## Corpus Check
-- 49 files · ~23,762 words
+- 49 files · ~23,835 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 324 nodes · 580 edges · 32 communities (23 shown, 9 thin omitted)
+- 325 nodes · 581 edges · 32 communities (23 shown, 9 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ee03c38d`
+- Built from commit: `c72e2194`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -103,8 +103,8 @@ Cohesion: 0.16
 Nodes (24): call_json(), _client_call(), _configuration(), LLMConfigurationError, LLMResponseError, LLMTimeoutError, parse_json(), Any (+16 more)
 
 ### Community 14 - "prompts.py"
-Cohesion: 0.11
-Nodes (18): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Final gate hardening, Five original misses, Golden progression, Phase A — diagnosis (+10 more)
+Cohesion: 0.10
+Nodes (19): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Final gate hardening, Five original misses, Golden progression, Phase A — diagnosis (+11 more)
 
 ### Community 15 - "extract.py"
 Cohesion: 0.13
@@ -155,7 +155,7 @@ Cohesion: 0.83
 Nodes (3): _js_slice(), main(), _read()
 
 ## Knowledge Gaps
-- **106 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+101 more)
+- **107 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+102 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -163,13 +163,13 @@ Nodes (3): _js_slice(), main(), _read()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Proposition` connect `embed` to `main.py`, `llm.py`, `extract.py`, `test_resolve.py`, `diagnose_misses.py`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Why does `Concept` connect `embed` to `main.py`, `llm.py`, `extract.py`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `resolve()` connect `test_resolve.py` to `embed`, `main.py`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _106 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _107 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Should `main.py` be split into smaller, more focused modules?**

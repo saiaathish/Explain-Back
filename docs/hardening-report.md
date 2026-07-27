@@ -225,6 +225,16 @@ startup prewarming, its regression assertion, reports, and generated Graphify
 artifacts. No extraction, verification, resolution, schema, prompt, threshold,
 or golden-fixture file changed after the complete run.
 
+## Post-run model experiment — reverted
+
+Google's live model inventory confirmed the requested identifier as
+`gemma-4-31b-it`, and an OpenAI-compatible smoke request returned valid JSON.
+The full original 10-sample golden portion then scored **30/37 (81.1%)**,
+below the required 32/37 floor. Warm analyses took 11.837–25.190 seconds,
+also exceeding the eight-second contract. The expanded portion was stopped
+after the original-set regression was already proven. The local model setting
+was reverted to `gemini-3.1-flash-lite`; Render was not changed.
+
 ## Unresolved issues
 
 - `02_reversed_stoich.txt` and `09_mixed_partial.txt` remain original golden

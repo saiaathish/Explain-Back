@@ -2996,10 +2996,21 @@
       "norm_label": "verification status"
     },
     {
-      "label": "Unresolved issues",
+      "label": "Post-run model experiment \u2014 reverted",
       "file_type": "document",
       "source_file": "docs/hardening-report.md",
       "source_location": "L228",
+      "_origin": "ast",
+      "id": "docs_hardening_report_post_run_model_experiment_reverted",
+      "community": 14,
+      "community_name": "prompts.py",
+      "norm_label": "post-run model experiment \u2014 reverted"
+    },
+    {
+      "label": "Unresolved issues",
+      "file_type": "document",
+      "source_file": "docs/hardening-report.md",
+      "source_location": "L238",
       "_origin": "ast",
       "id": "docs_hardening_report_unresolved_issues",
       "community": 14,
@@ -3010,7 +3021,7 @@
       "label": "Files intentionally not changed",
       "file_type": "document",
       "source_file": "docs/hardening-report.md",
-      "source_location": "L243",
+      "source_location": "L253",
       "_origin": "ast",
       "id": "docs_hardening_report_files_intentionally_not_changed",
       "community": 14,
@@ -9679,7 +9690,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/hardening-report.md",
-      "source_location": "L243",
+      "source_location": "L253",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_hardening_report_explain_back_hardening_report",
@@ -9713,6 +9724,17 @@
       "confidence": "EXTRACTED",
       "source_file": "docs/hardening-report.md",
       "source_location": "L228",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_hardening_report_explain_back_hardening_report",
+      "target": "docs_hardening_report_post_run_model_experiment_reverted",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/hardening-report.md",
+      "source_location": "L238",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_hardening_report_explain_back_hardening_report",
@@ -10211,5 +10233,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ee03c38d0564150370e0fdf6c7a811ada3a6361f"
+  "built_at_commit": "c72e219423629889f2144db4bf3bd102cf31b391"
 }
