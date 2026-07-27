@@ -181,7 +181,30 @@ yellow->yellow 6
 ```
 
 Gemma therefore remains smoke-only. Production semantics, browser rendering,
-local tests, and CI all pass. The PR remains draft and unmerged because the
-explicit production warm-latency gate is not satisfied; changing the model,
-production prompt payload, or 8-second threshold to force a release would
-violate the hardening brief.
+local tests, and CI all pass.
+
+## Product-owner release authorization — 2026-07-27
+
+The product owner explicitly selected `gemini-3.1-flash-lite` for this release
+after reviewing the unresolved warm-latency result. The 8-second test, model
+request shape, prompts, validators, golden labels, and deterministic resolver
+remain unchanged. The measured latency failure is accepted as a documented
+operational exception rather than hidden or converted into a passing result.
+
+Before that decision, `gemini-3.5-flash-lite` was evaluated as a possible
+replacement:
+
+- the exact model identifier returned HTTP 200;
+- the initial production determinism run matched only 2/5 signatures;
+- a validator-assisted experiment reached 5/5 determinism with warm analyses
+  between 2.820 and 4.021 seconds;
+- that experiment failed production semantics at 22/37 original, 34/55
+  expanded, and 13/15 accepted pipelines;
+- mixed 3.1/3.5 call configurations failed either warm latency or exact
+  determinism.
+
+The experimental prompt and validator changes were reverted, no 3.5 setting
+was applied to Render, and the repository returned to the previously verified
+3.1 release candidate. With the product-owner latency exception recorded,
+merge is authorized after the existing local, GitHub, deployment, and
+canonical browser checks are reconfirmed.

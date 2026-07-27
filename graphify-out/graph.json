@@ -142,8 +142,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_extract",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "extract.py"
     },
     {
@@ -153,8 +153,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "backend_extract_type",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "_type()"
     },
     {
@@ -164,8 +164,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_extract_py_any",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "any"
     },
     {
@@ -175,8 +175,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "backend_extract_certainty",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "_certainty()"
     },
     {
@@ -186,8 +186,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "backend_extract_dedupe_overlaps",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "_dedupe_overlaps()"
     },
     {
@@ -197,8 +197,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "backend_extract_locate_spans",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "locate_spans()"
     },
     {
@@ -208,8 +208,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "backend_extract_locate_concept_anchors",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "locate_concept_anchors()"
     },
     {
@@ -219,8 +219,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "backend_extract_extract_concepts",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "extract_concepts()"
     },
     {
@@ -230,8 +230,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "backend_extract_extract_propositions",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "extract_propositions()"
     },
     {
@@ -296,8 +296,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "runtimeerror",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "runtimeerror"
     },
     {
@@ -307,8 +307,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "backend_llm_llmresponseerror",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "llmresponseerror"
     },
     {
@@ -318,8 +318,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "backend_llm_llmtimeouterror",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "llmtimeouterror"
     },
     {
@@ -417,8 +417,8 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "backend_llm_client_call",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_client_call()"
     },
     {
@@ -439,8 +439,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "backend_llm_call_json",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "call_json()"
     },
     {
@@ -604,8 +604,8 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "backend_main_analyze",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "analyze()"
     },
     {
@@ -835,8 +835,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_schemas",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "schemas.py"
     },
     {
@@ -857,8 +857,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "basemodel",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "basemodel"
     },
     {
@@ -868,8 +868,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "backend_schemas_proposition",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "proposition"
     },
     {
@@ -890,8 +890,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "backend_schemas_flag",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "flag"
     },
     {
@@ -912,8 +912,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "backend_schemas_coverage",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "coverage"
     },
     {
@@ -923,8 +923,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "backend_schemas_analyzeresponse",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "analyzeresponse"
     },
     {
@@ -934,8 +934,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_verify",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "verify.py"
     },
     {
@@ -945,8 +945,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "backend_verify_cap_hint",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "_cap_hint()"
     },
     {
@@ -956,8 +956,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "backend_verify_follow_up",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "_follow_up()"
     },
     {
@@ -967,8 +967,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "backend_verify_validate_response",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "_validate_response()"
     },
     {
@@ -978,8 +978,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_verify_py_any",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "any"
     },
     {
@@ -989,8 +989,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "backend_verify_verify",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "verify()"
     },
     {
@@ -1902,8 +1902,8 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "tests_model_compare_model_header",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "_model_header()"
     },
     {
@@ -1913,8 +1913,8 @@
       "source_location": "L204",
       "_origin": "ast",
       "id": "tests_model_compare_worker",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "_worker()"
     },
     {
@@ -2023,8 +2023,8 @@
       "source_location": "L782",
       "_origin": "ast",
       "id": "tests_model_compare_main",
-      "community": 24,
-      "community_name": "embed",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "main()"
     },
     {
@@ -2078,8 +2078,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_extract",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "test_extract.py"
     },
     {
@@ -2089,8 +2089,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tests_test_extract_test_fabricated_claim_and_justification_are_discarded",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "test_fabricated_claim_and_justification_are_discarded()"
     },
     {
@@ -2100,8 +2100,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "tests_test_extract_test_concept_anchor_must_be_verbatim",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "test_concept_anchor_must_be_verbatim()"
     },
     {
@@ -2111,8 +2111,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_test_extract_test_longer_overlapping_proposition_wins",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 25,
+      "community_name": "diagnose_misses.py",
       "norm_label": "test_longer_overlapping_proposition_wins()"
     },
     {
@@ -2474,8 +2474,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_test_main_test_prewarm_does_not_block_health_endpoint",
-      "community": 24,
-      "community_name": "embed",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "test_prewarm_does_not_block_health_endpoint()"
     },
     {
@@ -2485,8 +2485,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "tests_test_main_test_prewarm_loads_all_demo_sources",
-      "community": 24,
-      "community_name": "embed",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "test_prewarm_loads_all_demo_sources()"
     },
     {
@@ -2496,8 +2496,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "tests_test_main_test_rate_limit_returns_clean_429",
-      "community": 24,
-      "community_name": "embed",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "test_rate_limit_returns_clean_429()"
     },
     {
@@ -2650,8 +2650,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_verify",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_verify.py"
     },
     {
@@ -2661,8 +2661,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tests_test_verify_proposition",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "proposition()"
     },
     {
@@ -2672,8 +2672,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_normalizes_mechanism_imperative",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_follow_up_normalizes_mechanism_imperative()"
     },
     {
@@ -2683,8 +2683,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_rejects_arbitrary_statement",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_follow_up_rejects_arbitrary_statement()"
     },
     {
@@ -2694,8 +2694,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_accepts_one_question_with_clarifying_instruction",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_follow_up_accepts_one_question_with_clarifying_instruction()"
     },
     {
@@ -2705,8 +2705,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_test_verify_test_verify_rejects_missing_verdict",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_verify_rejects_missing_verdict()"
     },
     {
@@ -2716,8 +2716,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "tests_test_verify_test_verify_checks_justification_and_follow_up_shape",
-      "community": 34,
-      "community_name": "verify.py",
+      "community": 16,
+      "community_name": "test_resolve.py",
       "norm_label": "test_verify_checks_justification_and_follow_up_shape()"
     },
     {
@@ -3269,6 +3269,17 @@
       "community": 32,
       "community_name": "Dual-model CI outcome",
       "norm_label": "final comparison and release disposition"
+    },
+    {
+      "label": "Product-owner release authorization \u2014 2026-07-27",
+      "file_type": "document",
+      "source_file": "docs/dual-model.md",
+      "source_location": "L186",
+      "_origin": "ast",
+      "id": "docs_dual_model_product_owner_release_authorization_2026_07_27",
+      "community": 32,
+      "community_name": "Dual-model CI outcome",
+      "norm_label": "product-owner release authorization \u2014 2026-07-27"
     },
     {
       "label": "gemma-baseline.md",
@@ -12006,6 +12017,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/dual-model.md",
+      "source_location": "L186",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_dual_model_dual_model_ci_outcome",
+      "target": "docs_dual_model_product_owner_release_authorization_2026_07_27",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/dual-model.md",
       "source_location": "L104",
       "weight": 1.0,
       "_origin": "ast",
@@ -12868,5 +12890,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "420c63c88aa6c9c368743c1d6c822ef6c925f4a7"
+  "built_at_commit": "1483b187e73a5aa9a26c3d7b0c25701995c4d932"
 }

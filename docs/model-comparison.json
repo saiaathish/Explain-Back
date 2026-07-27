@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-07-27",
-  "decision": "safe_fallback_smoke_only",
+  "decision": "release_gemini_3_1_with_latency_exception",
   "models": {
     "production": "gemini-3.1-flash-lite",
     "ci": "gemma-4-31b-it"
@@ -112,15 +112,54 @@
     },
     "follow_up_visible": true
   },
+  "rejected_production_trial": {
+    "model": "gemini-3.5-flash-lite",
+    "availability_status": 200,
+    "initial_determinism": {
+      "matching_runs": 2,
+      "total_runs": 5,
+      "rate": 0.4
+    },
+    "validator_experiment": {
+      "determinism": {
+        "matching_runs": 5,
+        "total_runs": 5,
+        "rate": 1.0
+      },
+      "warm_latency_seconds": [2.82, 2.885, 4.021, 3.996],
+      "original": {
+        "matched": 22,
+        "total": 37,
+        "rate": 0.5945945946
+      },
+      "expanded": {
+        "matched": 34,
+        "total": 55,
+        "rate": 0.6181818182
+      },
+      "accepted_pipelines": {
+        "accepted": 13,
+        "total": 15
+      }
+    },
+    "decision": "rejected_and_reverted"
+  },
+  "release_decision": {
+    "production_model": "gemini-3.1-flash-lite",
+    "product_owner_authorized": true,
+    "latency_exception": true,
+    "latency_gate_unchanged": true,
+    "ci_model_is_non_authoritative_smoke_only": true
+  },
   "release_gates": {
     "production_golden": "pass",
     "production_determinism": "pass",
-    "production_warm_latency": "fail",
+    "production_warm_latency": "accepted_product_owner_exception",
     "ci_schema_reliability": "fail",
     "ci_golden": "fail",
     "production_agreement": "fail",
     "zero_ci_only_red_transitions": "fail",
     "browser": "pass",
-    "merge": "blocked_by_latency_gate"
+    "merge": "authorized_after_reconfirmation"
   }
 }
