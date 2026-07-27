@@ -155,6 +155,11 @@ def test_ci_request_payload_uses_call_specific_json_schema(monkeypatch) -> None:
     ]["verdicts"]
     assert verdicts["minItems"] == verdicts["maxItems"] == 2
     assert verdicts["items"]["properties"]["prop_id"]["enum"] == ["P4", "P8"]
+    follow_up = call_c["response_format"]["json_schema"]["schema"][
+        "properties"
+    ]["follow_up"]
+    assert follow_up["minLength"] == 1
+    assert follow_up["pattern"] == r"^(How|Why) [^?]*\?$"
 
 
 @pytest.mark.asyncio

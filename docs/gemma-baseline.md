@@ -54,3 +54,22 @@ production-agreement percentage is claimed from this run.
 The untuned model was deterministic and respected the no-invented-justification
 sample, but it missed the 32/37 floor and depended on JSON repair. Schema
 conformance was therefore the first tuning target.
+
+## Final paced release characterization
+
+After CI-only native schema tuning and explicit provider pacing, the complete
+fixture set scored 29/37 on the original ten samples and 37/55 on the expanded
+fifteen. This is below both semantic acceptance floors.
+
+Call B was 15/15 direct JSON, schema-valid, and contract-valid. A remaining
+Call C completeness failure was traced to an empty `follow_up`, not missing or
+duplicate proposition IDs; a CI-only schema constraint fixed the targeted
+fixture on its first attempt.
+
+A 17-analysis fresh-cache reliability sequence produced 51 successful direct,
+schema-valid, contract-valid responses, but two additional HTTP 503 attempts
+occurred in the first 50 calls. End-to-end reliability was therefore 48/50
+(96%), below the required 98%.
+
+Gemma is retained for smoke, schema, determinism, and prompt-iteration checks
+only. It is not accepted as the production proxy.

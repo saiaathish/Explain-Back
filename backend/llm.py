@@ -259,10 +259,15 @@ def _request_payload(prompt: str, config: GenerationConfig) -> dict[str, Any]:
                 verdicts = schema["properties"]["verdicts"]
                 verdicts["minItems"] = len(prop_ids)
                 verdicts["maxItems"] = len(prop_ids)
-                verdicts["items"]["properties"]["prop_id"] = {
-                    "type": "string",
-                    "enum": prop_ids,
-                }
+            verdicts["items"]["properties"]["prop_id"] = {
+                "type": "string",
+                "enum": prop_ids,
+            }
+            schema["properties"]["follow_up"] = {
+                "type": "string",
+                "minLength": 1,
+                "pattern": r"^(How|Why) [^?]*\?$",
+            }
         payload["response_format"] = {
             "type": "json_schema",
             "json_schema": {

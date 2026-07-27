@@ -1,7 +1,20 @@
+import sys
 from types import SimpleNamespace
 
 from scripts import run_determinism, run_golden
 from tests import model_compare
+
+
+def test_model_compare_accepts_explicit_provider_pacing(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["model_compare.py", "--pace-seconds", "7.5"],
+    )
+
+    assert model_compare.parse_args().pace_seconds == 7.5
 
 
 def test_release_gate_thresholds_match_hardening_brief() -> None:

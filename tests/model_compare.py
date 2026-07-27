@@ -206,6 +206,7 @@ async def _worker(
     filenames: list[str],
     repeat: int,
     clear_cache_each: bool,
+    pace_seconds: float,
 ) -> dict:
     logging.getLogger("backend.main").setLevel(logging.ERROR)
     _set_configuration(configuration)
@@ -222,6 +223,7 @@ async def _worker(
     )
     raw_events: list[dict[str, Any]] = []
     real_client_call = llm_module._client_call
+    last_call_finished_at = 0.0
     context: dict[str, Any] = {
         "file": "",
         "run": 0,
@@ -237,6 +239,11 @@ async def _worker(
         timeout: float = 20.0,
         call: str = "generic",
     ) -> str:
+        nonlocal last_call_finished_at
+        if pace_seconds > 0 and last_call_finished_at:
+            elapsed = asyncio.get_running_loop().time() - last_call_finished_at
+            await asyncio.sleep(max(0.0, pace_seconds - elapsed))
+
         attempt_key = (
             context["file"],
             context["run"],
@@ -255,6 +262,7 @@ async def _worker(
         try:
             raw = await real_client_call(prompt, timeout=timeout, call=call)
         except Exception as exc:
+            last_call_finished_at = asyncio.get_running_loop().time()
             event.update(
                 {
                     "direct_json": False,
@@ -265,6 +273,7 @@ async def _worker(
             )
             raw_events.append(event)
             raise
+        last_call_finished_at = asyncio.get_running_loop().time()
         try:
             direct = json.loads(raw.strip())
             direct_json = True
@@ -309,6 +318,23 @@ async def _worker(
                 ],
             }
         )
+        if call == "c" and isinstance(parsed, dict):
+            verdicts = parsed.get("verdicts", [])
+            follow_up = parsed.get("follow_up")
+            event["returned_prop_ids"] = [
+                item.get("prop_id")
+                for item in verdicts
+                if isinstance(item, dict)
+            ]
+            event["expected_prop_ids"] = list(context["proposition_ids"])
+            event["follow_up_question_marks"] = (
+                follow_up.count("?") if isinstance(follow_up, str) else None
+            )
+            event["follow_up_starts_with_how_or_why"] = (
+                follow_up.strip().lower().startswith(("how ", "why "))
+                if isinstance(follow_up, str)
+                else False
+            )
         raw_events.append(event)
         return raw
 
@@ -414,6 +440,7 @@ def _run_worker(
     repeat: int,
     *,
     clear_cache_each: bool = False,
+    pace_seconds: float = 0.0,
 ) -> dict:
     command = [
         sys.executable,
@@ -428,6 +455,8 @@ def _run_worker(
     ]
     if clear_cache_each:
         command.append("--clear-cache-each")
+    if pace_seconds > 0:
+        command.extend(["--pace-seconds", str(pace_seconds)])
     completed = subprocess.run(
         command,
         cwd=ROOT,
@@ -649,7 +678,12 @@ def characterize(args: argparse.Namespace) -> dict[str, Any]:
     runs = {}
     for name in CONFIGURATIONS:
         print(f"Running {name} golden/isolation...", flush=True)
-        runs[name] = _run_worker(name, filenames, 1)
+        runs[name] = _run_worker(
+            name,
+            filenames,
+            1,
+            pace_seconds=args.pace_seconds,
+        )
         print(f"Completed {name} golden/isolation.", flush=True)
     schema_filenames = [
         ORIGINAL_FILES[index % len(ORIGINAL_FILES)]
@@ -667,6 +701,7 @@ def characterize(args: argparse.Namespace) -> dict[str, Any]:
             schema_filenames,
             1,
             clear_cache_each=True,
+            pace_seconds=args.pace_seconds,
         )
         print(f"Completed {name} schema characterization.", flush=True)
     print("Running CI determinism...", flush=True)
@@ -674,6 +709,7 @@ def characterize(args: argparse.Namespace) -> dict[str, Any]:
         "ci",
         [args.determinism_sample],
         args.determinism_runs,
+        pace_seconds=args.pace_seconds,
     )
     print("Completed CI determinism.", flush=True)
     production = runs["prod"]
@@ -719,6 +755,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--clear-cache-each", action="store_true")
     parser.add_argument(
+        "--pace-seconds",
+        type=float,
+        default=0.0,
+        help="Minimum delay after each provider response before the next request.",
+    )
+    parser.add_argument(
         "--schema-calls",
         type=int,
         choices=range(1, 51),
@@ -745,11 +787,12 @@ def main() -> int:
             json.dumps(
                 asyncio.run(
                     _worker(
-                        args.configuration,
-                        filenames,
-                        args.repeat,
-                        args.clear_cache_each,
-                    )
+                    args.configuration,
+                    filenames,
+                    args.repeat,
+                    args.clear_cache_each,
+                    args.pace_seconds,
+                )
                 ),
                 ensure_ascii=False,
             )

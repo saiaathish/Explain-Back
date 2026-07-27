@@ -434,7 +434,8 @@ COMPLETENESS GATE:
 - Return exactly one verdict for every prop_id in the actual ITEMS above.
 - Copy each prop_id exactly; never omit, duplicate, rename, or invent an ID.
 - Hedged words such as "usually", "often", and "tends to" require low confidence.
-- The follow_up must be one question containing exactly one question mark.
+- The follow_up must be non-empty, start with "How " or "Why ", and end with
+  exactly one question mark.
 - Return only the actual JSON object, with no markdown fence or commentary.
 '''
 

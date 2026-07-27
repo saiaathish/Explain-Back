@@ -40,6 +40,7 @@ and `/api/analyze` has no role or model parameter.
 | Three cross-domain B examples | 32/37 | Not independently accepted | Keep |
 | C completeness/hedging example | Fixed 2/2 targeted pipeline failures | Semantic score still low | Keep |
 | Dynamic C ID/count schema | 3/3 targeted hedged sample | Later full run hit provider HTTP failure | Keep as constrained decoding |
+| CI C follow-up schema (`How`/`Why`, one `?`) | `14_reverse_order.txt` failed 3/3 before the constraint | First constrained attempt completed with 6/6 flags | Keep |
 | Split B into B1/B2 | Not attempted | — | Avoided; 32/37 floor was reached |
 
 The B examples cover:
@@ -73,13 +74,13 @@ remain unchanged.
 
 | Criterion | Status |
 | --- | --- |
-| Schema conformance ≥98% across 50 consecutive calls | Not proven; strict runs reached 35 consecutive responses before a later provider HTTP failure |
-| Golden ≥32/37 | Reached in clean runs, but a later exact gate aborted on provider failure |
+| Schema/reliability ≥98% across 50 consecutive calls | Fail: 48/50 end-to-end because two provider HTTP 503s required retry; all 51 successful responses were direct, schema-valid, and contract-valid |
+| Golden ≥32/37 | Fail in the paced full-fixture release run: 29/37 |
 | Determinism 5/5 | Pass |
 | Agreement with production ≥90% | Blocked by production quota; no valid percentage |
 | No CI-only transitions into red | Blocked until production comparison is valid |
 | Fluent-unjustified majority empty | Pass |
-| Existing expanded gate ≥44/55 | Fail; measured full run was 38/55 |
+| Existing expanded gate ≥44/55 | Fail; paced full-fixture release run was 37/55 before the targeted C repair |
 
 Because production agreement and the expanded gate are not satisfied, the
 32/37 result is not enough to make Gemma an authoritative proxy.
@@ -108,6 +109,43 @@ would provide.
 - The production golden and byte-level response equivalence remain unproven on
   the current branch because the production provider quota blocked live calls.
   The exact outbound production request shape is covered by regression tests.
+
+## Release completion run — 2026-07-27
+
+The first live matrix was invalidated by two independent provider limits:
+
+- production `gemini-3.1-flash-lite` returned HTTP 429 for the
+  `GenerateRequestsPerDayPerProjectPerModel-FreeTier` quota (500 requests);
+- an unpaced Gemma replay also produced transient HTTP 429 responses.
+
+`tests/model_compare.py` now accepts `--pace-seconds`. Pacing is confined to
+the live evaluation harness and does not change production requests or
+runtime latency.
+
+With a 10-second post-response interval, Gemma produced:
+
+- original golden: 29/37;
+- expanded golden: 37/55;
+- Call B: 15/15 direct JSON, schema-valid, and contract-valid;
+- zero HTTP 429 responses;
+- one Call C pipeline failure on `14_reverse_order.txt`.
+
+That Call C failure was not an ID problem: all six expected IDs were returned
+exactly once on all three attempts. The model returned an empty `follow_up`.
+The retained CI-only JSON Schema constraint requires a non-empty question
+beginning with `How` or `Why` and ending in exactly one `?`. The targeted
+fixture then completed on its first attempt with six flags.
+
+The fresh-cache reliability run exercised 17 complete analyses (53 provider
+attempts). Two Call A attempts returned HTTP 503, so the first 50 attempts were
+48/50 end-to-end successful (96%), below the 98% release threshold. Retries
+recovered every analysis; all 51 successful responses were direct JSON,
+schema-valid, and contract-valid.
+
+**Final role decision:** safe fallback. Gemma remains a smoke, schema, and
+prompt-iteration model. It is not an authoritative production proxy and is
+not eligible for production deployment. Production remains
+`gemini-3.1-flash-lite`.
 
 ## Next acceptance run
 
