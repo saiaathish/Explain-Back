@@ -4,22 +4,23 @@ Explain-Back inverts the usual AI study tool. Instead of explaining material
 to a student, it asks the student to explain a short source passage and then
 maps formative guidance over the student's own words:
 
-- Green: understood and justified
-- Yellow: stated but not justified
+- Green: supported by the source and justified
+- Yellow: supported by the source but not justified
 - Red: contradicts the supplied source
 - Grey: the system is not confident
 
 Every non-green flag includes an exact contiguous span from the supplied source and
-a short revision hint. The response ends with one follow-up question aimed at
-the weakest point. There are no learner-facing scores, accounts, or stored
-submissions.
+a short revision hint. The response ends with one follow-up question generated
+from the analyzed gaps. There are no learner-facing scores or accounts.
+Explain-Back does not persist submissions; inputs are sent to the configured
+model provider under that provider's data-handling policy.
 
 ## Why this design
 
-Self-explanation prompting has reported meta-analytic support around
-`g ≈ 0.55` across roughly 64 studies. Explain-Back uses that learning activity
+Self-explanation prompting is a studied learning activity. Explain-Back uses it
 as its interaction model: the student produces the explanation before seeing
-feedback.
+feedback. This project has not established that Explain-Back itself improves
+learning.
 
 Grey is an intentional state, not a missing result. Misconception detection at
 realistic prevalence can create costly false positives, and model confidence is
@@ -29,7 +30,8 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 ## Architecture
 
 The browser holds input and results in React state. A FastAPI process performs
-up to three constrained model calls around deterministic validation:
+two or three logical model stages around deterministic validation. Each stage
+can retry malformed output for up to three total attempts:
 
 1. Extract source concepts; cache them by source hash in process memory.
 2. Extract propositions from the student's exact text.
@@ -49,8 +51,8 @@ Requires Python 3.11 and Node.js 20+.
 
 ```bash
 cp .env.example .env
-# Set LLM_API_KEY, LLM_MODEL, and the provider's OpenAI-compatible
-# LLM_BASE_URL in .env.
+# Set LLM_API_KEY, LLM_MODEL_PROD, LLM_MODEL_CI, and the provider's
+# OpenAI-compatible LLM_BASE_URL in .env. LLM_MODEL is a legacy prod fallback.
 
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
@@ -83,16 +85,20 @@ PYTHONPATH=. .venv/bin/python scripts/run_determinism.py
 cd frontend && npm test && npm run build
 ```
 
-Gate 1 and the golden regression require live `LLM_API_KEY` and `LLM_MODEL`
-values. They exit as blocked rather than replacing live evidence with fixtures.
+The authoritative golden defaults to `prod`; determinism and prompt-iteration
+harnesses default to `ci`. Set `GOLDEN_LLM_ROLE=ci` only for comparative
+evidence, or `DETERMINISM_LLM_ROLE=prod` for production evidence. Live gates
+require `LLM_API_KEY` plus the selected role's model and exit blocked rather
+than replacing live evidence with fixtures.
 
 ## Deployment
 
 `render.yaml` and `Dockerfile` define the FastAPI service. The Docker build
 bakes the embedding model into the image so `align.py` makes no runtime
-download. Set `LLM_API_KEY`, `LLM_MODEL`, and the deployed Vercel origin as
-`FRONTEND_ORIGIN` in Render. Also set `LLM_BASE_URL` to the configured
-provider's OpenAI-compatible base URL.
+download. Keep `LLM_ROLE=prod` in Render and set `LLM_API_KEY`,
+`LLM_MODEL_PROD` (or legacy `LLM_MODEL`), `FRONTEND_ORIGIN`, and the provider's
+OpenAI-compatible `LLM_BASE_URL`. `LLM_MODEL_CI` is evaluation-only and must not
+be selected in production.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
 service before building the Vercel deployment.
@@ -104,6 +110,9 @@ service before building the Vercel deployment.
   set, and it does not support a general accuracy claim.
 - The cosine thresholds are specific to the configured embedding model and
   this membrane-transport calibration set; no paper supplies these cuts.
+- Exploratory supply/demand and photosynthesis checks completed structurally,
+  but correct explanations were mostly yellow or grey and many errors remained
+  grey. Performance outside membrane transport is not calibrated or validated.
 - Source verification is model-assisted and can still miss errors or produce
   false alarms. Grey exists to expose uncertainty, not erase it.
 - Exact source anchors show what text informed a flag; they are not model

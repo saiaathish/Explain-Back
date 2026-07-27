@@ -6,11 +6,13 @@ import Legend from "./Legend";
 import Overlay from "./Overlay";
 
 const STAGES = ["Reading source", "Extracting claims", "Checking against source"];
+const ANALYSIS_TIMEOUT_MS = 90_000;
 
 function Footer() {
   return (
     <footer>
-      Formative guidance only. Not a grade. Nothing you type is stored.
+      Formative guidance only. Not a grade. Explain-Back does not persist
+      submissions.
     </footer>
   );
 }
@@ -67,7 +69,10 @@ export default function App() {
       () => setStage((current) => Math.min(current + 1, STAGES.length - 1)),
       1800,
     );
-    const timeout = window.setTimeout(() => controller.abort(), 30000);
+    const timeout = window.setTimeout(
+      () => controller.abort(),
+      ANALYSIS_TIMEOUT_MS,
+    );
     try {
       setResult(await analyze(source.trim(), explanation.trim(), controller.signal));
     } catch (requestError) {

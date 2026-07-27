@@ -56,4 +56,33 @@
     {"span": "The cycle makes the inside slightly negative", "state": "green"},
     {"span": "potassium is released before phosphate leaves.", "state": "red"}
   ]
+,
+"11_two_sentences.txt": [
+  {"span": "The pump moves three sodium ions out and two potassium ions in.", "state": "yellow"},
+  {"span": "It uses ATP.", "state": "yellow"}
+],
+"12_correct_claim_wrong_mechanism.txt": [
+  {"span": "The pump moves three sodium ions out and two potassium ions in because both ions diffuse down their concentration gradients.", "state": "red"},
+  {"span": "ATP is present but does not drive the transport.", "state": "red"}
+],
+"13_hedged_specific_error.txt": [
+  {"span": "The pump might usually move sodium outward", "state": "grey"},
+  {"span": "may bring potassium inward.", "state": "grey"},
+  {"span": "It probably uses ATP to change shape.", "state": "grey"},
+  {"span": "it always releases potassium outside the cell.", "state": "red"}
+],
+"14_reverse_order.txt": [
+  {"span": "Potassium is released into the cytoplasm because phosphate release returns the pump to its original shape.", "state": "green"},
+  {"span": "potassium binds from outside after sodium is released", "state": "yellow"},
+  {"span": "ATP phosphorylates the pump, which changes its shape and exposes sodium-binding sites outside.", "state": "green"},
+  {"span": "the pump moves three sodium ions out and two potassium ions in, creating a net outward positive charge.", "state": "green"}
+],
+"15_poor_grammar_correct.txt": [
+  {"span": "pump send 3 sodium out and 2 potassium in.", "state": "yellow"},
+  {"span": "need ATP cause ions go against gradient.", "state": "green"},
+  {"span": "phosphate make pump change shape so sodium go outside.", "state": "green"},
+  {"span": "potassium bind outside", "state": "yellow"},
+  {"span": "phosphate leave", "state": "yellow"},
+  {"span": "potassium go inside.", "state": "yellow"}
+]
 }

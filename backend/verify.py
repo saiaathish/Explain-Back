@@ -89,7 +89,7 @@ async def verify(
     for attempt in range(3):
         try:
             return _validate_response(
-                await call_json(prompt),
+                await call_json(prompt, call="c"),
                 propositions,
             )
         except LLMResponseError as exc:

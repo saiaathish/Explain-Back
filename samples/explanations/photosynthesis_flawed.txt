@@ -1,0 +1,5 @@
+Chlorophyll splits carbon dioxide using sunlight, so the oxygen released comes from carbon dioxide and water is only used to keep the plant hydrated. Both the light reactions and the Calvin cycle occur in the thylakoid membrane.
+
+The Calvin cycle uses light directly, and ATP and NADPH are waste products. Therefore, the cycle can continue without ATP or NADPH once carbon dioxide is present.
+
+Closing stomata always increases photosynthesis because it traps carbon dioxide inside the leaf. More light always increases glucose production regardless of temperature or carbon dioxide availability.

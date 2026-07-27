@@ -171,7 +171,7 @@ def locate_concept_anchors(
 
 
 async def extract_concepts(source: str) -> list[Concept]:
-    raw = await call_json(concept_prompt(source))
+    raw = await call_json(concept_prompt(source), call="a")
     if isinstance(raw, dict):
         raw = raw.get("concepts", [])
     if not isinstance(raw, list):
@@ -180,7 +180,7 @@ async def extract_concepts(source: str) -> list[Concept]:
 
 
 async def extract_propositions(source: str, explanation: str) -> list[Proposition]:
-    raw = await call_json(proposition_prompt(source, explanation))
+    raw = await call_json(proposition_prompt(source, explanation), call="b")
     if isinstance(raw, dict):
         raw = raw.get("propositions", [])
     if not isinstance(raw, list):

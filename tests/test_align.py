@@ -29,3 +29,30 @@ def test_alignment_embeds_student_justification_with_claim(monkeypatch) -> None:
         "The transport needs ATP because ions move against their gradients"
     ]
     assert result["P1"][0] == "K1"
+
+
+def test_concept_vectors_are_cached_by_digest(monkeypatch) -> None:
+    embedded: list[list[str]] = []
+
+    def fake_embed(texts: list[str]) -> np.ndarray:
+        embedded.append(texts)
+        return np.ones((len(texts), 384), dtype=np.float32)
+
+    monkeypatch.setattr(align, "embed", fake_embed)
+    align._concept_vector_cache.clear()
+    proposition = Proposition(id="P1", claim_span="ATP changes the pump")
+    concept = Concept(
+        id="K1",
+        label="ATP mechanism",
+        anchor="ATP phosphorylation changes the pump's shape.",
+    )
+
+    align.align([proposition], [concept])
+    align.align([proposition], [concept])
+
+    assert embedded == [
+        ["ATP changes the pump"],
+        ["ATP mechanism. ATP phosphorylation changes the pump's shape."],
+        ["ATP changes the pump"],
+    ]
+    assert all(len(key) == 64 for key in align._concept_vector_cache)

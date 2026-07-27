@@ -3,10 +3,28 @@ import json
 import os
 from pathlib import Path
 
+from backend.llm import active_model, active_role, is_configured
 from backend.main import analyze
 from backend.schemas import AnalyzeRequest
 
 ROOT = Path(__file__).parents[1]
+ORIGINAL_FILES = {
+    f"{index:02d}_{name}.txt"
+    for index, name in (
+        (1, "fluent_unjustified"),
+        (2, "reversed_stoich"),
+        (3, "passive_conflation"),
+        (4, "hedged"),
+        (5, "offtopic"),
+        (6, "correct"),
+        (7, "mixed_missing_mechanism"),
+        (8, "mixed_wrong_direction"),
+        (9, "mixed_partial"),
+        (10, "mixed_justification"),
+    )
+}
+ORIGINAL_BASELINE_MATCHED = 32
+EXPANDED_BASELINE_SCORE = 0.80
 
 
 def overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
@@ -14,9 +32,21 @@ def overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("GATE 3 BLOCKED: set LLM_API_KEY and LLM_MODEL for live golden evidence.")
+    os.environ["LLM_ROLE"] = os.getenv(
+        "GOLDEN_LLM_ROLE", "prod"
+    ).strip().lower()
+    if not all(is_configured(call=call) for call in ("a", "b", "c")):
+        print(
+            "GATE 3 BLOCKED: configure LLM_API_KEY and the selected role's model."
+        )
         return 2
+    print(
+        "Golden configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
     source = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
         encoding="utf-8"
     ).strip()
@@ -25,6 +55,8 @@ async def main() -> int:
     )
     matched = 0
     total = 0
+    original_matched = 0
+    original_total = 0
     sample_states: dict[str, list[str]] = {}
     sample_interval = max(
         0.0, float(os.getenv("GATE_SAMPLE_INTERVAL_SECONDS", "0"))
@@ -54,6 +86,9 @@ async def main() -> int:
             )
             passed = actual is not None and actual.state == expected["state"]
             matched += int(passed)
+            if filename in ORIGINAL_FILES:
+                original_total += 1
+                original_matched += int(passed)
             print(
                 f"{'PASS' if passed else 'FAIL'} {filename} "
                 f"{expected['state']:6s} {expected['span']!r} "
@@ -63,13 +98,28 @@ async def main() -> int:
             await asyncio.sleep(sample_interval)
 
     score = matched / total if total else 0
+    original_score = original_matched / original_total if original_total else 0
     all_states = {state for states in sample_states.values() for state in states}
     hedged_red = sample_states.get("04_hedged.txt", []).count("red")
     correct_states = sample_states.get("06_correct.txt", [])
     unjustified_states = sample_states.get("01_fluent_unjustified.txt", [])
-    print(f"\nGolden agreement: {matched}/{total} = {score:.1%}")
+    print(
+        f"\nOriginal golden agreement: "
+        f"{original_matched}/{original_total} = {original_score:.1%}"
+    )
+    print(f"Expanded golden agreement: {matched}/{total} = {score:.1%}")
     print(f"States observed: {sorted(all_states)}")
-    if score < 0.80:
+    if original_matched < ORIGINAL_BASELINE_MATCHED:
+        print(
+            "FAIL: original golden regressed below "
+            f"{ORIGINAL_BASELINE_MATCHED}/{original_total}."
+        )
+        return 1
+    if score < EXPANDED_BASELINE_SCORE:
+        print(
+            "FAIL: expanded golden regressed below "
+            f"{EXPANDED_BASELINE_SCORE:.0%}."
+        )
         return 1
     if hedged_red:
         print("FAIL: 04_hedged.txt produced red.")

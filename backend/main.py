@@ -1,15 +1,18 @@
 import asyncio
 import hashlib
 import logging
+import math
 import os
 import time
+from collections import deque
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from backend.align import align
+from backend.align import align, embed_concepts
 from backend.config import (
     MAX_EXPLANATION_CHARS,
     MAX_SOURCE_CHARS,
@@ -19,7 +22,12 @@ from backend.config import (
     T_LOW,
 )
 from backend.extract import extract_concepts, extract_propositions
-from backend.llm import LLMConfigurationError, LLMResponseError, LLMTimeoutError
+from backend.llm import (
+    LLMConfigurationError,
+    LLMResponseError,
+    LLMTimeoutError,
+    is_configured,
+)
 from backend.misconceptions import match
 from backend.resolve import resolve
 from backend.schemas import (
@@ -34,25 +42,40 @@ from backend.verify import verify
 logger = logging.getLogger(__name__)
 _concept_cache: dict[str, list[Concept]] = {}
 _prewarm_task: asyncio.Task[None] | None = None
+_rate_limit_events: dict[str, deque[float]] = {}
+_rate_limit_last_cleanup = 0.0
+RATE_LIMIT_MAX_REQUESTS = 20
+RATE_LIMIT_WINDOW_SECONDS = 60.0
+PREWARM_SOURCE_FILES = (
+    "source_sodium_pump.txt",
+    "source_supply_demand.txt",
+    "source_photosynthesis.txt",
+)
 
 
 def _cache_key(source: str) -> str:
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
-async def _prewarm() -> None:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        logger.warning("Concept cache prewarm skipped: LLM credentials are not configured.")
-        return
-    sample = Path(__file__).parents[1] / "samples" / "source_sodium_pump.txt"
+async def _prewarm_source(sample: Path) -> None:
     source = sample.read_text(encoding="utf-8").strip()
     try:
         concepts = await extract_concepts(source)
     except LLMResponseError:
-        logger.exception("Concept cache prewarm failed.")
+        logger.exception("Concept cache prewarm failed for %s.", sample.name)
         return
     if concepts:
         _concept_cache[_cache_key(source)] = concepts
+        await asyncio.to_thread(embed_concepts, concepts)
+
+
+async def _prewarm() -> None:
+    if not is_configured(call="a"):
+        logger.warning("Concept cache prewarm skipped: LLM credentials are not configured.")
+        return
+    samples = Path(__file__).parents[1] / "samples"
+    for filename in PREWARM_SOURCE_FILES:
+        await _prewarm_source(samples / filename)
 
 
 @asynccontextmanager
@@ -70,6 +93,52 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Explain-Back", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def rate_limit_analyze(request: Request, call_next):
+    global _rate_limit_last_cleanup
+
+    if request.method != "POST" or request.url.path != "/api/analyze":
+        return await call_next(request)
+
+    forwarded_for = request.headers.get("x-forwarded-for", "")
+    client_id = forwarded_for.rsplit(",", 1)[-1].strip()
+    if not client_id:
+        client_id = request.client.host if request.client else "unknown"
+
+    now = time.monotonic()
+    if now - _rate_limit_last_cleanup >= RATE_LIMIT_WINDOW_SECONDS:
+        stale_cutoff = now - RATE_LIMIT_WINDOW_SECONDS
+        for stored_client, stored_events in list(_rate_limit_events.items()):
+            while stored_events and stored_events[0] <= stale_cutoff:
+                stored_events.popleft()
+            if not stored_events:
+                del _rate_limit_events[stored_client]
+        _rate_limit_last_cleanup = now
+
+    events = _rate_limit_events.setdefault(client_id, deque())
+    cutoff = now - RATE_LIMIT_WINDOW_SECONDS
+    while events and events[0] <= cutoff:
+        events.popleft()
+
+    if len(events) >= RATE_LIMIT_MAX_REQUESTS:
+        retry_after = max(
+            1,
+            math.ceil(events[0] + RATE_LIMIT_WINDOW_SECONDS - now),
+        )
+        return JSONResponse(
+            status_code=429,
+            content={
+                "detail": "Too many submissions. Please try again shortly."
+            },
+            headers={"Retry-After": str(retry_after)},
+        )
+
+    events.append(now)
+    return await call_next(request)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

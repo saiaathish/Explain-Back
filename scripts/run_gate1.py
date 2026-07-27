@@ -4,7 +4,12 @@ import os
 from pathlib import Path
 
 from backend.extract import extract_propositions
-from backend.llm import LLMConfigurationError
+from backend.llm import (
+    LLMConfigurationError,
+    active_model,
+    active_role,
+    is_configured,
+)
 
 ROOT = Path(__file__).parents[1]
 SOURCE = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
@@ -13,9 +18,14 @@ SOURCE = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("GATE 1 BLOCKED: set LLM_API_KEY and LLM_MODEL for live Call B evidence.")
+    os.environ["LLM_ROLE"] = os.getenv("GATE1_LLM_ROLE", "ci").strip().lower()
+    if not is_configured(call="b"):
+        print("GATE 1 BLOCKED: configure the selected LLM role.")
         return 2
+    print(
+        "Gate 1 configuration: "
+        f"B={active_model('b')} ({active_role('b')})"
+    )
     files = sorted((ROOT / "samples" / "explanations").glob("*.txt"))
     runs = files + [files[0]]
     request_interval = max(
