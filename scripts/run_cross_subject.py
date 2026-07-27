@@ -4,6 +4,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
+from backend.llm import active_model, active_role, is_configured
 from backend.main import analyze
 from backend.schemas import AnalyzeRequest
 
@@ -18,12 +19,19 @@ CASES = (
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print(
-            "CROSS-SUBJECT BLOCKED: set LLM_API_KEY and LLM_MODEL "
-            "for live evidence."
-        )
+    os.environ["LLM_ROLE"] = os.getenv(
+        "CROSS_SUBJECT_LLM_ROLE", "ci"
+    ).strip().lower()
+    if not all(is_configured(call) for call in ("a", "b", "c")):
+        print("CROSS-SUBJECT BLOCKED: configure the selected LLM role.")
         return 2
+    print(
+        "Cross-subject configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
 
     summary_only = os.getenv("CROSS_SUBJECT_SUMMARY_ONLY") == "1"
     requested_case = os.getenv("CROSS_SUBJECT_CASE", "").strip()

@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 
+from backend.llm import active_model, active_role, is_configured
 from backend.main import analyze
 from backend.schemas import AnalyzeRequest
 
@@ -31,9 +32,21 @@ def overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("GATE 3 BLOCKED: set LLM_API_KEY and LLM_MODEL for live golden evidence.")
+    os.environ["LLM_ROLE"] = os.getenv(
+        "GOLDEN_LLM_ROLE", "prod"
+    ).strip().lower()
+    if not all(is_configured(call=call) for call in ("a", "b", "c")):
+        print(
+            "GATE 3 BLOCKED: configure LLM_API_KEY and the selected role's model."
+        )
         return 2
+    print(
+        "Golden configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
     source = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
         encoding="utf-8"
     ).strip()

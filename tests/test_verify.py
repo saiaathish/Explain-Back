@@ -34,9 +34,10 @@ def test_follow_up_accepts_one_question_with_clarifying_instruction() -> None:
 async def test_verify_rejects_missing_verdict(monkeypatch) -> None:
     calls = 0
 
-    async def incomplete(_prompt: str):
+    async def incomplete(_prompt: str, *, call: str):
         nonlocal calls
         calls += 1
+        assert call == "c"
         return {
             "verdicts": [
                 {
@@ -74,8 +75,9 @@ async def test_verify_rejects_missing_verdict(monkeypatch) -> None:
 async def test_verify_checks_justification_and_follow_up_shape(monkeypatch) -> None:
     captured = ""
 
-    async def complete(prompt: str):
+    async def complete(prompt: str, *, call: str):
         nonlocal captured
+        assert call == "c"
         captured = prompt
         return {
             "verdicts": [

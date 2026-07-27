@@ -22,7 +22,12 @@ from backend.config import (
     T_LOW,
 )
 from backend.extract import extract_concepts, extract_propositions
-from backend.llm import LLMConfigurationError, LLMResponseError, LLMTimeoutError
+from backend.llm import (
+    LLMConfigurationError,
+    LLMResponseError,
+    LLMTimeoutError,
+    is_configured,
+)
 from backend.misconceptions import match
 from backend.resolve import resolve
 from backend.schemas import (
@@ -65,7 +70,7 @@ async def _prewarm_source(sample: Path) -> None:
 
 
 async def _prewarm() -> None:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
+    if not is_configured(call="a"):
         logger.warning("Concept cache prewarm skipped: LLM credentials are not configured.")
         return
     samples = Path(__file__).parents[1] / "samples"

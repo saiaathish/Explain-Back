@@ -23,7 +23,8 @@ def test_clean_validation_errors(source: str, explanation: str, message: str) ->
 
 
 def test_corrupt_model_output_is_visible_error_not_all_grey(monkeypatch) -> None:
-    async def corrupt(_prompt: str, timeout: float) -> str:
+    async def corrupt(_prompt: str, timeout: float, call: str) -> str:
+        assert call == "a"
         return "not valid json"
 
     async def no_sleep(_seconds: float) -> None:

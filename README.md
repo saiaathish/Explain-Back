@@ -51,8 +51,8 @@ Requires Python 3.11 and Node.js 20+.
 
 ```bash
 cp .env.example .env
-# Set LLM_API_KEY, LLM_MODEL, and the provider's OpenAI-compatible
-# LLM_BASE_URL in .env.
+# Set LLM_API_KEY, LLM_MODEL_PROD, LLM_MODEL_CI, and the provider's
+# OpenAI-compatible LLM_BASE_URL in .env. LLM_MODEL is a legacy prod fallback.
 
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
@@ -85,16 +85,20 @@ PYTHONPATH=. .venv/bin/python scripts/run_determinism.py
 cd frontend && npm test && npm run build
 ```
 
-Gate 1 and the golden regression require live `LLM_API_KEY` and `LLM_MODEL`
-values. They exit as blocked rather than replacing live evidence with fixtures.
+The authoritative golden defaults to `prod`; determinism and prompt-iteration
+harnesses default to `ci`. Set `GOLDEN_LLM_ROLE=ci` only for comparative
+evidence, or `DETERMINISM_LLM_ROLE=prod` for production evidence. Live gates
+require `LLM_API_KEY` plus the selected role's model and exit blocked rather
+than replacing live evidence with fixtures.
 
 ## Deployment
 
 `render.yaml` and `Dockerfile` define the FastAPI service. The Docker build
 bakes the embedding model into the image so `align.py` makes no runtime
-download. Set `LLM_API_KEY`, `LLM_MODEL`, and the deployed Vercel origin as
-`FRONTEND_ORIGIN` in Render. Also set `LLM_BASE_URL` to the configured
-provider's OpenAI-compatible base URL.
+download. Keep `LLM_ROLE=prod` in Render and set `LLM_API_KEY`,
+`LLM_MODEL_PROD` (or legacy `LLM_MODEL`), `FRONTEND_ORIGIN`, and the provider's
+OpenAI-compatible `LLM_BASE_URL`. `LLM_MODEL_CI` is evaluation-only and must not
+be selected in production.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
 service before building the Vercel deployment.

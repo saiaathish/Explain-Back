@@ -3,6 +3,7 @@ import os
 import time
 from pathlib import Path
 
+from backend.llm import active_model, active_role, is_configured
 from backend.main import _concept_cache, analyze
 from backend.schemas import AnalyzeRequest, Flag
 
@@ -49,9 +50,21 @@ def compare(first: list[Flag], second: list[Flag]) -> tuple[int, int]:
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("DETERMINISM BLOCKED: set LLM_API_KEY and LLM_MODEL.")
+    os.environ["LLM_ROLE"] = os.getenv(
+        "DETERMINISM_LLM_ROLE", "ci"
+    ).strip().lower()
+    if not all(is_configured(call=call) for call in ("a", "b", "c")):
+        print(
+            "DETERMINISM BLOCKED: configure LLM_API_KEY and the selected role's model."
+        )
         return 2
+    print(
+        "Determinism configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
     source = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
         encoding="utf-8"
     ).strip()
@@ -103,7 +116,8 @@ async def main() -> int:
     if matching_runs != DETERMINISM_RUNS:
         print("DETERMINISM FAIL: state or span pattern changed.")
         return 1
-    if slow_warm_runs:
+    production_run = all(active_role(call) == "prod" for call in ("a", "b", "c"))
+    if slow_warm_runs and production_run:
         details = ", ".join(
             f"run {run_number} {elapsed:.3f}s"
             for run_number, elapsed in slow_warm_runs
@@ -113,6 +127,8 @@ async def main() -> int:
             f"{WARM_ANALYSIS_LIMIT_SECONDS:.1f}s ({details})."
         )
         return 1
+    if slow_warm_runs:
+        print("Warm latency is informational for the CI role.")
     print("DETERMINISM PASS")
     return 0
 

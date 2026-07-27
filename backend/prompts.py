@@ -264,6 +264,86 @@ Return JSON only, no commentary:
 ]
 '''
 
+CI_CALL_B_SUFFIX = '''
+
+ADDITIONAL WORKED EXAMPLES FOR THIS EXTRACTION:
+
+Example A — fluent detail is not a justification:
+PASSAGE:
+"The peace treaty was signed in 1919."
+STUDENT EXPLANATION:
+"The peace treaty was signed in 1919, an important and memorable event."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The peace treaty was signed in 1919, an important and memorable event.",
+    "justification_spans": [],
+    "type": "descriptive",
+    "certainty": "high"
+  }
+]
+The praise adds fluency, not a student-written reason. Keep the array empty.
+
+Example B — a justification can appear several sentences later:
+PASSAGE:
+"Metal rails expand when heated because their particles move farther apart."
+STUDENT EXPLANATION:
+"The rail expanded on the hot afternoon. Workers measured the gap. This happened because heating made the particles move farther apart."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The rail expanded on the hot afternoon.",
+    "justification_spans": [
+      "This happened because heating made the particles move farther apart."
+    ],
+    "type": "causal",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "Workers measured the gap.",
+    "justification_spans": [],
+    "type": "descriptive",
+    "certainty": "high"
+  }
+]
+The third sentence is copied verbatim and linked back to the first claim.
+
+Example C — counted evidence justifies the total:
+PASSAGE:
+"A box has six rows of four markers, for a total of twenty-four."
+STUDENT EXPLANATION:
+"The box contains 24 markers. It has six rows of four, so six groups of four make 24."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The box contains 24 markers.",
+    "justification_spans": [
+      "It has six rows of four, so six groups of four make 24."
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "It has six rows of four",
+    "justification_spans": [
+      "so six groups of four make 24"
+    ],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+The explicit count is evidence. Copy it; do not replace it with arithmetic from
+the passage.
+
+Apply the same rules to the actual STUDENT EXPLANATION above. Return only its
+JSON array, with no markdown fence or commentary.
+'''
+
 
 CALL_C = '''You are checking student statements against a source passage. This is
 formative feedback for a student's own revision. It is not grading.
@@ -313,7 +393,49 @@ Return JSON only:
     ...
   ],
   "follow_up": "..."
-  }
+}
+'''
+
+CI_CALL_C_SUFFIX = '''
+
+ADDITIONAL VERIFICATION EXAMPLE:
+SOURCE:
+"Cloud cover can sometimes reduce daytime surface heating."
+ITEMS:
+1. prop_id: P7
+   STUDENT STATEMENT: Clouds usually make the ground cooler.
+   STUDENT JUSTIFICATIONS:
+   SOURCE ANCHOR: Cloud cover can sometimes reduce daytime surface heating.
+2. prop_id: P9
+   STUDENT STATEMENT: Clouds always eliminate surface heating.
+   STUDENT JUSTIFICATIONS:
+   SOURCE ANCHOR: Cloud cover can sometimes reduce daytime surface heating.
+
+CORRECT JSON:
+{
+  "verdicts": [
+    {
+      "prop_id": "P7",
+      "relation": "entails",
+      "confidence": "low",
+      "revision_hint": "State when cloud cover reduces daytime heating."
+    },
+    {
+      "prop_id": "P9",
+      "relation": "contradicts",
+      "confidence": "high",
+      "revision_hint": "Replace the absolute claim with the source's limited effect."
+    }
+  ],
+  "follow_up": "How does cloud cover change daytime surface heating?"
+}
+
+COMPLETENESS GATE:
+- Return exactly one verdict for every prop_id in the actual ITEMS above.
+- Copy each prop_id exactly; never omit, duplicate, rename, or invent an ID.
+- Hedged words such as "usually", "often", and "tends to" require low confidence.
+- The follow_up must be one question containing exactly one question mark.
+- Return only the actual JSON object, with no markdown fence or commentary.
 '''
 
 

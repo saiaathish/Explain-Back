@@ -14,6 +14,18 @@ def test_only_llm_module_names_outbound_clients() -> None:
     assert "httpx" in (ROOT / "backend" / "llm.py").read_text(encoding="utf-8")
 
 
+def test_only_llm_module_resolves_model_environment() -> None:
+    forbidden = ("LLM_MODEL", "LLM_MODEL_PROD", "LLM_MODEL_CI")
+    offenders = []
+    for path in (ROOT / "backend").glob("*.py"):
+        if path.name == "llm.py":
+            continue
+        text = path.read_text(encoding="utf-8")
+        if any(token in text for token in forbidden):
+            offenders.append(path.name)
+    assert offenders == []
+
+
 def test_resolver_is_sync_and_model_free() -> None:
     text = (ROOT / "backend" / "resolve.py").read_text(encoding="utf-8")
     assert "import llm" not in text

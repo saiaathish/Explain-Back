@@ -19,7 +19,12 @@ from unittest.mock import patch
 import backend.extract as extract_module
 import backend.main as main_module
 from backend.extract import extract_concepts, locate_spans
-from backend.llm import call_json as real_call_json
+from backend.llm import (
+    active_model,
+    active_role,
+    call_json as real_call_json,
+    is_configured,
+)
 from backend.schemas import AnalyzeRequest, Flag, Proposition
 
 ROOT = Path(__file__).parents[1]
@@ -127,9 +132,19 @@ def summarize(results: list[dict[str, Any]]) -> None:
 
 
 async def run(args: argparse.Namespace) -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("BLOCKED: set LLM_API_KEY and LLM_MODEL for live diagnostics.")
+    os.environ["LLM_ROLE"] = os.getenv(
+        "DIAGNOSTICS_LLM_ROLE", "ci"
+    ).strip().lower()
+    if not all(is_configured(call) for call in ("a", "b", "c")):
+        print("BLOCKED: configure the selected LLM role.")
         return 2
+    print(
+        "Diagnostics configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
 
     source = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
         encoding="utf-8"
@@ -156,8 +171,9 @@ async def run(args: argparse.Namespace) -> int:
         for run_number in range(1, args.runs + 1):
             captured: list[Any] = []
 
-            async def capture_call_b(prompt: str) -> Any:
-                response = await real_call_json(prompt)
+            async def capture_call_b(prompt: str, *, call: str) -> Any:
+                assert call == "b"
+                response = await real_call_json(prompt, call="b")
                 captured.append(response)
                 return response
 
