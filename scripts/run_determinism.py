@@ -1,15 +1,23 @@
 import asyncio
 import os
+import time
 from pathlib import Path
 
+from backend.llm import active_model, active_role, is_configured
 from backend.main import _concept_cache, analyze
 from backend.schemas import AnalyzeRequest, Flag
 
 ROOT = Path(__file__).parents[1]
+DETERMINISM_RUNS = 5
+WARM_ANALYSIS_LIMIT_SECONDS = 8.0
 
 
 def overlap(first: Flag, second: Flag) -> int:
     return max(0, min(first.end, second.end) - max(first.start, second.start))
+
+
+def signature(flags: list[Flag]) -> list[tuple[int, int, str]]:
+    return sorted((flag.start, flag.end, flag.state) for flag in flags)
 
 
 def compare(first: list[Flag], second: list[Flag]) -> tuple[int, int]:
@@ -42,9 +50,21 @@ def compare(first: list[Flag], second: list[Flag]) -> tuple[int, int]:
 
 
 async def main() -> int:
-    if not os.getenv("LLM_API_KEY") or not os.getenv("LLM_MODEL"):
-        print("DETERMINISM BLOCKED: set LLM_API_KEY and LLM_MODEL.")
+    os.environ["LLM_ROLE"] = os.getenv(
+        "DETERMINISM_LLM_ROLE", "ci"
+    ).strip().lower()
+    if not all(is_configured(call=call) for call in ("a", "b", "c")):
+        print(
+            "DETERMINISM BLOCKED: configure LLM_API_KEY and the selected role's model."
+        )
         return 2
+    print(
+        "Determinism configuration: "
+        + ", ".join(
+            f"{call.upper()}={active_model(call)} ({active_role(call)})"
+            for call in ("a", "b", "c")
+        )
+    )
     source = (ROOT / "samples" / "source_sodium_pump.txt").read_text(
         encoding="utf-8"
     ).strip()
@@ -54,14 +74,61 @@ async def main() -> int:
     ).strip()
     request = AnalyzeRequest(source=source, explanation=explanation)
     _concept_cache.clear()
-    first = await analyze(request)
-    second = await analyze(request)
-    matched, total = compare(first.flags, second.flags)
-    agreement = matched / total if total else 0.0
-    print(f"State agreement: {matched}/{total} = {agreement:.1%}")
-    if agreement < 0.90:
-        print("DETERMINISM FAIL")
+    interval = max(
+        0.0, float(os.getenv("DETERMINISM_INTERVAL_SECONDS", "0"))
+    )
+    responses = []
+    timings = []
+    for run_number in range(1, DETERMINISM_RUNS + 1):
+        started_at = time.perf_counter()
+        responses.append(await analyze(request))
+        elapsed = time.perf_counter() - started_at
+        timings.append(elapsed)
+        print(f"Run {run_number}/{DETERMINISM_RUNS}: {elapsed:.3f}s")
+        if run_number < DETERMINISM_RUNS and interval:
+            await asyncio.sleep(interval)
+
+    if any(not response.flags for response in responses):
+        print("DETERMINISM FAIL: one or more runs returned no diagnostics.")
         return 1
+
+    reference = responses[0]
+    matching_runs = 1
+    for run_number, response in enumerate(responses[1:], start=2):
+        matched, total = compare(reference.flags, response.flags)
+        agreement = matched / total if total else 0.0
+        exact = signature(reference.flags) == signature(response.flags)
+        matching_runs += int(exact)
+        print(
+            f"Run {run_number} state agreement: "
+            f"{matched}/{total} = {agreement:.1%}"
+        )
+
+    slow_warm_runs = [
+        (run_number, elapsed)
+        for run_number, elapsed in enumerate(timings[1:], start=2)
+        if elapsed >= WARM_ANALYSIS_LIMIT_SECONDS
+    ]
+    print(
+        f"Deterministic runs: {matching_runs}/{DETERMINISM_RUNS} = "
+        f"{matching_runs / DETERMINISM_RUNS:.1%}"
+    )
+    if matching_runs != DETERMINISM_RUNS:
+        print("DETERMINISM FAIL: state or span pattern changed.")
+        return 1
+    production_run = all(active_role(call) == "prod" for call in ("a", "b", "c"))
+    if slow_warm_runs and production_run:
+        details = ", ".join(
+            f"run {run_number} {elapsed:.3f}s"
+            for run_number, elapsed in slow_warm_runs
+        )
+        print(
+            "DETERMINISM FAIL: warm analysis reached or exceeded "
+            f"{WARM_ANALYSIS_LIMIT_SECONDS:.1f}s ({details})."
+        )
+        return 1
+    if slow_warm_runs:
+        print("Warm latency is informational for the CI role.")
     print("DETERMINISM PASS")
     return 0
 

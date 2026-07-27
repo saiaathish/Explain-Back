@@ -10,7 +10,8 @@ const STAGES = ["Reading source", "Extracting claims", "Checking against source"
 function Footer() {
   return (
     <footer>
-      Formative guidance only. Not a grade. Nothing you type is stored.
+      Formative guidance only. Not a grade. Explain-Back does not persist
+      submissions.
     </footer>
   );
 }

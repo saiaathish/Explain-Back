@@ -8,6 +8,10 @@ services:
     envVars:
       - key: LLM_API_KEY
         sync: false
+      - key: LLM_ROLE
+        value: "prod"
+      - key: LLM_MODEL_PROD
+        sync: false
       - key: LLM_MODEL
         sync: false
       - key: LLM_BASE_URL

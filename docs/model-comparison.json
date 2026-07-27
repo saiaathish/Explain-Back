@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-07-27",
+  "decision": "release_gemini_3_1_with_latency_exception",
+  "models": {
+    "production": "gemini-3.1-flash-lite",
+    "ci": "gemma-4-31b-it"
+  },
+  "production": {
+    "original": {
+      "matched": 34,
+      "total": 37,
+      "rate": 0.9189189189
+    },
+    "expanded": {
+      "matched": 45,
+      "total": 55,
+      "rate": 0.8181818182
+    },
+    "accepted_pipelines": {
+      "accepted": 15,
+      "total": 15
+    },
+    "provider_attempts": 32,
+    "recovered_errors": {
+      "http_503": 1
+    },
+    "determinism": {
+      "matching_runs": 5,
+      "total_runs": 5,
+      "rate": 1.0
+    },
+    "warm_latency_seconds": {
+      "limit": 8.0,
+      "first_run": [5.618, 6.227, 10.811, 10.957],
+      "repeat_run": [7.065, 19.846, 10.396, 9.112],
+      "passed": false
+    }
+  },
+  "ci": {
+    "original": {
+      "matched": 25,
+      "total": 37,
+      "rate": 0.6756756757
+    },
+    "expanded": {
+      "matched": 34,
+      "total": 55,
+      "rate": 0.6181818182
+    },
+    "accepted_pipelines": {
+      "accepted": 15,
+      "total": 15
+    },
+    "provider_attempts": 31,
+    "provider_errors": 0,
+    "fluent_unjustified": {
+      "empty_justifications": 4,
+      "total_propositions": 4,
+      "majority_empty": true
+    },
+    "reliability_first_50": {
+      "successful": 48,
+      "total": 50,
+      "rate": 0.96,
+      "required_rate": 0.98,
+      "passed": false
+    },
+    "determinism": {
+      "matching_runs": 5,
+      "total_runs": 5,
+      "rate": 1.0
+    }
+  },
+  "agreement_with_production": {
+    "matched": 42,
+    "total": 62,
+    "rate": 0.6774193548,
+    "required_rate": 0.9,
+    "exact_span_state_matched": 33,
+    "exact_span_state_rate": 0.5322580645,
+    "ci_only_red_transitions": 1,
+    "confusion": {
+      "green->green": 12,
+      "green->grey": 4,
+      "green->yellow": 1,
+      "grey->grey": 16,
+      "missing->grey": 3,
+      "missing->red": 1,
+      "missing->yellow": 2,
+      "red->red": 8,
+      "yellow->grey": 9,
+      "yellow->yellow": 6
+    }
+  },
+  "browser": {
+    "url": "https://explain-back.vercel.app",
+    "source_visible": true,
+    "explanation_visible": true,
+    "result_visible": true,
+    "alert": null,
+    "diagnostic_highlights": 5,
+    "states": {
+      "green": 4,
+      "yellow": 1,
+      "red": 0,
+      "grey": 0
+    },
+    "coverage": {
+      "covered": 4,
+      "partial": 1,
+      "missing": 1
+    },
+    "follow_up_visible": true
+  },
+  "rejected_production_trial": {
+    "model": "gemini-3.5-flash-lite",
+    "availability_status": 200,
+    "initial_determinism": {
+      "matching_runs": 2,
+      "total_runs": 5,
+      "rate": 0.4
+    },
+    "validator_experiment": {
+      "determinism": {
+        "matching_runs": 5,
+        "total_runs": 5,
+        "rate": 1.0
+      },
+      "warm_latency_seconds": [2.82, 2.885, 4.021, 3.996],
+      "original": {
+        "matched": 22,
+        "total": 37,
+        "rate": 0.5945945946
+      },
+      "expanded": {
+        "matched": 34,
+        "total": 55,
+        "rate": 0.6181818182
+      },
+      "accepted_pipelines": {
+        "accepted": 13,
+        "total": 15
+      }
+    },
+    "decision": "rejected_and_reverted"
+  },
+  "release_decision": {
+    "production_model": "gemini-3.1-flash-lite",
+    "product_owner_authorized": true,
+    "latency_exception": true,
+    "latency_gate_unchanged": true,
+    "ci_model_is_non_authoritative_smoke_only": true
+  },
+  "release_gates": {
+    "production_golden": "pass",
+    "production_determinism": "pass",
+    "production_warm_latency": "accepted_product_owner_exception",
+    "ci_schema_reliability": "fail",
+    "ci_golden": "fail",
+    "production_agreement": "fail",
+    "zero_ci_only_red_transitions": "fail",
+    "browser": "pass",
+    "merge": "authorized_after_reconfirmation"
+  }
+}

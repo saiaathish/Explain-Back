@@ -1,8 +1,8 @@
-"""LLM prompt contracts for Explain-Back.
+"""LLM prompt templates for Explain-Back.
 
-The prompt templates preserve the response shapes defined in the blueprint.
-The caller supplies source text, explanation text, and Call C items without
-changing the JSON schema expected by the downstream validators.
+The templates state the intended response shapes from the blueprint. Runtime
+parsing and validators make those shapes binding before model output reaches
+the deterministic pipeline.
 """
 
 from __future__ import annotations
@@ -81,6 +81,13 @@ Rules, in order of importance:
    "because", "by", "which", or "so" clause to the originating claim when
    that clause explains the claim's mechanism or consequence. Do not return
    the connector word alone; copy the complete explanatory clause.
+
+8. NON-ADJACENT QUANTITATIVE CONSEQUENCES. When a later student sentence
+explicitly derives a consequence from the same quantity or direction as an
+earlier claim (for example, "three charges leave while two enter" or "one more
+positive charge leaves than enters"), attach that exact later causal sentence
+as a justification for the earlier quantitative claim. A general statement
+that the claim is useful or important is not enough.
 
 MANDATORY JUSTIFICATION EVIDENCE GATE:
 Before adding any justification span, ask: "Did the student write words
@@ -177,6 +184,67 @@ CORRECT JSON:
   }
 ]
 
+Example 6 — a later quantitative consequence justifies an earlier claim:
+PASSAGE:
+"The pump exports three positive ions and imports two, creating a net outward
+positive current."
+STUDENT EXPLANATION:
+"The pump moves three ions out and two ions in. This creates an imbalance
+because three positive charges leave while only two positive charges enter."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The pump moves three ions out and two ions in.",
+    "justification_spans": [
+      "This creates an imbalance because three positive charges leave while only two positive charges enter"
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "This creates an imbalance",
+    "justification_spans": [
+      "because three positive charges leave while only two positive charges enter"
+    ],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+The later sentence supplies a specific quantitative consequence. In contrast,
+"The resulting gradient is important for signaling" only names importance and
+must not justify the earlier transport claim.
+
+Example 7 — a derived net-charge consequence supports the earlier ratio:
+PASSAGE:
+"The pump exports three sodium ions and imports two potassium ions, producing
+a net outward movement of one positive charge."
+STUDENT EXPLANATION:
+"The pump moves three sodium ions out and two potassium ions in. The inside
+becomes slightly negative because one more positive charge leaves than enters."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The pump moves three sodium ions out and two potassium ions in.",
+    "justification_spans": [
+      "The inside becomes slightly negative because one more positive charge leaves than enters"
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "The inside becomes slightly negative",
+    "justification_spans": [
+      "because one more positive charge leaves than enters"
+    ],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+
 FINAL SELF-CHECK:
 - For every non-empty justification_spans array, point to the exact student
   words that answer why/how. If no such words exist, use [].
@@ -194,6 +262,86 @@ Return JSON only, no commentary:
     "certainty": "high" | "medium" | "low"
   }
 ]
+'''
+
+CI_CALL_B_SUFFIX = '''
+
+ADDITIONAL WORKED EXAMPLES FOR THIS EXTRACTION:
+
+Example A — fluent detail is not a justification:
+PASSAGE:
+"The peace treaty was signed in 1919."
+STUDENT EXPLANATION:
+"The peace treaty was signed in 1919, an important and memorable event."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The peace treaty was signed in 1919, an important and memorable event.",
+    "justification_spans": [],
+    "type": "descriptive",
+    "certainty": "high"
+  }
+]
+The praise adds fluency, not a student-written reason. Keep the array empty.
+
+Example B — a justification can appear several sentences later:
+PASSAGE:
+"Metal rails expand when heated because their particles move farther apart."
+STUDENT EXPLANATION:
+"The rail expanded on the hot afternoon. Workers measured the gap. This happened because heating made the particles move farther apart."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The rail expanded on the hot afternoon.",
+    "justification_spans": [
+      "This happened because heating made the particles move farther apart."
+    ],
+    "type": "causal",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "Workers measured the gap.",
+    "justification_spans": [],
+    "type": "descriptive",
+    "certainty": "high"
+  }
+]
+The third sentence is copied verbatim and linked back to the first claim.
+
+Example C — counted evidence justifies the total:
+PASSAGE:
+"A box has six rows of four markers, for a total of twenty-four."
+STUDENT EXPLANATION:
+"The box contains 24 markers. It has six rows of four, so six groups of four make 24."
+CORRECT JSON:
+[
+  {
+    "id": "P1",
+    "claim_span": "The box contains 24 markers.",
+    "justification_spans": [
+      "It has six rows of four, so six groups of four make 24."
+    ],
+    "type": "descriptive",
+    "certainty": "high"
+  },
+  {
+    "id": "P2",
+    "claim_span": "It has six rows of four",
+    "justification_spans": [
+      "so six groups of four make 24"
+    ],
+    "type": "causal",
+    "certainty": "high"
+  }
+]
+The explicit count is evidence. Copy it; do not replace it with arithmetic from
+the passage.
+
+Apply the same rules to the actual STUDENT EXPLANATION above. Return only its
+JSON array, with no markdown fence or commentary.
 '''
 
 
@@ -245,7 +393,50 @@ Return JSON only:
     ...
   ],
   "follow_up": "..."
-  }
+}
+'''
+
+CI_CALL_C_SUFFIX = '''
+
+ADDITIONAL VERIFICATION EXAMPLE:
+SOURCE:
+"Cloud cover can sometimes reduce daytime surface heating."
+ITEMS:
+1. prop_id: P7
+   STUDENT STATEMENT: Clouds usually make the ground cooler.
+   STUDENT JUSTIFICATIONS:
+   SOURCE ANCHOR: Cloud cover can sometimes reduce daytime surface heating.
+2. prop_id: P9
+   STUDENT STATEMENT: Clouds always eliminate surface heating.
+   STUDENT JUSTIFICATIONS:
+   SOURCE ANCHOR: Cloud cover can sometimes reduce daytime surface heating.
+
+CORRECT JSON:
+{
+  "verdicts": [
+    {
+      "prop_id": "P7",
+      "relation": "entails",
+      "confidence": "low",
+      "revision_hint": "State when cloud cover reduces daytime heating."
+    },
+    {
+      "prop_id": "P9",
+      "relation": "contradicts",
+      "confidence": "high",
+      "revision_hint": "Replace the absolute claim with the source's limited effect."
+    }
+  ],
+  "follow_up": "How does cloud cover change daytime surface heating?"
+}
+
+COMPLETENESS GATE:
+- Return exactly one verdict for every prop_id in the actual ITEMS above.
+- Copy each prop_id exactly; never omit, duplicate, rename, or invent an ID.
+- Hedged words such as "usually", "often", and "tends to" require low confidence.
+- The follow_up must be non-empty, start with "How " or "Why ", and end with
+  exactly one question mark.
+- Return only the actual JSON object, with no markdown fence or commentary.
 '''
 
 

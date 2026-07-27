@@ -8,9 +8,11 @@
 
 ## 0. One-paragraph statement of the thing
 
-Every AI study tool explains concepts *to* the student. Explain-Back inverts it: the student explains, and the system diagnoses. Paste 2–3 paragraphs of source material, type an explanation in your own words, and get back a four-state color map over your own writing — green (understood and justified), yellow (stated but never justified), red (contradicts the source), grey (system isn't sure). Every non-green flag carries a source anchor (the exact sentence from the source that triggered it) and a concrete revision hint. Ends with one follow-up question targeting only the gaps. Formative only. No scores. No storage.
+Every AI study tool explains concepts *to* the student. Explain-Back inverts it: the student explains, and the system diagnoses. Paste 2–3 paragraphs of source material, type an explanation in your own words, and get back a four-state color map over your own writing — green (source-consistent and supported), yellow (stated but never justified), red (contradicts the source), grey (system isn't sure). Every non-green flag carries a source anchor (the exact sentence from the source that triggered it) and a concrete revision hint. Ends with one follow-up question targeting only the gaps. Formative only. No scores. No storage.
 
-Grounding: self-explanation prompting has a meta-analytic effect of g ≈ 0.55 across ~64 studies and ~6,000 learners. Almost nothing shipped analyzes free-text self-explanations against a user-supplied source.
+Grounding: self-explanation is an established learning activity. The product's
+specific contribution is source-grounded formative analysis of a learner's
+free-text explanation.
 
 ---
 
@@ -696,7 +698,7 @@ Milestone: three strangers use it without you talking.
 - [ ] Fix only what confused them. **Fix confusion, not features.**
 - [ ] Run all 10 samples on the deployed URL, not localhost
 - [ ] Time it. Anything over 10s warm, cut call C's max tokens.
-- [ ] README: what it does, the g ≈ 0.55 grounding, the 8:1 rationale for grey, setup, explicit limitations
+- [ ] README: what it does, the source-grounded rationale for grey, setup, and explicit limitations
 - [ ] Pre-warm the concept cache for your demo source so the video never waits
 
 This day is your actual edge. In a 685-submission field, most projects that work at all will work *roughly*. First place versus fourth is whether the demo is smooth. A judge on submission #40 at 11pm has zero patience for a spinner.
@@ -714,19 +716,24 @@ Timing is load-bearing. The product must be on screen by ~0:15.
 **0:00–0:15 — the hook, no intro**
 Cold open on a fluent AP Bio explanation of the sodium-potassium pump. It reads well. Confident. Then the colors hit and half of it is yellow.
 
-> "This explanation sounds right. Most of it is memorized, not understood."
+> "This explanation sounds right. Several claims are accurate, but the student
+> has not supplied the supporting mechanism."
 
 **Do not say your name. Do not say "today I'll be showing you."**
 
 **0:15–1:10 — one full walkthrough**
 Input → colors → hover a red flag, revealing the source anchor and the named misconception → the follow-up question.
 
-> "Self-explanation is one of the strongest interventions in learning science — g of 0.55 across sixty-plus studies. But every AI study tool explains *to* the student. Explain-Back flips the direction. The student explains. We diagnose."
+> "Most AI study tools explain *to* the student. Explain-Back flips the
+> direction: the student explains, and the app checks those statements against
+> the supplied source."
 
 **1:10–1:45 — pipeline and the grey state**
 Simple animation: source → concepts, explanation → claims, alignment, verification.
 
-> "Research on hidden misconception detection found that even a strong reasoning model produces about eight false alarms for every real catch at realistic rates. So we built a fourth state. Grey means the system isn't sure, and says so, instead of accusing a student of a misconception they don't have."
+> "Model judgments are uncertain, so we built a fourth state. Grey means the
+> system cannot support a confident source-based judgment instead of presenting
+> a guess as a contradiction."
 
 That is your differentiator sentence. Land it clearly.
 
@@ -736,7 +743,7 @@ That is your differentiator sentence. Land it clearly.
 
 **Production notes:**
 - Voiceover **plus** 1–2 word on-screen labels. Judges mute videos.
-- Legible with sound off: "Green = understood," "Yellow = memorized," "Red = contradicts source," "Grey = uncertain"
+- Legible with sound off: "Green = supported and justified," "Yellow = supported, not justified," "Red = contradicts source," "Grey = uncertain"
 - 1080p, screen recording, no webcam
 - Hard cut at 1:58. Over 2:00 will not be viewed.
 
@@ -746,10 +753,10 @@ That is your differentiator sentence. Land it clearly.
 
 | Criterion | The specific thing that earns it |
 |---|---|
-| Educational Impact (25) | g ≈ 0.55, ~64 studies, ~6,000 learners. Documented whitespace: nothing shipped analyzes free-text self-explanations against a user-supplied source. Three formative-assessment regions in the UI. |
+| Educational Impact (25) | Source-grounded formative feedback on free-text explanations. Three distinct regions separate source coverage, statement-level diagnostics, and a follow-up prompt. |
 | Creative Use of AI/ML (25) | Four-stage pipeline, not a wrapper. Structured extraction with verbatim constraint, embedding alignment, calibrated thresholds, NLI with a deterministic specificity gate. Every flag anchored to source text. |
-| Technical Execution (25) | No training, no dataset, no hand-authored expert graph. Works on any subject because the source supplies ground truth at runtime. Two round trips. Cached. Graceful degradation everywhere. |
-| Pitch & Demo (25) | Product on screen at 0:15. One before/after contrast. The 8:1 line. Limitations stated as design rationale, not apology. |
+| Technical Execution (25) | No training, no dataset, no hand-authored expert graph. Accepts arbitrary pasted source material, while cross-subject diagnostic quality remains uncalibrated. Cached source concepts, typed boundaries, and bounded visible failures. |
+| Pitch & Demo (25) | Product on screen at 0:15. One before/after contrast. Grey-state rationale and limitations stated plainly. |
 
 ---
 
@@ -770,7 +777,7 @@ That is your differentiator sentence. Land it clearly.
 ## 15. Claims you can and cannot defend
 
 **Can:**
-- Self-explanation as an intervention has strong meta-analytic support (g ≈ 0.55)
+- Self-explanation as a learning activity has published research support; that evidence does not validate this product
 - Almost no shipped tool analyzes free-text self-explanations against a user-supplied source
 - LLMs approach human reliability on *clear, short* explanations in constrained domains
 - Misconception detectors produce heavy false-positive rates at realistic prevalence
@@ -778,8 +785,8 @@ That is your differentiator sentence. Land it clearly.
 
 **Cannot — do not say these:**
 - That Explain-Back itself is validated. It isn't. Nothing like it has been.
-- That any published paper gives you your cosine thresholds. None does. You calibrated them.
-- "XAI-inspired." You are citing your sources, not doing attribution on model internals. A knowledgeable judge will correctly call that inflated and you will lose more than the phrase was worth.
-- Any accuracy percentage for your own system. You have no labeled test set.
+- That published work supplied the cosine thresholds. They were calibrated locally.
+- Interpretability branding that implies attribution over model internals. Source citations are not internal-model attribution.
+- Any unlabeled performance percentage for the system.
 
 The honest version is stronger than the inflated version, and in front of twelve judges at least one of whom knows the field, it is also the only version that survives contact.

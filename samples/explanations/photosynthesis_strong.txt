@@ -1,0 +1,5 @@
+The light reactions occur in the thylakoid membranes of chloroplasts. Pigments capture light, and water supplies replacement electrons; splitting water releases oxygen. Electron transport creates a proton gradient that drives ATP production, while the electrons help form NADPH.
+
+The Calvin cycle takes place in the stroma. Rubisco fixes carbon dioxide to RuBP, and ATP and NADPH help convert the resulting compounds into G3P. Some G3P can be used to make sugars, while the rest regenerates RuBP. The cycle does not capture light directly, but it depends on products made by the light reactions.
+
+In the simplified equation, carbon dioxide and water use light energy to produce carbohydrate and oxygen. The released oxygen comes from water. Closing stomata limits carbon dioxide entry and can reduce photosynthesis, and increasing light raises the rate only until another factor becomes limiting.

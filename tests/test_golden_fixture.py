@@ -7,7 +7,7 @@ def test_golden_spans_are_verbatim_and_all_states_are_represented() -> None:
     golden = json.loads(
         (root / "samples" / "golden.json").read_text(encoding="utf-8")
     )
-    assert len(golden) == 10
+    assert len(golden) == 15
     states = set()
     for filename, items in golden.items():
         explanation = (

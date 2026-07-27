@@ -1,0 +1,5 @@
+Photosynthesis begins in the thylakoid membranes of chloroplasts. In the light-dependent reactions, pigments absorb photons and energize electrons. Water is split to replace those electrons, releasing oxygen, while electron transport and chemiosmosis produce ATP and electrons reduce NADP+ to NADPH.
+
+The Calvin cycle occurs in the chloroplast stroma and does not absorb photons directly. Rubisco adds carbon dioxide to RuBP, producing molecules that are converted into G3P using ATP and NADPH. Some G3P leaves the cycle for carbohydrate synthesis, while the rest regenerates RuBP.
+
+The simplified overall equation is carbon dioxide plus water plus light energy producing glucose and oxygen. The oxygen released comes from water rather than carbon dioxide. Stomata regulate gas exchange; when they close, carbon dioxide entry is limited and carbon fixation can decrease even though water loss is reduced.

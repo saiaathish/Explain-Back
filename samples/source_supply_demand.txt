@@ -1,0 +1,5 @@
+In a competitive market, the demand curve slopes downward: holding other factors constant, a lower price leads consumers to choose a larger quantity, while the upward-sloping supply curve shows that producers offer a larger quantity at a higher price. The intersection of the two curves determines the equilibrium price and equilibrium quantity, where the quantity consumers want to buy equals the quantity firms want to sell.
+
+A binding price ceiling is set below the equilibrium price. At the controlled price, quantity demanded exceeds quantity supplied, so the market has a shortage. Queues, favoritism, or other non-price rationing may determine who receives the limited units; the ceiling creates movement along the existing curves rather than shifting demand or supply.
+
+A per-unit tax collected from sellers creates a wedge between the price buyers pay and the net price sellers receive. The buyer price rises, the seller price falls, and the equilibrium quantity traded decreases. Although the law may require sellers to remit the tax, the economic burden is shared, with the less elastic side of the market bearing the larger share.
