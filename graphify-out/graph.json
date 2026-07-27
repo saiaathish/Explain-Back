@@ -143,18 +143,18 @@
       "_origin": "ast",
       "id": "backend_extract",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "extract.py"
     },
     {
       "label": "_type()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "backend_extract_type",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "_type()"
     },
     {
@@ -165,74 +165,129 @@
       "_origin": "ast",
       "id": "backend_extract_py_any",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "any"
     },
     {
       "label": "_certainty()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "backend_extract_certainty",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "_certainty()"
+    },
+    {
+      "label": "_norm()",
+      "file_type": "code",
+      "source_file": "backend/extract.py",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "backend_extract_norm",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "_norm()"
+    },
+    {
+      "label": "_flatten()",
+      "file_type": "code",
+      "source_file": "backend/extract.py",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "backend_extract_flatten",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "_flatten()"
+    },
+    {
+      "label": "find_normalized()",
+      "file_type": "code",
+      "source_file": "backend/extract.py",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "backend_extract_find_normalized",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "find_normalized()"
     },
     {
       "label": "_dedupe_overlaps()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L16",
+      "source_location": "L82",
       "_origin": "ast",
       "id": "backend_extract_dedupe_overlaps",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "_dedupe_overlaps()"
     },
     {
       "label": "locate_spans()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L37",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "backend_extract_locate_spans",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "locate_spans()"
     },
     {
       "label": "locate_concept_anchors()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L78",
+      "source_location": "L145",
       "_origin": "ast",
       "id": "backend_extract_locate_concept_anchors",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "locate_concept_anchors()"
     },
     {
       "label": "extract_concepts()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L104",
+      "source_location": "L173",
       "_origin": "ast",
       "id": "backend_extract_extract_concepts",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "extract_concepts()"
     },
     {
       "label": "extract_propositions()",
       "file_type": "code",
       "source_file": "backend/extract.py",
-      "source_location": "L113",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "backend_extract_extract_propositions",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 25,
+      "community_name": "extract.py",
       "norm_label": "extract_propositions()"
+    },
+    {
+      "label": "Collapse whitespace in haystack to single spaces, keeping a map from     each fl",
+      "file_type": "rationale",
+      "source_file": "backend/extract.py",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "backend_extract_rationale_22",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "collapse whitespace in haystack to single spaces, keeping a map from     each fl"
+    },
+    {
+      "label": "Locate ``needle`` in ``haystack`` ignoring whitespace differences.      Whitespa",
+      "file_type": "rationale",
+      "source_file": "backend/extract.py",
+      "source_location": "L48",
+      "_origin": "ast",
+      "id": "backend_extract_rationale_48",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "locate ``needle`` in ``haystack`` ignoring whitespace differences.      whitespa"
     },
     {
       "label": "llm.py",
@@ -241,8 +296,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_llm",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "llm.py"
     },
     {
@@ -252,8 +307,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "backend_llm_generationconfig",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "generationconfig"
     },
     {
@@ -263,8 +318,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "backend_llm_providerconfig",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "providerconfig"
     },
     {
@@ -274,8 +329,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "backend_llm_generationdefaults",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_generationdefaults"
     },
     {
@@ -285,8 +340,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "backend_llm_llmconfigurationerror",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "llmconfigurationerror"
     },
     {
@@ -296,8 +351,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "runtimeerror",
-      "community": 24,
-      "community_name": "embed",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "runtimeerror"
     },
     {
@@ -307,8 +362,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "backend_llm_llmresponseerror",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "llmresponseerror"
     },
     {
@@ -318,8 +373,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "backend_llm_llmtimeouterror",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "llmtimeouterror"
     },
     {
@@ -329,8 +384,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "backend_llm_normalize_call",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_normalize_call()"
     },
     {
@@ -340,8 +395,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "backend_llm_generation_config",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_generation_config()"
     },
     {
@@ -384,8 +439,8 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "backend_llm_configuration",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_configuration()"
     },
     {
@@ -395,8 +450,8 @@
       "source_location": "L238",
       "_origin": "ast",
       "id": "backend_llm_request_payload",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_request_payload()"
     },
     {
@@ -406,8 +461,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_llm_py_any",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "any"
     },
     {
@@ -417,8 +472,8 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "backend_llm_client_call",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_client_call()"
     },
     {
@@ -428,8 +483,8 @@
       "source_location": "L332",
       "_origin": "ast",
       "id": "backend_llm_parse_json",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "parse_json()"
     },
     {
@@ -439,8 +494,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "backend_llm_call_json",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "call_json()"
     },
     {
@@ -450,8 +505,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_llm_rationale_1",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "sole backend network boundary to the configured model provider."
     },
     {
@@ -472,8 +527,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_main",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "main.py"
     },
     {
@@ -483,8 +538,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "backend_main_cache_key",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_cache_key()"
     },
     {
@@ -494,8 +549,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "backend_main_prewarm_source",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_prewarm_source()"
     },
     {
@@ -505,8 +560,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "path",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "path"
     },
     {
@@ -516,8 +571,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "backend_main_prewarm",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_prewarm()"
     },
     {
@@ -527,8 +582,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "backend_main_lifespan",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "lifespan()"
     },
     {
@@ -538,8 +593,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "fastapi",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "fastapi"
     },
     {
@@ -549,8 +604,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "backend_main_rate_limit_analyze",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "rate_limit_analyze()"
     },
     {
@@ -560,8 +615,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "request",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "request"
     },
     {
@@ -593,8 +648,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "backend_main_health",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "health()"
     },
     {
@@ -604,8 +659,8 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "backend_main_analyze",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "analyze()"
     },
     {
@@ -615,8 +670,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_misconceptions",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "misconceptions.py"
     },
     {
@@ -626,8 +681,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "backend_misconceptions_match",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "match()"
     },
     {
@@ -638,7 +693,7 @@
       "_origin": "ast",
       "id": "backend_prompts",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "prompts.py"
     },
     {
@@ -649,7 +704,7 @@
       "_origin": "ast",
       "id": "backend_prompts_render",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "_render()"
     },
     {
@@ -660,7 +715,7 @@
       "_origin": "ast",
       "id": "backend_prompts_items_text",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "_items_text()"
     },
     {
@@ -671,7 +726,7 @@
       "_origin": "ast",
       "id": "backend_prompts_py_any",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "any"
     },
     {
@@ -682,7 +737,7 @@
       "_origin": "ast",
       "id": "backend_prompts_call_a_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "call_a_prompt()"
     },
     {
@@ -693,7 +748,7 @@
       "_origin": "ast",
       "id": "backend_prompts_call_b_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "call_b_prompt()"
     },
     {
@@ -704,7 +759,7 @@
       "_origin": "ast",
       "id": "backend_prompts_call_c_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "call_c_prompt()"
     },
     {
@@ -715,7 +770,7 @@
       "_origin": "ast",
       "id": "backend_prompts_concept_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "concept_prompt()"
     },
     {
@@ -726,7 +781,7 @@
       "_origin": "ast",
       "id": "backend_prompts_proposition_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "proposition_prompt()"
     },
     {
@@ -737,7 +792,7 @@
       "_origin": "ast",
       "id": "backend_prompts_verification_prompt",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "verification_prompt()"
     },
     {
@@ -748,7 +803,7 @@
       "_origin": "ast",
       "id": "backend_prompts_rationale_1",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "llm prompt templates for explain-back.  the templates state the intended respons"
     },
     {
@@ -759,7 +814,7 @@
       "_origin": "ast",
       "id": "backend_prompts_rationale_444",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "substitute template fields without re-interpreting inserted text."
     },
     {
@@ -770,7 +825,7 @@
       "_origin": "ast",
       "id": "backend_prompts_rationale_476",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "build call a without interpreting or transforming source text."
     },
     {
@@ -781,7 +836,7 @@
       "_origin": "ast",
       "id": "backend_prompts_rationale_481",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "build hardened call b without interpreting or transforming input text."
     },
     {
@@ -792,7 +847,7 @@
       "_origin": "ast",
       "id": "backend_prompts_rationale_486",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "build batched call c without changing its verdict schema."
     },
     {
@@ -835,8 +890,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_schemas",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "schemas.py"
     },
     {
@@ -857,8 +912,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "basemodel",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "basemodel"
     },
     {
@@ -868,8 +923,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "backend_schemas_proposition",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "proposition"
     },
     {
@@ -912,8 +967,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "backend_schemas_coverage",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "coverage"
     },
     {
@@ -923,8 +978,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "backend_schemas_analyzeresponse",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "analyzeresponse"
     },
     {
@@ -934,8 +989,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_verify",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "verify.py"
     },
     {
@@ -945,8 +1000,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "backend_verify_cap_hint",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_cap_hint()"
     },
     {
@@ -956,8 +1011,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "backend_verify_follow_up",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_follow_up()"
     },
     {
@@ -967,8 +1022,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "backend_verify_validate_response",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "_validate_response()"
     },
     {
@@ -978,8 +1033,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_verify_py_any",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "any"
     },
     {
@@ -989,8 +1044,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "backend_verify_verify",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "verify()"
     },
     {
@@ -1704,8 +1759,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_diagnose_misses",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "diagnose_misses.py"
     },
     {
@@ -1715,8 +1770,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "tests_diagnose_misses_overlap",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "overlap()"
     },
     {
@@ -1726,8 +1781,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_diagnose_misses_best_flag",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "best_flag()"
     },
     {
@@ -1737,8 +1792,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "tests_diagnose_misses_best_proposition",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "best_proposition()"
     },
     {
@@ -1748,8 +1803,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "tests_diagnose_misses_raw_propositions",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "raw_propositions()"
     },
     {
@@ -1759,8 +1814,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_diagnose_misses_py_any",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "any"
     },
     {
@@ -1770,8 +1825,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "tests_diagnose_misses_raw_match",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "raw_match()"
     },
     {
@@ -1781,8 +1836,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "tests_diagnose_misses_summarize",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "summarize()"
     },
     {
@@ -1792,8 +1847,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "tests_diagnose_misses_run",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "run()"
     },
     {
@@ -1803,8 +1858,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_diagnose_misses_py_namespace",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "namespace"
     },
     {
@@ -1814,8 +1869,8 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "tests_diagnose_misses_parse_args",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "parse_args()"
     },
     {
@@ -1825,8 +1880,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_diagnose_misses_rationale_1",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "repeat the five known golden misses and capture call b diagnostics.  this is an"
     },
     {
@@ -2079,41 +2134,129 @@
       "_origin": "ast",
       "id": "tests_test_extract",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "test_extract.py"
     },
     {
       "label": "test_fabricated_claim_and_justification_are_discarded()",
       "file_type": "code",
       "source_file": "tests/test_extract.py",
-      "source_location": "L5",
+      "source_location": "L10",
       "_origin": "ast",
       "id": "tests_test_extract_test_fabricated_claim_and_justification_are_discarded",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "test_fabricated_claim_and_justification_are_discarded()"
     },
     {
       "label": "test_concept_anchor_must_be_verbatim()",
       "file_type": "code",
       "source_file": "tests/test_extract.py",
-      "source_location": "L36",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "tests_test_extract_test_concept_anchor_must_be_verbatim",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "test_concept_anchor_must_be_verbatim()"
     },
     {
       "label": "test_longer_overlapping_proposition_wins()",
       "file_type": "code",
       "source_file": "tests/test_extract.py",
-      "source_location": "L53",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "tests_test_extract_test_longer_overlapping_proposition_wins",
       "community": 25,
-      "community_name": "diagnose_misses.py",
+      "community_name": "extract.py",
       "norm_label": "test_longer_overlapping_proposition_wins()"
+    },
+    {
+      "label": "test_find_normalized_offsets_into_original()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_find_normalized_offsets_into_original",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_find_normalized_offsets_into_original()"
+    },
+    {
+      "label": "test_find_normalized_respects_cursor()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_find_normalized_respects_cursor",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_find_normalized_respects_cursor()"
+    },
+    {
+      "label": "test_find_normalized_missing_returns_minus_one()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_find_normalized_missing_returns_minus_one",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_find_normalized_missing_returns_minus_one()"
+    },
+    {
+      "label": "test_concept_anchor_resolves_across_hard_wraps()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_concept_anchor_resolves_across_hard_wraps",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_concept_anchor_resolves_across_hard_wraps()"
+    },
+    {
+      "label": "test_claim_span_resolves_across_wraps_and_stored_raw()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L111",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_claim_span_resolves_across_wraps_and_stored_raw",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_claim_span_resolves_across_wraps_and_stored_raw()"
+    },
+    {
+      "label": "test_justification_span_resolves_across_wraps()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L133",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_justification_span_resolves_across_wraps",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_justification_span_resolves_across_wraps()"
+    },
+    {
+      "label": "test_locate_still_discards_truly_absent_spans()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L154",
+      "_origin": "ast",
+      "id": "tests_test_extract_test_locate_still_discards_truly_absent_spans",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "test_locate_still_discards_truly_absent_spans()"
+    },
+    {
+      "label": "_norm()",
+      "file_type": "code",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L168",
+      "_origin": "ast",
+      "id": "tests_test_extract_norm",
+      "community": 25,
+      "community_name": "extract.py",
+      "norm_label": "_norm()"
     },
     {
       "label": "test_gate_scripts.py",
@@ -2188,8 +2331,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_golden_fixture",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_golden_fixture.py"
     },
     {
@@ -2199,8 +2342,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tests_test_golden_fixture_test_golden_spans_are_verbatim_and_all_states_are_represented",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_golden_spans_are_verbatim_and_all_states_are_represented()"
     },
     {
@@ -2408,8 +2551,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "tests_test_llm_test_prod_request_payload_is_legacy_byte_shape",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_prod_request_payload_is_legacy_byte_shape()"
     },
     {
@@ -2419,8 +2562,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "tests_test_llm_test_ci_request_payload_uses_call_specific_json_schema",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_ci_request_payload_uses_call_specific_json_schema()"
     },
     {
@@ -2650,8 +2793,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_verify",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_verify.py"
     },
     {
@@ -2661,8 +2804,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tests_test_verify_proposition",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "proposition()"
     },
     {
@@ -2672,8 +2815,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_normalizes_mechanism_imperative",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_follow_up_normalizes_mechanism_imperative()"
     },
     {
@@ -2683,8 +2826,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_rejects_arbitrary_statement",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_follow_up_rejects_arbitrary_statement()"
     },
     {
@@ -2694,8 +2837,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_test_verify_test_follow_up_accepts_one_question_with_clarifying_instruction",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_follow_up_accepts_one_question_with_clarifying_instruction()"
     },
     {
@@ -2705,8 +2848,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_test_verify_test_verify_rejects_missing_verdict",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_verify_rejects_missing_verdict()"
     },
     {
@@ -2716,8 +2859,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "tests_test_verify_test_verify_checks_justification_and_follow_up_shape",
-      "community": 16,
-      "community_name": "test_resolve.py",
+      "community": 15,
+      "community_name": "extract.py",
       "norm_label": "test_verify_checks_justification_and_follow_up_shape()"
     },
     {
@@ -4723,7 +4866,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4734,7 +4877,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L16",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4745,7 +4888,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L104",
+      "source_location": "L173",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4756,7 +4899,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L113",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4767,7 +4910,29 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L78",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract",
+      "target": "backend_extract_flatten",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L145",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4778,7 +4943,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L37",
+      "source_location": "L103",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4789,7 +4954,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L8",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract",
+      "target": "backend_extract_norm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4801,7 +4977,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4813,7 +4989,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4825,7 +5001,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4837,7 +5013,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4849,7 +5025,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4861,7 +5037,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4873,7 +5049,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4885,7 +5061,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract",
@@ -4945,7 +5121,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L71",
+      "source_location": "L138",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_spans",
@@ -4957,7 +5133,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_type",
@@ -4969,7 +5145,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_certainty",
@@ -4981,7 +5157,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L78",
+      "source_location": "L145",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_concept_anchors",
@@ -4993,7 +5169,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L37",
+      "source_location": "L103",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_spans",
@@ -5005,7 +5181,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L72",
+      "source_location": "L139",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_spans",
@@ -5013,11 +5189,129 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_find_normalized",
+      "target": "backend_extract_norm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_find_normalized",
+      "target": "backend_extract_flatten",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_rationale_22",
+      "target": "backend_extract_flatten",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L156",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_locate_concept_anchors",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L110",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_locate_spans",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/extract.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_extract_rationale_48",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L85",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_find_normalized_missing_returns_minus_one",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_find_normalized_offsets_into_original",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_find_normalized_respects_cursor",
+      "target": "backend_extract_find_normalized",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L16",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_dedupe_overlaps",
@@ -5029,7 +5323,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L75",
+      "source_location": "L142",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_spans",
@@ -5053,7 +5347,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L59",
+      "source_location": "L64",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract_test_longer_overlapping_proposition_wins",
@@ -5065,7 +5359,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L119",
+      "source_location": "L188",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_propositions",
@@ -5077,7 +5371,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L37",
+      "source_location": "L103",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_spans",
@@ -5125,7 +5419,19 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L26",
+      "source_location": "L125",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_claim_span_resolves_across_wraps_and_stored_raw",
+      "target": "backend_extract_locate_spans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract_test_fabricated_claim_and_justification_are_discarded",
@@ -5136,8 +5442,32 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L144",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_justification_span_resolves_across_wraps",
+      "target": "backend_extract_locate_spans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L165",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_locate_still_discards_truly_absent_spans",
+      "target": "backend_extract_locate_spans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L110",
+      "source_location": "L179",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_concepts",
@@ -5149,7 +5479,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L78",
+      "source_location": "L145",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_locate_concept_anchors",
@@ -5173,7 +5503,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L38",
+      "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract_test_concept_anchor_must_be_verbatim",
@@ -5184,8 +5514,20 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L98",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_concept_anchor_resolves_across_hard_wraps",
+      "target": "backend_extract_locate_concept_anchors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L105",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_concepts",
@@ -5197,7 +5539,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L105",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_concepts",
@@ -5209,7 +5551,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L104",
+      "source_location": "L173",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_concepts",
@@ -5281,7 +5623,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L114",
+      "source_location": "L183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_propositions",
@@ -5293,7 +5635,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L114",
+      "source_location": "L183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_propositions",
@@ -5305,7 +5647,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/extract.py",
-      "source_location": "L113",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_extract_extract_propositions",
@@ -8276,7 +8618,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L2",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract",
@@ -8641,7 +8983,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L2",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract",
@@ -8653,7 +8995,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L55",
+      "source_location": "L60",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract_test_longer_overlapping_proposition_wins",
@@ -10822,7 +11164,29 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L36",
+      "source_location": "L168",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_norm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L111",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_claim_span_resolves_across_wraps_and_stored_raw",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract",
@@ -10833,7 +11197,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L5",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_concept_anchor_resolves_across_hard_wraps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract",
@@ -10844,11 +11219,78 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_extract.py",
-      "source_location": "L53",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_find_normalized_missing_returns_minus_one",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_find_normalized_offsets_into_original",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_find_normalized_respects_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L133",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_justification_span_resolves_across_wraps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L154",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract",
+      "target": "tests_test_extract_test_locate_still_discards_truly_absent_spans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L58",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_extract",
       "target": "tests_test_extract_test_longer_overlapping_proposition_wins",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_extract.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_test_extract_test_find_normalized_offsets_into_original",
+      "target": "tests_test_extract_norm",
       "confidence_score": 1.0
     },
     {
@@ -12890,5 +13332,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b90184fd8e50d53c704054e45b4b8b4fdd016211"
+  "built_at_commit": "6321ff4b09c6185911d408a8c33f97d8b0172eaa"
 }

@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from backend.llm import call_json
@@ -11,6 +12,71 @@ def _type(value: Any) -> str:
 
 def _certainty(value: Any) -> str:
     return value if value in {"high", "medium", "low"} else "medium"
+
+
+def _norm(s: str) -> str:
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _flatten(haystack: str) -> tuple[str, list[int]]:
+    """Collapse whitespace in haystack to single spaces, keeping a map from
+    each flattened character back to its index in the original string.
+
+    A leading space from a leading-whitespace run is dropped (we ``strip`` the
+    flattened form), and interior whitespace runs become one space whose
+    original index is the index of the first whitespace char in the run.
+    """
+    flat: list[str] = []
+    idx_map: list[int] = []
+    prev_space = False
+    leading = True
+    for i, ch in enumerate(haystack):
+        if ch.isspace():
+            prev_space = True
+            continue
+        if prev_space and flat:
+            flat.append(" ")
+            idx_map.append(i - 1)
+        flat.append(ch)
+        idx_map.append(i)
+        prev_space = False
+        leading = False
+    return "".join(flat), idx_map
+
+
+def find_normalized(haystack: str, needle: str, start: int = 0) -> tuple[int, int]:
+    """Locate ``needle`` in ``haystack`` ignoring whitespace differences.
+
+    Whitespace runs (newlines, tabs, double spaces) are treated as equivalent
+    to a single space on both sides. Returns ``(start, end)`` offsets into the
+    ORIGINAL ``haystack`` (so ``haystack[start:end]`` is the matched span,
+    including any original whitespace), or ``(-1, -1)`` if not found.
+
+    ``start`` is a cursor into the ORIGINAL haystack; it is mapped to the
+    flattened index before searching.
+    """
+    n = _norm(needle)
+    if not n:
+        return -1, -1
+    flat, idx_map = _flatten(haystack)
+    if not idx_map:
+        return -1, -1
+    # Map an original-haystack cursor to a flattened cursor. If the cursor
+    # lands on whitespace, advance to the next non-space char in the flat form.
+    flat_start = 0
+    if start > 0:
+        # Count flat characters whose original index is < start.
+        for fi, oi in enumerate(idx_map):
+            if oi >= start:
+                flat_start = fi
+                break
+        else:
+            flat_start = len(idx_map)
+    pos = flat.find(n, flat_start)
+    if pos == -1:
+        return -1, -1
+    end = pos + len(n) - 1
+    return idx_map[pos], idx_map[end] + 1
 
 
 def _dedupe_overlaps(props: list[Proposition]) -> list[Proposition]:
@@ -41,31 +107,32 @@ def locate_spans(raw_props: list[dict[str, Any]], explanation: str) -> list[Prop
         claim = raw.get("claim_span", "")
         if not isinstance(claim, str) or not claim.strip():
             continue
-        index = explanation.find(claim, cursor)
+        index, end = find_normalized(explanation, claim, cursor)
         if index == -1:
-            index = explanation.find(claim)
+            index, end = find_normalized(explanation, claim)
         if index == -1:
             continue
-        cursor = index + len(claim)
+        # Store the raw slice of the original explanation so offsets always
+        # re-slice to the stored text (whitespace tolerance is locate-only).
+        claim_text = explanation[index:end]
+        cursor = end
 
         justifications: list[str] = []
         offsets: list[tuple[int, int]] = []
         for justification in raw.get("justification_spans", []):
             if not isinstance(justification, str) or not justification.strip():
                 continue
-            justification_index = explanation.find(justification)
-            if justification_index == -1:
+            j_start, j_end = find_normalized(explanation, justification)
+            if j_start == -1:
                 continue
-            justifications.append(justification)
-            offsets.append(
-                (justification_index, justification_index + len(justification))
-            )
+            justifications.append(explanation[j_start:j_end])
+            offsets.append((j_start, j_end))
         output.append(
             Proposition(
                 id=str(raw.get("id") or f"P{len(output) + 1}"),
-                claim_span=claim,
+                claim_span=claim_text,
                 claim_start=index,
-                claim_end=index + len(claim),
+                claim_end=end,
                 justification_spans=justifications,
                 justification_offsets=offsets,
                 type=_type(raw.get("type")),
@@ -86,16 +153,18 @@ def locate_concept_anchors(
             continue
         if not isinstance(label, str) or not label.strip():
             continue
-        start = source.find(anchor)
+        start, end = find_normalized(source, anchor)
         if start == -1:
             continue
+        # Store the raw slice of the original source; offsets always re-slice
+        # to this text (whitespace tolerance is locate-only).
         output.append(
             Concept(
                 id=str(raw.get("id") or f"K{len(output) + 1}"),
                 label=label.strip(),
-                anchor=anchor,
+                anchor=source[start:end],
                 anchor_start=start,
-                anchor_end=start + len(anchor),
+                anchor_end=end,
             )
         )
     return output
