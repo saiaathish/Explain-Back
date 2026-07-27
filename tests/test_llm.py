@@ -127,6 +127,7 @@ def test_prod_request_payload_is_legacy_byte_shape(monkeypatch) -> None:
 
 
 def test_ci_request_payload_uses_call_specific_json_schema(monkeypatch) -> None:
+    monkeypatch.setenv("LLM_API_KEY", "secret")
     monkeypatch.setenv("LLM_ROLE", "ci")
     monkeypatch.setenv("LLM_MODEL_CI", "ci-model")
     config = llm._configuration(call="b").generation
