@@ -75,12 +75,12 @@ remain unchanged.
 | Criterion | Status |
 | --- | --- |
 | Schema/reliability ≥98% across 50 consecutive calls | Fail: 48/50 end-to-end because two provider HTTP 503s required retry; all 51 successful responses were direct, schema-valid, and contract-valid |
-| Golden ≥32/37 | Fail in the paced full-fixture release run: 29/37 |
+| Golden ≥32/37 | Fail in the final post-fix run: 25/37 |
 | Determinism 5/5 | Pass |
-| Agreement with production ≥90% | Blocked by production quota; no valid percentage |
-| No CI-only transitions into red | Blocked until production comparison is valid |
+| Agreement with production ≥90% | Fail: 42/62 offset-matched states = 67.7% |
+| No CI-only transitions into red | Fail: one `missing -> red` transition |
 | Fluent-unjustified majority empty | Pass |
-| Existing expanded gate ≥44/55 | Fail; paced full-fixture release run was 37/55 before the targeted C repair |
+| Existing expanded gate ≥44/55 | Fail: final post-fix run was 34/55 |
 
 Because production agreement and the expanded gate are not satisfied, the
 32/37 result is not enough to make Gemma an authoritative proxy.
@@ -105,10 +105,17 @@ would provide.
 
 - Production branch/SHA remains `main` at `84c86e9`.
 - Render backend health returned HTTP 200 on 2026-07-27.
-- No branch build was deployed or merged as part of this subgoal.
-- The production golden and byte-level response equivalence remain unproven on
-  the current branch because the production provider quota blocked live calls.
-  The exact outbound production request shape is covered by regression tests.
+- No branch build has been merged yet.
+- The post-reset production golden passed at 34/37 original and 45/55
+  expanded, with all 15 pipelines accepted and zero HTTP 429 responses.
+- The canonical production browser flow at
+  `https://explain-back.vercel.app` rendered five diagnostic highlights and a
+  follow-up question without an alert.
+- Production determinism passed 5/5 twice, but the warm ≤8-second latency gate
+  failed twice. The second run measured 7.065s, 19.846s, 10.396s, and 9.112s
+  for the four warm analyses.
+- The exact outbound production request shape remains covered by regression
+  tests.
 
 ## Release completion run — 2026-07-27
 
@@ -147,15 +154,34 @@ prompt-iteration model. It is not an authoritative production proxy and is
 not eligible for production deployment. Production remains
 `gemini-3.1-flash-lite`.
 
-## Next acceptance run
+## Final comparison and release disposition
 
-After production quota resets:
+The final post-fix, paced runs produced:
 
-1. run the comparison harness with `--confirm-live-matrix` to execute
-   production, all-CI, A-only, B-only, and C-only configurations in fresh
-   subprocesses;
-2. produce the offset-matched state confusion matrix;
-3. require ≥90% agreement and zero CI-only red transitions;
-4. run 50 consecutive CI provider calls with paced intervals;
-5. run the unchanged production golden once;
-6. keep Gemma smoke-only unless every criterion passes.
+- production: 34/37 original, 45/55 expanded, 15/15 accepted pipelines;
+- Gemma CI: 25/37 original, 34/55 expanded, 15/15 accepted pipelines;
+- offset-matched agreement: 42/62 = 67.7%;
+- exact-span/state agreement: 33/62 = 53.2%;
+- one CI-only `missing -> red` transition;
+- fluent-unjustified: 4/4 empty justification arrays.
+
+The confusion matrix was:
+
+```text
+green->green 12
+green->grey 4
+green->yellow 1
+grey->grey 16
+missing->grey 3
+missing->red 1
+missing->yellow 2
+red->red 8
+yellow->grey 9
+yellow->yellow 6
+```
+
+Gemma therefore remains smoke-only. Production semantics, browser rendering,
+local tests, and CI all pass. The PR remains draft and unmerged because the
+explicit production warm-latency gate is not satisfied; changing the model,
+production prompt payload, or 8-second threshold to force a release would
+violate the hardening brief.

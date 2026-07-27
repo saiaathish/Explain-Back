@@ -1,680 +1,126 @@
 {
-  "evidence_status": {
-    "stage": "untuned-baseline",
-    "production_comparison_valid": false,
-    "reason": "All production-role requests were quota-blocked; zero scores are transport failures, not model-quality measurements.",
-    "authoritative_for": [
-      "untuned Gemma golden scores",
-      "untuned Gemma schema characterization",
-      "untuned Gemma determinism"
-    ]
-  },
+  "generated_at": "2026-07-27",
+  "decision": "safe_fallback_smoke_only",
   "models": {
-    "prod": {
-      "a": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "b": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "c": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      }
+    "production": "gemini-3.1-flash-lite",
+    "ci": "gemma-4-31b-it"
+  },
+  "production": {
+    "original": {
+      "matched": 34,
+      "total": 37,
+      "rate": 0.9189189189
     },
-    "ci": {
-      "a": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      },
-      "b": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      },
-      "c": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      }
+    "expanded": {
+      "matched": 45,
+      "total": 55,
+      "rate": 0.8181818182
     },
-    "a_only": {
-      "a": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      },
-      "b": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "c": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      }
+    "accepted_pipelines": {
+      "accepted": 15,
+      "total": 15
     },
-    "b_only": {
-      "a": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "b": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      },
-      "c": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      }
+    "provider_attempts": 32,
+    "recovered_errors": {
+      "http_503": 1
     },
-    "c_only": {
-      "a": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "b": {
-        "role": "prod",
-        "model": "gemini-3.1-flash-lite"
-      },
-      "c": {
-        "role": "ci",
-        "model": "gemma-4-31b-it"
-      }
+    "determinism": {
+      "matching_runs": 5,
+      "total_runs": 5,
+      "rate": 1.0
+    },
+    "warm_latency_seconds": {
+      "limit": 8.0,
+      "first_run": [5.618, 6.227, 10.811, 10.957],
+      "repeat_run": [7.065, 19.846, 10.396, 9.112],
+      "passed": false
     }
   },
-  "scores": {
-    "prod": {
-      "matched": 0,
-      "total": 55,
-      "score": 0.0,
-      "original_matched": 0,
-      "original_total": 37,
-      "original_score": 0.0,
-      "proposition_counts": {
-        "01_fluent_unjustified.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "02_reversed_stoich.txt": {
-          "raw": 2,
-          "located_deduplicated": 2,
-          "final_flags": 0
-        },
-        "03_passive_conflation.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "04_hedged.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "05_offtopic.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "06_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "07_mixed_missing_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "08_mixed_wrong_direction.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "09_mixed_partial.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "10_mixed_justification.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "11_two_sentences.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "12_correct_claim_wrong_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "13_hedged_specific_error.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "14_reverse_order.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "15_poor_grammar_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        }
-      },
-      "provider_responses": 54
+  "ci": {
+    "original": {
+      "matched": 25,
+      "total": 37,
+      "rate": 0.6756756757
     },
-    "ci": {
-      "matched": 38,
+    "expanded": {
+      "matched": 34,
       "total": 55,
-      "score": 0.6909090909090909,
-      "original_matched": 30,
-      "original_total": 37,
-      "original_score": 0.8108108108108109,
-      "proposition_counts": {
-        "01_fluent_unjustified.txt": {
-          "raw": 6,
-          "located_deduplicated": 6,
-          "final_flags": 6
-        },
-        "02_reversed_stoich.txt": {
-          "raw": 2,
-          "located_deduplicated": 2,
-          "final_flags": 2
-        },
-        "03_passive_conflation.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        },
-        "04_hedged.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        },
-        "05_offtopic.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        },
-        "06_correct.txt": {
-          "raw": 6,
-          "located_deduplicated": 6,
-          "final_flags": 6
-        },
-        "07_mixed_missing_mechanism.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        },
-        "08_mixed_wrong_direction.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        },
-        "09_mixed_partial.txt": {
-          "raw": 4,
-          "located_deduplicated": 4,
-          "final_flags": 4
-        },
-        "10_mixed_justification.txt": {
-          "raw": 4,
-          "located_deduplicated": 4,
-          "final_flags": 4
-        },
-        "11_two_sentences.txt": {
-          "raw": 3,
-          "located_deduplicated": 3,
-          "final_flags": 3
-        },
-        "12_correct_claim_wrong_mechanism.txt": {
-          "raw": 3,
-          "located_deduplicated": 3,
-          "final_flags": 3
-        },
-        "13_hedged_specific_error.txt": {
-          "raw": 4,
-          "located_deduplicated": 4,
-          "final_flags": 4
-        },
-        "14_reverse_order.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 0
-        },
-        "15_poor_grammar_correct.txt": {
-          "raw": 5,
-          "located_deduplicated": 5,
-          "final_flags": 5
-        }
-      },
-      "provider_responses": 33
+      "rate": 0.6181818182
     },
-    "a_only": {
-      "matched": 0,
-      "total": 55,
-      "score": 0.0,
-      "original_matched": 0,
-      "original_total": 37,
-      "original_score": 0.0,
-      "proposition_counts": {
-        "01_fluent_unjustified.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "02_reversed_stoich.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "03_passive_conflation.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "04_hedged.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "05_offtopic.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "06_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "07_mixed_missing_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "08_mixed_wrong_direction.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "09_mixed_partial.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "10_mixed_justification.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "11_two_sentences.txt": {
-          "raw": 2,
-          "located_deduplicated": 2,
-          "final_flags": 0
-        },
-        "12_correct_claim_wrong_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "13_hedged_specific_error.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "14_reverse_order.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "15_poor_grammar_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        }
-      },
-      "provider_responses": 55
+    "accepted_pipelines": {
+      "accepted": 15,
+      "total": 15
     },
-    "b_only": {
-      "matched": 0,
-      "total": 55,
-      "score": 0.0,
-      "original_matched": 0,
-      "original_total": 37,
-      "original_score": 0.0,
-      "proposition_counts": {
-        "01_fluent_unjustified.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "02_reversed_stoich.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "03_passive_conflation.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "04_hedged.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "05_offtopic.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "06_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "07_mixed_missing_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "08_mixed_wrong_direction.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "09_mixed_partial.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "10_mixed_justification.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "11_two_sentences.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "12_correct_claim_wrong_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "13_hedged_specific_error.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "14_reverse_order.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "15_poor_grammar_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        }
-      },
-      "provider_responses": 45
+    "provider_attempts": 31,
+    "provider_errors": 0,
+    "fluent_unjustified": {
+      "empty_justifications": 4,
+      "total_propositions": 4,
+      "majority_empty": true
     },
-    "c_only": {
-      "matched": 0,
-      "total": 55,
-      "score": 0.0,
-      "original_matched": 0,
-      "original_total": 37,
-      "original_score": 0.0,
-      "proposition_counts": {
-        "01_fluent_unjustified.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "02_reversed_stoich.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "03_passive_conflation.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "04_hedged.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "05_offtopic.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "06_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "07_mixed_missing_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "08_mixed_wrong_direction.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "09_mixed_partial.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "10_mixed_justification.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "11_two_sentences.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "12_correct_claim_wrong_mechanism.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "13_hedged_specific_error.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "14_reverse_order.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        },
-        "15_poor_grammar_correct.txt": {
-          "raw": 0,
-          "located_deduplicated": 0,
-          "final_flags": 0
-        }
-      },
-      "provider_responses": 45
-    }
-  },
-  "schema": {
-    "prod": {
-      "a": {
-        "responses": 30,
-        "direct_json": 0,
-        "parseable": 0,
-        "schema_valid": 0,
-        "direct_schema_valid": 0,
-        "schema_rate": 0.0,
-        "responses_requiring_retry": 20,
-        "raw_items": 0,
-        "valid_claims": 0,
-        "raw_justifications": 0,
-        "valid_justifications": 0
-      },
-      "b": {
-        "responses": 0,
-        "direct_json": 0,
-        "parseable": 0,
-        "schema_valid": 0,
-        "direct_schema_valid": 0,
-        "schema_rate": 0.0,
-        "responses_requiring_retry": 0,
-        "raw_items": 0,
-        "valid_claims": 0,
-        "raw_justifications": 0,
-        "valid_justifications": 0
-      },
-      "c": {
-        "responses": 0,
-        "direct_json": 0,
-        "parseable": 0,
-        "schema_valid": 0,
-        "direct_schema_valid": 0,
-        "schema_rate": 0.0,
-        "responses_requiring_retry": 0,
-        "raw_items": 0,
-        "valid_claims": 0,
-        "raw_justifications": 0,
-        "valid_justifications": 0
-      },
-      "pipeline": {
-        "accepted": 0,
-        "total": 10
-      }
+    "reliability_first_50": {
+      "successful": 48,
+      "total": 50,
+      "rate": 0.96,
+      "required_rate": 0.98,
+      "passed": false
     },
-    "ci": {
-      "a": {
-        "responses": 10,
-        "direct_json": 0,
-        "parseable": 10,
-        "schema_valid": 10,
-        "direct_schema_valid": 0,
-        "schema_rate": 1.0,
-        "responses_requiring_retry": 0,
-        "raw_items": 60,
-        "valid_claims": 60,
-        "raw_justifications": 0,
-        "valid_justifications": 0
-      },
-      "b": {
-        "responses": 10,
-        "direct_json": 0,
-        "parseable": 10,
-        "schema_valid": 10,
-        "direct_schema_valid": 0,
-        "schema_rate": 1.0,
-        "responses_requiring_retry": 0,
-        "raw_items": 47,
-        "valid_claims": 47,
-        "raw_justifications": 14,
-        "valid_justifications": 14
-      },
-      "c": {
-        "responses": 10,
-        "direct_json": 0,
-        "parseable": 10,
-        "schema_valid": 4,
-        "direct_schema_valid": 0,
-        "schema_rate": 0.4,
-        "responses_requiring_retry": 0,
-        "raw_items": 47,
-        "valid_claims": 0,
-        "raw_justifications": 0,
-        "valid_justifications": 0
-      },
-      "pipeline": {
-        "accepted": 10,
-        "total": 10
-      }
+    "determinism": {
+      "matching_runs": 5,
+      "total_runs": 5,
+      "rate": 1.0
     }
   },
   "agreement_with_production": {
-    "ci": {
-      "matched": 0,
-      "total": 62,
-      "agreement": 0.0,
-      "exact_span_state_matched": 0,
-      "exact_span_state_agreement": 0.0,
-      "exact_pairs": 0,
-      "relaxed_pairs": 0,
-      "red_transitions_not_in_production": 8,
-      "confusion": {
-        "missing->green": 13,
-        "missing->grey": 27,
-        "missing->red": 8,
-        "missing->yellow": 14
-      }
-    },
-    "a_only": {
-      "matched": 0,
-      "total": 0,
-      "agreement": 0.0,
-      "exact_span_state_matched": 0,
-      "exact_span_state_agreement": 0.0,
-      "exact_pairs": 0,
-      "relaxed_pairs": 0,
-      "red_transitions_not_in_production": 0,
-      "confusion": {}
-    },
-    "b_only": {
-      "matched": 0,
-      "total": 0,
-      "agreement": 0.0,
-      "exact_span_state_matched": 0,
-      "exact_span_state_agreement": 0.0,
-      "exact_pairs": 0,
-      "relaxed_pairs": 0,
-      "red_transitions_not_in_production": 0,
-      "confusion": {}
-    },
-    "c_only": {
-      "matched": 0,
-      "total": 0,
-      "agreement": 0.0,
-      "exact_span_state_matched": 0,
-      "exact_span_state_agreement": 0.0,
-      "exact_pairs": 0,
-      "relaxed_pairs": 0,
-      "red_transitions_not_in_production": 0,
-      "confusion": {}
+    "matched": 42,
+    "total": 62,
+    "rate": 0.6774193548,
+    "required_rate": 0.9,
+    "exact_span_state_matched": 33,
+    "exact_span_state_rate": 0.5322580645,
+    "ci_only_red_transitions": 1,
+    "confusion": {
+      "green->green": 12,
+      "green->grey": 4,
+      "green->yellow": 1,
+      "grey->grey": 16,
+      "missing->grey": 3,
+      "missing->red": 1,
+      "missing->yellow": 2,
+      "red->red": 8,
+      "yellow->grey": 9,
+      "yellow->yellow": 6
     }
   },
-  "ci_determinism": {
-    "matching_runs": 5,
-    "total_runs": 5,
-    "rate": 1.0
+  "browser": {
+    "url": "https://explain-back.vercel.app",
+    "source_visible": true,
+    "explanation_visible": true,
+    "result_visible": true,
+    "alert": null,
+    "diagnostic_highlights": 5,
+    "states": {
+      "green": 4,
+      "yellow": 1,
+      "red": 0,
+      "grey": 0
+    },
+    "coverage": {
+      "covered": 4,
+      "partial": 1,
+      "missing": 1
+    },
+    "follow_up_visible": true
   },
-  "ci_unjustified": {
-    "empty": 6,
-    "total": 6,
-    "majority_empty": true
-  },
-  "quota": {
-    "prod": 54,
-    "ci": 33,
-    "a_only": 55,
-    "b_only": 45,
-    "c_only": 45
-  },
-  "schema_quota": {
-    "prod": 30,
-    "ci": 30
+  "release_gates": {
+    "production_golden": "pass",
+    "production_determinism": "pass",
+    "production_warm_latency": "fail",
+    "ci_schema_reliability": "fail",
+    "ci_golden": "fail",
+    "production_agreement": "fail",
+    "zero_ci_only_red_transitions": "fail",
+    "browser": "pass",
+    "merge": "blocked_by_latency_gate"
   }
 }

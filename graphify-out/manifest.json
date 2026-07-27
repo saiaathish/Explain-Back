@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "docs/model-comparison.json": {
-    "mtime": 1785123839.3895445,
-    "ast_hash": "6f034ed90964ba92ac2d412966b1f5a5",
+    "mtime": 1785137891.3808029,
+    "ast_hash": "ab28a138c974417dbdf673b51b8480fb",
     "semantic_hash": ""
   },
   "tests/model_compare.py": {
@@ -385,13 +385,13 @@
     "semantic_hash": ""
   },
   "docs/dual-model.md": {
-    "mtime": 1785132339.693713,
-    "ast_hash": "a720fb8e8ae18bfebe3dfb1bd2984b94",
+    "mtime": 1785137826.2490752,
+    "ast_hash": "574df0f0e53f1fbe024bb234e1c498fe",
     "semantic_hash": ""
   },
   "docs/gemma-baseline.md": {
-    "mtime": 1785132419.1011002,
-    "ast_hash": "9e55e5a25ccd8f352690d3f5e497c892",
+    "mtime": 1785137844.9985082,
+    "ast_hash": "66b36b4edfbf546c695bbcdd8d198c1a",
     "semantic_hash": ""
   }
 }

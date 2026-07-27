@@ -57,9 +57,9 @@ conformance was therefore the first tuning target.
 
 ## Final paced release characterization
 
-After CI-only native schema tuning and explicit provider pacing, the complete
-fixture set scored 29/37 on the original ten samples and 37/55 on the expanded
-fifteen. This is below both semantic acceptance floors.
+After CI-only native schema tuning and explicit provider pacing, the final
+complete fixture set scored 25/37 on the original ten samples and 34/55 on the
+expanded fifteen. This is below both semantic acceptance floors.
 
 Call B was 15/15 direct JSON, schema-valid, and contract-valid. A remaining
 Call C completeness failure was traced to an empty `follow_up`, not missing or
@@ -72,4 +72,6 @@ occurred in the first 50 calls. End-to-end reliability was therefore 48/50
 (96%), below the required 98%.
 
 Gemma is retained for smoke, schema, determinism, and prompt-iteration checks
-only. It is not accepted as the production proxy.
+only. Against the valid production run, offset-matched state agreement was
+42/62 (67.7%), exact-span/state agreement was 33/62 (53.2%), and one CI-only
+transition entered red. It is not accepted as the production proxy.

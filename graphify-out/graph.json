@@ -3252,7 +3252,7 @@
       "label": "Release completion run \u2014 2026-07-27",
       "file_type": "document",
       "source_file": "docs/dual-model.md",
-      "source_location": "L113",
+      "source_location": "L120",
       "_origin": "ast",
       "id": "docs_dual_model_release_completion_run_2026_07_27",
       "community": 32,
@@ -3260,15 +3260,15 @@
       "norm_label": "release completion run \u2014 2026-07-27"
     },
     {
-      "label": "Next acceptance run",
+      "label": "Final comparison and release disposition",
       "file_type": "document",
       "source_file": "docs/dual-model.md",
-      "source_location": "L150",
+      "source_location": "L157",
       "_origin": "ast",
-      "id": "docs_dual_model_next_acceptance_run",
+      "id": "docs_dual_model_final_comparison_and_release_disposition",
       "community": 32,
       "community_name": "Dual-model CI outcome",
-      "norm_label": "next acceptance run"
+      "norm_label": "final comparison and release disposition"
     },
     {
       "label": "gemma-baseline.md",
@@ -11984,22 +11984,22 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/dual-model.md",
-      "source_location": "L33",
+      "source_location": "L157",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_dual_model_dual_model_ci_outcome",
-      "target": "docs_dual_model_measurements_and_retained_tuning",
+      "target": "docs_dual_model_final_comparison_and_release_disposition",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/dual-model.md",
-      "source_location": "L150",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_dual_model_dual_model_ci_outcome",
-      "target": "docs_dual_model_next_acceptance_run",
+      "target": "docs_dual_model_measurements_and_retained_tuning",
       "confidence_score": 1.0
     },
     {
@@ -12028,7 +12028,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/dual-model.md",
-      "source_location": "L113",
+      "source_location": "L120",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_dual_model_dual_model_ci_outcome",
@@ -12868,5 +12868,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "84d63834ff67fca2648c13845e715ade42d71d6e"
+  "built_at_commit": "420c63c88aa6c9c368743c1d6c822ef6c925f4a7"
 }

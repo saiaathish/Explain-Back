@@ -1,7 +1,7 @@
 # Graph Report - Explain-Back  (2026-07-27)
 
 ## Corpus Check
-- 53 files · ~30,794 words
+- 53 files · ~29,903 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `84d63834`
+- Built from commit: `420c63c8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -159,7 +159,7 @@ Nodes (3): _js_slice(), main(), _read()
 
 ### Community 32 - "Dual-model CI outcome"
 Cohesion: 0.17
-Nodes (11): Architecture, Current evidence, Decision, Dual-model CI outcome, Measurements and retained tuning, Next acceptance run, Passing evidence, Production status (+3 more)
+Nodes (11): Architecture, Current evidence, Decision, Dual-model CI outcome, Final comparison and release disposition, Measurements and retained tuning, Passing evidence, Production status (+3 more)
 
 ### Community 33 - "Gemma baseline"
 Cohesion: 0.22
