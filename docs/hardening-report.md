@@ -14,9 +14,11 @@ Production remained live throughout the run:
 - Backend: `https://explain-back.onrender.com`
 - Live production SHA during hardening: `84c86e9`
 
-The branch completed rendered desktop and 390px preview verification in the
-selected in-app browser. Production remained on `84c86e9` while the branch
-awaited final CI and merge.
+Rendered desktop and 390px preview verification was completed at semantic SHA
+`87a78be`. The later `ee03c38` commit changed startup prewarm scheduling,
+release-gate scripts, tests, reports, and generated Graphify artifacts, but not
+the frontend or semantic analysis modules. Production remained on `84c86e9`
+while the branch awaited exact-current-head live gates and merge.
 
 ## Golden progression
 
@@ -144,7 +146,7 @@ concepts for all three demo sources sequentially in a background task, and
 A final normal-environment backend run exposed a native crash when the original
 background task launched three shared-model `SentenceTransformer` encodes
 concurrently during TestClient shutdown. Serializing the source warms removed
-the crash. The full suite then passed 40/40 repeatedly, including without
+the crash. The full suite then passed 42/42 repeatedly, including without
 thread-limiting environment overrides, and the prewarm regression test asserts
 maximum concurrency remains one.
 

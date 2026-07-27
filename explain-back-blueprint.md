@@ -8,7 +8,7 @@
 
 ## 0. One-paragraph statement of the thing
 
-Every AI study tool explains concepts *to* the student. Explain-Back inverts it: the student explains, and the system diagnoses. Paste 2–3 paragraphs of source material, type an explanation in your own words, and get back a four-state color map over your own writing — green (understood and justified), yellow (stated but never justified), red (contradicts the source), grey (system isn't sure). Every non-green flag carries a source anchor (the exact sentence from the source that triggered it) and a concrete revision hint. Ends with one follow-up question targeting only the gaps. Formative only. No scores. No storage.
+Every AI study tool explains concepts *to* the student. Explain-Back inverts it: the student explains, and the system diagnoses. Paste 2–3 paragraphs of source material, type an explanation in your own words, and get back a four-state color map over your own writing — green (source-consistent and supported), yellow (stated but never justified), red (contradicts the source), grey (system isn't sure). Every non-green flag carries a source anchor (the exact sentence from the source that triggered it) and a concrete revision hint. Ends with one follow-up question targeting only the gaps. Formative only. No scores. No storage.
 
 Grounding: self-explanation is an established learning activity. The product's
 specific contribution is source-grounded formative analysis of a learner's
@@ -777,7 +777,7 @@ That is your differentiator sentence. Land it clearly.
 ## 15. Claims you can and cannot defend
 
 **Can:**
-- Self-explanation as an intervention has strong meta-analytic support (g ≈ 0.55)
+- Self-explanation as a learning activity has published research support; that evidence does not validate this product
 - Almost no shipped tool analyzes free-text self-explanations against a user-supplied source
 - LLMs approach human reliability on *clear, short* explanations in constrained domains
 - Misconception detectors produce heavy false-positive rates at realistic prevalence

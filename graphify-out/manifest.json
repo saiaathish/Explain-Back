@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "explain-back-blueprint.md": {
-    "mtime": 1785112862.757169,
-    "ast_hash": "0d792cdb6cae7e95fdf505245092b811",
+    "mtime": 1785115581.890473,
+    "ast_hash": "c9d4d9ef02c29425f4b58cd2544c16b2",
     "semantic_hash": ""
   },
   "backend/__init__.py": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "docs/hardening-report.md": {
-    "mtime": 1785113190.8409498,
-    "ast_hash": "fcd9451cad9a0f4fab45896ad69ee065",
+    "mtime": 1785115622.2935662,
+    "ast_hash": "7b099e507fd80eedd35c9a2d06af710d",
     "semantic_hash": ""
   },
   "docs/overclaim-audit.md": {
