@@ -60,6 +60,14 @@ def test_prewarm_does_not_block_health_endpoint(monkeypatch) -> None:
         assert response.json() == {"status": "ok"}
 
 
+def test_health_endpoint_accepts_head_requests() -> None:
+    with TestClient(main.app) as client:
+        response = client.head("/api/health")
+
+    assert response.status_code == 200
+    assert response.content == b""
+
+
 def test_prewarm_loads_all_demo_sources(monkeypatch) -> None:
     seen: list[str] = []
     active = 0
