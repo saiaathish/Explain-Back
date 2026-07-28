@@ -1,0 +1,21 @@
+Animal cells maintain unequal concentrations of sodium and potassium
+ions across the plasma membrane. The sodium-potassium pump moves three
+sodium ions out of the cell and two potassium ions into the cell during
+each transport cycle. Because three positive charges leave while only
+two enter, each cycle contributes a small net negative charge inside the
+cell.
+
+The pump is an active transporter rather than a channel for passive
+diffusion. Sodium ions are moved against their concentration gradient,
+and potassium ions are also moved against their concentration gradient,
+so the transport cannot proceed without an energy source. ATP binds to
+the pump and transfers a phosphate group to it; phosphorylation changes
+the pump's shape and exposes the sodium-binding sites to the outside of
+the cell.
+
+After sodium is released, potassium binds from outside the cell. The
+phosphate group then leaves the pump, causing it to return to its
+original shape and release potassium into the cytoplasm. Repeating this
+cycle maintains the ion gradients that support the resting membrane
+potential, secondary active transport, and electrical signaling in
+neurons and muscle cells.
