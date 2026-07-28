@@ -61,6 +61,15 @@ def align(
 ) -> dict[str, tuple[str, float]]:
     if not propositions or not concepts:
         return {}
+    # KNOWN DRIFT — do not "clean up" without reading docs/revise-loop.md.
+    # The blueprint specifies `claim_span` alone, and calibrate/pairs.json holds
+    # bare claims, so T_HIGH/T_LOW are calibrated for claim-only vectors. Joining
+    # the justification in dilutes the vector away from the concept, which lowers
+    # similarity and can push a *better* justified claim toward grey.
+    # Switching to claim-only is nonetheless blocked: it drops the golden gate
+    # from 34/37 to 31/37, deterministically (same numbers on two runs). The
+    # golden baseline was recorded against this joined behaviour, so the two are
+    # now entangled and have to be moved together.
     proposition_vectors = embed(
         [
             " ".join([item.claim_span, *item.justification_spans])

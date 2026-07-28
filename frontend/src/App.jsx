@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { analyze } from "./api";
 import ConceptList from "./ConceptList";
+import DiffStrip from "./DiffStrip";
+import { diffRuns } from "./diff";
 import FollowUp from "./FollowUp";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
@@ -39,11 +41,33 @@ function validate(source, explanation) {
 export default function App() {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
-  const [result, setResult] = useState(null);
+  /* A run snapshot is `{ result, explanation }`: flags carry offsets, not claim
+     text, so the diff needs the exact text each run was scored against. */
+  const [current, setCurrent] = useState(null);
+  const [previous, setPrevious] = useState(null);
+  const [revising, setRevising] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState(0);
   const abortRef = useRef(null);
+  const reviseRef = useRef(null);
+
+  const summary = useMemo(() => diffRuns(previous, current), [previous, current]);
+
+  useEffect(() => {
+    if (!revising) return;
+    const field = reviseRef.current;
+    if (!field) return;
+    const reduceMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    field.scrollIntoView({
+      block: "center",
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+    field.focus();
+    field.setSelectionRange(field.value.length, field.value.length);
+  }, [revising]);
 
   async function loadExample() {
     const [demoSource, demoExplanation] = await Promise.all([
@@ -53,7 +77,9 @@ export default function App() {
     setSource(demoSource.trim());
     setExplanation(demoExplanation.trim());
     setError("");
-    setResult(null);
+    setCurrent(null);
+    setPrevious(null);
+    setRevising(false);
   }
 
   useEffect(
@@ -71,7 +97,6 @@ export default function App() {
       return;
     }
     setError("");
-    setResult(null);
     setLoading(true);
     setStage(0);
     const controller = new AbortController();
@@ -85,7 +110,12 @@ export default function App() {
       ANALYSIS_TIMEOUT_MS,
     );
     try {
-      setResult(await analyze(source.trim(), explanation.trim(), controller.signal));
+      const trimmed = explanation.trim();
+      const result = await analyze(source.trim(), trimmed, controller.signal);
+      /* One level of history, and this is all of it. */
+      setPrevious(current);
+      setCurrent({ result, explanation: trimmed });
+      setRevising(false);
     } catch (requestError) {
       setError(
         requestError.name === "AbortError"
@@ -109,7 +139,7 @@ export default function App() {
       </header>
 
       <main>
-        <form className="workspace" onSubmit={submit}>
+        <form className="workspace" id="workspace-form" onSubmit={submit}>
           <label>
             <span>Source material</span>
             <textarea
@@ -120,16 +150,20 @@ export default function App() {
             />
             <small>{source.length} / 6,000 characters</small>
           </label>
-          <label>
-            <span>Your explanation</span>
-            <textarea
-              value={explanation}
-              onChange={(event) => setExplanation(event.target.value)}
-              placeholder="Explain the section in your own words…"
-              maxLength={4001}
-            />
-            <small>{explanation.length} / 4,000 characters</small>
-          </label>
+          {/* While revising, the field moves below the overlay so the student can
+              see the yellow they are fixing. */}
+          {!revising && (
+            <label>
+              <span>Your explanation</span>
+              <textarea
+                value={explanation}
+                onChange={(event) => setExplanation(event.target.value)}
+                placeholder="Explain the section in your own words…"
+                maxLength={4001}
+              />
+              <small>{explanation.length} / 4,000 characters</small>
+            </label>
+          )}
           <button className="secondary" disabled={loading} onClick={loadExample} type="button">
             Load example
           </button>
@@ -158,23 +192,58 @@ export default function App() {
           </p>
         )}
 
-        {result && (
+        {current && (
           <section className="results" aria-label="Formative analysis">
             <section className="result-region">
               <h2>What this section teaches</h2>
-              <ConceptList concepts={result.concepts} coverage={result.coverage} />
+              <ConceptList
+                concepts={current.result.concepts}
+                coverage={current.result.coverage}
+              />
             </section>
             <section className="result-region result-region--overlay">
               <h2>Where you are now</h2>
               <p className="region-intro">
                 Hover or focus an underline for source-anchored guidance.
               </p>
-              <Overlay explanation={explanation.trim()} flags={result.flags} />
+              <DiffStrip summary={summary} />
+              <Overlay
+                explanation={current.explanation}
+                flags={current.result.flags}
+                improvedIds={summary?.improved}
+              />
               <Legend />
+              {revising && (
+                <div className="revise-panel">
+                  <label>
+                    <span>Revise your explanation</span>
+                    <textarea
+                      ref={reviseRef}
+                      value={explanation}
+                      onChange={(event) => setExplanation(event.target.value)}
+                      maxLength={4001}
+                    />
+                    <small>{explanation.length} / 4,000 characters</small>
+                  </label>
+                  <button className="primary" disabled={loading} type="submit" form="workspace-form">
+                    {loading ? STAGES[stage] : "Check my revision"}
+                  </button>
+                </div>
+              )}
             </section>
             <section className="result-region">
               <h2>How to move forward</h2>
-              <FollowUp question={result.follow_up} />
+              <FollowUp question={current.result.follow_up} />
+              {!revising && (
+                <button
+                  className="secondary revise-button"
+                  disabled={loading}
+                  onClick={() => setRevising(true)}
+                  type="button"
+                >
+                  Revise your explanation
+                </button>
+              )}
             </section>
           </section>
         )}

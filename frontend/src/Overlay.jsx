@@ -1,16 +1,5 @@
 import { useMemo, useState } from "react";
-
-function codePointOffsetToCodeUnit(text, offset) {
-  if (!Number.isInteger(offset) || offset < 0) return null;
-  let codePointOffset = 0;
-  let codeUnitOffset = 0;
-  for (const character of text) {
-    if (codePointOffset === offset) return codeUnitOffset;
-    codePointOffset += 1;
-    codeUnitOffset += character.length;
-  }
-  return codePointOffset === offset ? codeUnitOffset : null;
-}
+import { codePointOffsetToCodeUnit } from "./offsets";
 
 function cleanFlags(flags, text) {
   const sorted = [...flags]
@@ -60,7 +49,16 @@ function FeedbackCard({ flag }) {
   );
 }
 
-export default function Overlay({ explanation, flags }) {
+/* Where an improved claim is animated from. The settle animation ends on the new
+   state's tint and then clears, so nothing persists past the flash. */
+const TINTS = {
+  green: "#d8f3dc",
+  yellow: "#fff3bf",
+  red: "#ffe3e3",
+  grey: "#eceef1",
+};
+
+export default function Overlay({ explanation, flags, improvedIds }) {
   const [active, setActive] = useState(null);
   const segments = useMemo(() => {
     const clean = cleanFlags(flags, explanation);
@@ -91,11 +89,22 @@ export default function Overlay({ explanation, flags }) {
 
   return (
     <p className="overlay" aria-label="Your explanation with diagnostic highlights">
-      {segments.map((segment) =>
-        segment.flag ? (
+      {segments.map((segment) => {
+        const improvedFrom = segment.flag && improvedIds?.get?.(segment.flag.prop_id);
+        return segment.flag ? (
           <span
-            className={`diagnostic diagnostic--${segment.flag.state}`}
+            className={`diagnostic diagnostic--${segment.flag.state}${
+              improvedFrom ? " hl-improved" : ""
+            }`}
             key={segment.key}
+            style={
+              improvedFrom
+                ? {
+                    "--hl-from": TINTS[improvedFrom],
+                    "--hl-to": TINTS[segment.flag.state],
+                  }
+                : undefined
+            }
             tabIndex={segment.flag.state === "green" ? -1 : 0}
             onMouseEnter={() => setActive(segment.key)}
             onMouseLeave={() => setActive(null)}
@@ -113,8 +122,8 @@ export default function Overlay({ explanation, flags }) {
           </span>
         ) : (
           <span key={segment.key}>{segment.text}</span>
-        ),
-      )}
+        );
+      })}
     </p>
   );
 }

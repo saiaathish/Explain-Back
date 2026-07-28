@@ -327,6 +327,112 @@ main {
   text-decoration-style: dashed;
 }
 
+/* The flash runs once on mount: it starts on the colour the claim used to be,
+   passes through its new colour, then clears so improved claims settle into the
+   same appearance as every other claim. Regressions are never animated. */
+@keyframes settle {
+  0% {
+    background-color: var(--hl-from, transparent);
+  }
+  55% {
+    background-color: var(--hl-to, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.hl-improved {
+  animation: settle 600ms ease-out;
+  border-radius: 2px;
+}
+
+.diff-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 7px;
+  margin: 0 0 16px;
+  padding: 9px 12px;
+  border-left: 3px solid var(--blue);
+  background: #f3f7fe;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.diff-sep {
+  color: var(--muted);
+}
+
+.diff-strip .label-short {
+  display: none;
+}
+
+.revise-panel {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.revise-panel label {
+  display: grid;
+  gap: 9px;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.revise-panel textarea {
+  width: 100%;
+  min-height: 190px;
+  resize: vertical;
+  border: 1px solid #adb6c3;
+  border-radius: 3px;
+  padding: 16px;
+  color: var(--ink);
+  background: #fff;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.72;
+}
+
+.revise-panel textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgb(19 79 214 / 12%);
+}
+
+.revise-panel small {
+  justify-self: end;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.revise-panel .primary {
+  grid-column: auto;
+  justify-self: start;
+}
+
+.revise-button {
+  margin-top: 16px;
+  border: 1px solid var(--blue);
+  border-radius: 3px;
+  padding: 9px 16px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.revise-button:hover:not(:disabled) {
+  background: #f0f5ff;
+}
+
 .feedback-card {
   position: absolute;
   z-index: 10;
@@ -468,6 +574,22 @@ footer {
     gap: 9px;
   }
 
+  /* Two wrapped lines are fine here; the strip must not push the overlay off
+     the first screen at 390px. */
+  .diff-strip {
+    margin-bottom: 12px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .diff-strip .label-full {
+    display: none;
+  }
+
+  .diff-strip .label-short {
+    display: inline;
+  }
+
   .stages li::after {
     display: none;
   }
@@ -490,5 +612,10 @@ footer {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+
+  /* Skip the flash entirely and render the settled state directly. */
+  .hl-improved {
+    animation: none !important;
   }
 }
