@@ -99,6 +99,10 @@ export default function Overlay({ explanation, flags }) {
             tabIndex={segment.flag.state === "green" ? -1 : 0}
             onMouseEnter={() => setActive(segment.key)}
             onMouseLeave={() => setActive(null)}
+            /* Touch devices have no hover; a tap must open and close the card. */
+            onClick={() =>
+              setActive((current) => (current === segment.key ? null : segment.key))
+            }
             onFocus={() => setActive(segment.key)}
             onBlur={() => setActive(null)}
           >
