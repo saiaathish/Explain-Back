@@ -23,6 +23,16 @@ export async function analyze(source, explanation, signal) {
     if (response.status === 504) {
       throw new Error("The analysis service took too long to respond. Try again with the same text.");
     }
+    if (response.status === 502) {
+      throw new Error("The analysis came back incomplete and was discarded rather than shown. Submit the same text again.");
+    }
+    if (response.status === 422) {
+      throw new Error(
+        /concept/i.test(payload.detail || "")
+          ? "No teachable concepts could be pulled out of this source. Paste 2–3 paragraphs of explanatory prose rather than notes or headings, then try again."
+          : "The explanation could not be split into checkable claims. Rewrite it as full sentences, one idea each, then try again.",
+      );
+    }
     throw new Error(payload.detail || "Analysis could not be completed. Check the text and try again.");
   }
   return payload;
