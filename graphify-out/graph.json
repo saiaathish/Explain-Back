@@ -252,8 +252,8 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "backend_extract_extract_concepts",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "extract_concepts()"
     },
     {
@@ -263,8 +263,8 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "backend_extract_extract_propositions",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "extract_propositions()"
     },
     {
@@ -296,8 +296,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_llm",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "llm.py"
     },
     {
@@ -307,8 +307,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "backend_llm_generationconfig",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "generationconfig"
     },
     {
@@ -318,8 +318,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "backend_llm_providerconfig",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "providerconfig"
     },
     {
@@ -329,8 +329,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "backend_llm_generationdefaults",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_generationdefaults"
     },
     {
@@ -340,8 +340,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "backend_llm_llmconfigurationerror",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "llmconfigurationerror"
     },
     {
@@ -373,8 +373,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "backend_llm_llmtimeouterror",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "llmtimeouterror"
     },
     {
@@ -384,8 +384,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "backend_llm_normalize_call",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_normalize_call()"
     },
     {
@@ -395,8 +395,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "backend_llm_generation_config",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_generation_config()"
     },
     {
@@ -439,8 +439,8 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "backend_llm_configuration",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_configuration()"
     },
     {
@@ -450,8 +450,8 @@
       "source_location": "L238",
       "_origin": "ast",
       "id": "backend_llm_request_payload",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_request_payload()"
     },
     {
@@ -461,8 +461,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_llm_py_any",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "any"
     },
     {
@@ -472,8 +472,8 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "backend_llm_client_call",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_client_call()"
     },
     {
@@ -483,8 +483,8 @@
       "source_location": "L332",
       "_origin": "ast",
       "id": "backend_llm_parse_json",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "parse_json()"
     },
     {
@@ -494,8 +494,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "backend_llm_call_json",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "call_json()"
     },
     {
@@ -505,8 +505,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_llm_rationale_1",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "sole backend network boundary to the configured model provider."
     },
     {
@@ -527,30 +527,41 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_main",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "main.py"
     },
     {
       "label": "_cache_key()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L56",
+      "source_location": "L59",
       "_origin": "ast",
       "id": "backend_main_cache_key",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "_cache_key()"
+    },
+    {
+      "label": "_result_cache_key()",
+      "file_type": "code",
+      "source_file": "backend/main.py",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "backend_main_result_cache_key",
+      "community": 13,
+      "community_name": "llm.py",
+      "norm_label": "_result_cache_key()"
     },
     {
       "label": "_prewarm_source()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L60",
+      "source_location": "L67",
       "_origin": "ast",
       "id": "backend_main_prewarm_source",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "_prewarm_source()"
     },
     {
@@ -560,30 +571,30 @@
       "source_location": "",
       "_origin": "ast",
       "id": "path",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "path"
     },
     {
       "label": "_prewarm()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L72",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "backend_main_prewarm",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_prewarm()"
     },
     {
       "label": "lifespan()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L82",
+      "source_location": "L95",
       "_origin": "ast",
       "id": "backend_main_lifespan",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "lifespan()"
     },
     {
@@ -593,19 +604,19 @@
       "source_location": "",
       "_origin": "ast",
       "id": "fastapi",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "fastapi"
     },
     {
       "label": "rate_limit_analyze()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L99",
+      "source_location": "L112",
       "_origin": "ast",
       "id": "backend_main_rate_limit_analyze",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "rate_limit_analyze()"
     },
     {
@@ -615,15 +626,15 @@
       "source_location": "",
       "_origin": "ast",
       "id": "request",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "request"
     },
     {
       "label": "_validate_lengths()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L154",
+      "source_location": "L167",
       "_origin": "ast",
       "id": "backend_main_validate_lengths",
       "community": 3,
@@ -634,7 +645,7 @@
       "label": "compute_coverage()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L167",
+      "source_location": "L180",
       "_origin": "ast",
       "id": "backend_main_compute_coverage",
       "community": 3,
@@ -645,18 +656,18 @@
       "label": "health()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L187",
+      "source_location": "L200",
       "_origin": "ast",
       "id": "backend_main_health",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "health()"
     },
     {
       "label": "analyze()",
       "file_type": "code",
       "source_file": "backend/main.py",
-      "source_location": "L192",
+      "source_location": "L205",
       "_origin": "ast",
       "id": "backend_main_analyze",
       "community": 13,
@@ -670,8 +681,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_misconceptions",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "misconceptions.py"
     },
     {
@@ -681,8 +692,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "backend_misconceptions_match",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "match()"
     },
     {
@@ -692,8 +703,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_prompts",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "prompts.py"
     },
     {
@@ -703,8 +714,8 @@
       "source_location": "L443",
       "_origin": "ast",
       "id": "backend_prompts_render",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "_render()"
     },
     {
@@ -714,8 +725,8 @@
       "source_location": "L456",
       "_origin": "ast",
       "id": "backend_prompts_items_text",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "_items_text()"
     },
     {
@@ -725,8 +736,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_prompts_py_any",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "any"
     },
     {
@@ -736,8 +747,8 @@
       "source_location": "L475",
       "_origin": "ast",
       "id": "backend_prompts_call_a_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "call_a_prompt()"
     },
     {
@@ -747,8 +758,8 @@
       "source_location": "L480",
       "_origin": "ast",
       "id": "backend_prompts_call_b_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "call_b_prompt()"
     },
     {
@@ -758,8 +769,8 @@
       "source_location": "L485",
       "_origin": "ast",
       "id": "backend_prompts_call_c_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "call_c_prompt()"
     },
     {
@@ -769,8 +780,8 @@
       "source_location": "L492",
       "_origin": "ast",
       "id": "backend_prompts_concept_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "concept_prompt()"
     },
     {
@@ -780,8 +791,8 @@
       "source_location": "L496",
       "_origin": "ast",
       "id": "backend_prompts_proposition_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "proposition_prompt()"
     },
     {
@@ -791,8 +802,8 @@
       "source_location": "L500",
       "_origin": "ast",
       "id": "backend_prompts_verification_prompt",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "verification_prompt()"
     },
     {
@@ -802,8 +813,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_prompts_rationale_1",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "llm prompt templates for explain-back.  the templates state the intended respons"
     },
     {
@@ -813,8 +824,8 @@
       "source_location": "L444",
       "_origin": "ast",
       "id": "backend_prompts_rationale_444",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "substitute template fields without re-interpreting inserted text."
     },
     {
@@ -824,8 +835,8 @@
       "source_location": "L476",
       "_origin": "ast",
       "id": "backend_prompts_rationale_476",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "build call a without interpreting or transforming source text."
     },
     {
@@ -835,8 +846,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "backend_prompts_rationale_481",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "build hardened call b without interpreting or transforming input text."
     },
     {
@@ -846,8 +857,8 @@
       "source_location": "L486",
       "_origin": "ast",
       "id": "backend_prompts_rationale_486",
-      "community": 25,
-      "community_name": "extract.py",
+      "community": 34,
+      "community_name": "prompts.py",
       "norm_label": "build batched call c without changing its verdict schema."
     },
     {
@@ -945,8 +956,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "backend_schemas_flag",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "flag"
     },
     {
@@ -1759,8 +1770,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_diagnose_misses",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "diagnose_misses.py"
     },
     {
@@ -1770,8 +1781,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "tests_diagnose_misses_overlap",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "overlap()"
     },
     {
@@ -1781,8 +1792,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_diagnose_misses_best_flag",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "best_flag()"
     },
     {
@@ -1792,8 +1803,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "tests_diagnose_misses_best_proposition",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "best_proposition()"
     },
     {
@@ -1803,8 +1814,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "tests_diagnose_misses_raw_propositions",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "raw_propositions()"
     },
     {
@@ -1814,8 +1825,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_diagnose_misses_py_any",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "any"
     },
     {
@@ -1825,8 +1836,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "tests_diagnose_misses_raw_match",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "raw_match()"
     },
     {
@@ -1836,8 +1847,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "tests_diagnose_misses_summarize",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "summarize()"
     },
     {
@@ -1847,8 +1858,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "tests_diagnose_misses_run",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "run()"
     },
     {
@@ -1858,8 +1869,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_diagnose_misses_py_namespace",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "namespace"
     },
     {
@@ -1869,8 +1880,8 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "tests_diagnose_misses_parse_args",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "parse_args()"
     },
     {
@@ -1880,8 +1891,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_diagnose_misses_rationale_1",
-      "community": 13,
-      "community_name": "llm.py",
+      "community": 35,
+      "community_name": "diagnose_misses.py",
       "norm_label": "repeat the five known golden misses and capture call b diagnostics.  this is an"
     },
     {
@@ -1957,8 +1968,8 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "tests_model_compare_model_header",
-      "community": 24,
-      "community_name": "embed",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_model_header()"
     },
     {
@@ -1968,8 +1979,8 @@
       "source_location": "L204",
       "_origin": "ast",
       "id": "tests_model_compare_worker",
-      "community": 24,
-      "community_name": "embed",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "_worker()"
     },
     {
@@ -2078,8 +2089,8 @@
       "source_location": "L782",
       "_origin": "ast",
       "id": "tests_model_compare_main",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "main()"
     },
     {
@@ -2331,8 +2342,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_golden_fixture",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "test_golden_fixture.py"
     },
     {
@@ -2342,8 +2353,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tests_test_golden_fixture_test_golden_spans_are_verbatim_and_all_states_are_represented",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 3,
+      "community_name": "main.py",
       "norm_label": "test_golden_spans_are_verbatim_and_all_states_are_represented()"
     },
     {
@@ -2551,8 +2562,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "tests_test_llm_test_prod_request_payload_is_legacy_byte_shape",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "test_prod_request_payload_is_legacy_byte_shape()"
     },
     {
@@ -2562,8 +2573,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "tests_test_llm_test_ci_request_payload_uses_call_specific_json_schema",
-      "community": 15,
-      "community_name": "extract.py",
+      "community": 13,
+      "community_name": "llm.py",
       "norm_label": "test_ci_request_payload_uses_call_specific_json_schema()"
     },
     {
@@ -2617,8 +2628,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_test_main_test_prewarm_does_not_block_health_endpoint",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "test_prewarm_does_not_block_health_endpoint()"
     },
     {
@@ -2628,8 +2639,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "tests_test_main_test_prewarm_loads_all_demo_sources",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "test_prewarm_loads_all_demo_sources()"
     },
     {
@@ -2639,8 +2650,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "tests_test_main_test_rate_limit_returns_clean_429",
-      "community": 3,
-      "community_name": "main.py",
+      "community": 24,
+      "community_name": "embed",
       "norm_label": "test_rate_limit_returns_clean_429()"
     },
     {
@@ -3423,6 +3434,61 @@
       "community": 32,
       "community_name": "Dual-model CI outcome",
       "norm_label": "product-owner release authorization \u2014 2026-07-27"
+    },
+    {
+      "label": "fix-run.md",
+      "file_type": "document",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_fix_run",
+      "community": 36,
+      "community_name": "Pre-submission fix run",
+      "norm_label": "fix-run.md"
+    },
+    {
+      "label": "Pre-submission fix run",
+      "file_type": "document",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_fix_run_pre_submission_fix_run",
+      "community": 36,
+      "community_name": "Pre-submission fix run",
+      "norm_label": "pre-submission fix run"
+    },
+    {
+      "label": "Batch outcomes",
+      "file_type": "document",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_fix_run_batch_outcomes",
+      "community": 36,
+      "community_name": "Pre-submission fix run",
+      "norm_label": "batch outcomes"
+    },
+    {
+      "label": "Regression evidence",
+      "file_type": "document",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "docs_fix_run_regression_evidence",
+      "community": 36,
+      "community_name": "Pre-submission fix run",
+      "norm_label": "regression evidence"
+    },
+    {
+      "label": "Remaining work",
+      "file_type": "document",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "docs_fix_run_remaining_work",
+      "community": 36,
+      "community_name": "Pre-submission fix run",
+      "norm_label": "remaining work"
     },
     {
       "label": "gemma-baseline.md",
@@ -4761,7 +4827,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/main.py",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm_source",
@@ -4809,7 +4875,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L219",
+      "source_location": "L240",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -5576,7 +5642,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L203",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -5587,7 +5653,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L63",
+      "source_location": "L70",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm_source",
@@ -5672,7 +5738,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L212",
+      "source_location": "L223",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -6275,7 +6341,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/verify.py",
-      "source_location": "L100",
+      "source_location": "L91",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_verify_verify",
@@ -6754,7 +6820,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L73",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm",
@@ -7090,7 +7156,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/verify.py",
-      "source_location": "L92",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_verify_verify",
@@ -7137,7 +7203,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L192",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7148,7 +7214,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L56",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7159,7 +7225,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L167",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7170,7 +7236,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L187",
+      "source_location": "L200",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7181,7 +7247,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L82",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7192,7 +7258,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L72",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7203,7 +7269,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L60",
+      "source_location": "L67",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7214,7 +7280,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L99",
+      "source_location": "L112",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7225,7 +7291,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L154",
+      "source_location": "L63",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_main",
+      "target": "backend_main_result_cache_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/main.py",
+      "source_location": "L167",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main",
@@ -7465,7 +7542,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L198",
+      "source_location": "L215",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7477,7 +7554,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L68",
+      "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm_source",
@@ -7501,7 +7578,19 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L78",
+      "source_location": "L210",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_main_analyze",
+      "target": "backend_main_result_cache_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/main.py",
+      "source_location": "L85",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm",
@@ -7513,7 +7602,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L60",
+      "source_location": "L67",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm_source",
@@ -7525,7 +7614,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L76",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_prewarm",
@@ -7573,11 +7662,35 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L84",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_lifespan",
       "target": "backend_main_prewarm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/main.py",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_main_prewarm",
+      "target": "backend_main_analyze",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/main.py",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_main_prewarm",
+      "target": "backend_schemas_analyzerequest",
       "confidence_score": 1.0
     },
     {
@@ -7597,7 +7710,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L82",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_lifespan",
@@ -7621,7 +7734,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L99",
+      "source_location": "L112",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_rate_limit_analyze",
@@ -7633,7 +7746,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L196",
+      "source_location": "L209",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7669,7 +7782,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L281",
+      "source_location": "L302",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7681,7 +7794,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L167",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_compute_coverage",
@@ -7693,7 +7806,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L167",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_compute_coverage",
@@ -7705,7 +7818,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L167",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_compute_coverage",
@@ -7742,7 +7855,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L260",
+      "source_location": "L281",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7754,7 +7867,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L257",
+      "source_location": "L278",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7765,7 +7878,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L192",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7777,7 +7890,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L192",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7789,7 +7902,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/main.py",
-      "source_location": "L264",
+      "source_location": "L285",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -7802,7 +7915,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/main.py",
-      "source_location": "L222",
+      "source_location": "L243",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_main_analyze",
@@ -9531,7 +9644,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/verify.py",
-      "source_location": "L91",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_verify_verify",
@@ -12524,6 +12637,50 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_fix_run",
+      "target": "docs_fix_run_pre_submission_fix_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_fix_run_pre_submission_fix_run",
+      "target": "docs_fix_run_batch_outcomes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_fix_run_pre_submission_fix_run",
+      "target": "docs_fix_run_regression_evidence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/fix-run.md",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_fix_run_pre_submission_fix_run",
+      "target": "docs_fix_run_remaining_work",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/gemma-baseline.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -13332,5 +13489,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6321ff4b09c6185911d408a8c33f97d8b0172eaa"
+  "built_at_commit": "f51c69bed8b5c3ff7f655ed1685b0e2ceb010db0"
 }

@@ -180,7 +180,7 @@ async def test_successful_response_logs_configured_and_provider_model(
 
     class Client:
         def __init__(self, timeout: float) -> None:
-            assert timeout == 20.0
+                assert timeout == 10.0
 
         async def __aenter__(self):
             return self

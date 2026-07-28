@@ -19,19 +19,19 @@ function Footer() {
 
 function validate(source, explanation) {
   if (!source.trim() || !explanation.trim()) {
-    return "Paste both source material and your explanation.";
+    return "Source or explanation is missing. Paste both texts, then try again.";
   }
   if (source.trim().length < 100) {
-    return "Source too short. Paste 2–3 paragraphs.";
+    return "Source is too short to identify concepts. Paste 2–3 paragraphs, then try again.";
   }
   if (explanation.trim().length < 40) {
-    return "Explanation too short. Write at least two full sentences.";
+    return "Explanation is too short to check. Write at least two full sentences, then try again.";
   }
   if (source.length > 6000) {
-    return "Source too long. Keep it to 2–3 paragraphs.";
+    return "Source exceeds the 6,000-character limit. Shorten it to 2–3 paragraphs, then try again.";
   }
   if (explanation.length > 4000) {
-    return "Explanation too long. Keep it to a few paragraphs.";
+    return "Explanation exceeds the 4,000-character limit. Shorten it to a few paragraphs, then try again.";
   }
   return "";
 }
@@ -44,6 +44,17 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState(0);
   const abortRef = useRef(null);
+
+  async function loadExample() {
+    const [demoSource, demoExplanation] = await Promise.all([
+      fetch("/samples/source_sodium_pump.txt").then((response) => response.text()),
+      fetch("/samples/demo_video.txt").then((response) => response.text()),
+    ]);
+    setSource(demoSource.trim());
+    setExplanation(demoExplanation.trim());
+    setError("");
+    setResult(null);
+  }
 
   useEffect(
     () => () => {
@@ -78,8 +89,10 @@ export default function App() {
     } catch (requestError) {
       setError(
         requestError.name === "AbortError"
-          ? "The model timed out. Please try again."
-          : requestError.message,
+          ? "The analysis request timed out. Try again with the same text."
+          : requestError instanceof TypeError
+            ? "The analysis service could not be reached. Check your connection, then try again."
+            : requestError.message,
       );
     } finally {
       window.clearInterval(stageTimer);
@@ -117,6 +130,9 @@ export default function App() {
             />
             <small>{explanation.length} / 4,000 characters</small>
           </label>
+          <button className="secondary" disabled={loading} onClick={loadExample} type="button">
+            Load example
+          </button>
           <button className="primary" disabled={loading} type="submit">
             {loading ? STAGES[stage] : "Check my explanation"}
           </button>

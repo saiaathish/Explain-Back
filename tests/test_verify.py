@@ -68,7 +68,7 @@ async def test_verify_rejects_missing_verdict(monkeypatch) -> None:
             [concept],
             {"P1": ("K1", 0.9), "P2": ("K1", 0.9)},
         )
-    assert calls == 3
+    assert calls == 1
 
 
 @pytest.mark.asyncio

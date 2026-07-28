@@ -85,18 +85,9 @@ async def verify(
         )
 
     prompt = verification_prompt(source, items)
-    last_error: LLMResponseError | None = None
-    for attempt in range(3):
-        try:
-            return _validate_response(
-                await call_json(prompt, call="c"),
-                propositions,
-            )
-        except LLMResponseError as exc:
-            last_error = exc
-            if attempt == 2:
-                break
-            await asyncio.sleep(0.4 * (2**attempt))
-    raise LLMResponseError(
-        "The model returned invalid verification data after 3 attempts."
-    ) from last_error
+    try:
+        return _validate_response(await call_json(prompt, call="c"), propositions)
+    except LLMResponseError as exc:
+        raise LLMResponseError(
+            "The model returned invalid verification data after 3 attempts."
+        ) from exc

@@ -1,16 +1,16 @@
 # Graph Report - Explain-Back  (2026-07-27)
 
 ## Corpus Check
-- 53 files · ~30,899 words
+- 54 files · ~31,619 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 404 nodes · 773 edges · 34 communities (25 shown, 9 thin omitted)
+- 410 nodes · 781 edges · 37 communities (28 shown, 9 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6321ff4b`
+- Built from commit: `f51c69be`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -46,35 +46,38 @@
 - run_adversarial.py
 - Dual-model CI outcome
 - Gemma baseline
+- prompts.py
+- diagnose_misses.py
+- Pre-submission fix run
 
 ## God Nodes (most connected - your core abstractions)
 1. `Proposition` - 27 edges
-2. `Concept` - 22 edges
-3. `analyze()` - 21 edges
+2. `analyze()` - 23 edges
+3. `Concept` - 22 edges
 4. `active_model()` - 20 edges
 5. `is_configured()` - 16 edges
 6. `run()` - 16 edges
 7. `locate_spans()` - 15 edges
 8. `Flag` - 15 edges
-9. `active_role()` - 14 edges
-10. `resolve()` - 14 edges
+9. `AnalyzeRequest` - 15 edges
+10. `active_role()` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_parse_json_salvages_wrapped_object()` --calls--> `parse_json()`  [EXTRACTED]
-  tests/test_llm.py → backend/llm.py
-- `test_parse_json_strips_fence()` --calls--> `parse_json()`  [EXTRACTED]
-  tests/test_llm.py → backend/llm.py
-- `test_call_json_fails_loudly_after_retries()` --calls--> `call_json()`  [EXTRACTED]
-  tests/test_llm.py → backend/llm.py
 - `test_alignment_embeds_student_justification_with_claim()` --indirect_call--> `align()`  [INFERRED]
   tests/test_align.py → backend/align.py
 - `test_concept_vectors_are_cached_by_digest()` --indirect_call--> `align()`  [INFERRED]
   tests/test_align.py → backend/align.py
+- `test_find_normalized_missing_returns_minus_one()` --calls--> `find_normalized()`  [EXTRACTED]
+  tests/test_extract.py → backend/extract.py
+- `test_find_normalized_respects_cursor()` --calls--> `find_normalized()`  [EXTRACTED]
+  tests/test_extract.py → backend/extract.py
+- `run()` --calls--> `locate_spans()`  [EXTRACTED]
+  tests/diagnose_misses.py → backend/extract.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (34 total, 9 thin omitted)
+## Communities (37 total, 9 thin omitted)
 
 ### Community 0 - "11. Five-day schedule"
 Cohesion: 0.12
@@ -89,8 +92,8 @@ Cohesion: 0.40
 Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo layout, 3. Data model, Explain-Back — Complete Build Blueprint
 
 ### Community 3 - "main.py"
-Cohesion: 0.14
-Nodes (24): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), compute_coverage(), _validate_lengths(), AnalyzeResponse (+16 more)
+Cohesion: 0.11
+Nodes (30): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), _cache_key(), compute_coverage(), lifespan() (+22 more)
 
 ### Community 4 - "package.json"
 Cohesion: 0.09
@@ -101,16 +104,16 @@ Cohesion: 0.13
 Nodes (12): analyze(), API_BASE, App(), STAGES, ConceptList(), groupById(), FollowUp(), ITEMS (+4 more)
 
 ### Community 13 - "llm.py"
-Cohesion: 0.11
-Nodes (38): extract_concepts(), active_model(), active_role(), is_configured(), Return the model selected by the centralized role/call registry., analyze(), AnalyzeRequest, Flag (+30 more)
+Cohesion: 0.10
+Nodes (46): extract_propositions(), active_model(), active_role(), call_json(), _client_call(), _configuration(), _generation_config(), GenerationConfig (+38 more)
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.10
 Nodes (19): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Final gate hardening, Five original misses, Golden progression, Phase A — diagnosis (+11 more)
 
 ### Community 15 - "extract.py"
-Cohesion: 0.09
-Nodes (39): call_json(), _client_call(), _configuration(), _generation_config(), GenerationConfig, _GenerationDefaults, LLMConfigurationError, LLMResponseError (+31 more)
+Cohesion: 0.27
+Nodes (13): LLMResponseError, _cap_hint(), _follow_up(), Any, _validate_response(), verify(), RuntimeError, proposition() (+5 more)
 
 ### Community 16 - "test_resolve.py"
 Cohesion: 0.41
@@ -129,12 +132,12 @@ Cohesion: 0.14
 Nodes (13): `01_fluent_unjustified.txt`, `02_reversed_stoich.txt`, `06_correct.txt`, `09_mixed_partial.txt`, `10_mixed_justification.txt`, Baseline and method, Class 1: propositions that receive no matching diagnostic, Class 2: valid justification is never selected (+5 more)
 
 ### Community 24 - "embed"
-Cohesion: 0.23
-Nodes (17): _agreement(), best_flag(), characterize(), _determinism(), _model_header(), overlap(), parse_args(), Any (+9 more)
+Cohesion: 0.19
+Nodes (19): _agreement(), best_flag(), characterize(), _determinism(), main(), overlap(), parse_args(), Any (+11 more)
 
 ### Community 25 - "extract.py"
-Cohesion: 0.10
-Nodes (37): _certainty(), _dedupe_overlaps(), extract_propositions(), find_normalized(), _flatten(), locate_concept_anchors(), locate_spans(), _norm() (+29 more)
+Cohesion: 0.17
+Nodes (22): _certainty(), _dedupe_overlaps(), find_normalized(), _flatten(), locate_concept_anchors(), locate_spans(), _norm(), Any (+14 more)
 
 ### Community 26 - "Overclaim and silent-failure audit"
 Cohesion: 0.20
@@ -164,25 +167,37 @@ Nodes (12): Architecture, Current evidence, Decision, Dual-model CI outcome, Fin
 Cohesion: 0.22
 Nodes (8): Baseline conclusion, Final paced release characterization, Gemma baseline, Isolation status, Proposition counts, Scope, Structured output, Untuned results
 
+### Community 34 - "prompts.py"
+Cohesion: 0.22
+Nodes (14): call_a_prompt(), call_b_prompt(), call_c_prompt(), concept_prompt(), _items_text(), proposition_prompt(), Any, LLM prompt templates for Explain-Back.  The templates state the intended respons (+6 more)
+
+### Community 35 - "diagnose_misses.py"
+Cohesion: 0.31
+Nodes (12): extract_concepts(), best_flag(), best_proposition(), overlap(), parse_args(), Any, Namespace, Repeat the five known golden misses and capture Call B diagnostics.  This is an (+4 more)
+
+### Community 36 - "Pre-submission fix run"
+Cohesion: 0.40
+Nodes (4): Batch outcomes, Pre-submission fix run, Regression evidence, Remaining work
+
 ## Knowledge Gaps
-- **124 isolated node(s):** `_GenerationDefaults`, `name`, `private`, `version`, `type` (+119 more)
+- **127 isolated node(s):** `_GenerationDefaults`, `name`, `private`, `version`, `type` (+122 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Proposition` connect `main.py` to `llm.py`, `extract.py`, `test_resolve.py`, `embed`, `extract.py`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `active_model()` connect `llm.py` to `embed`, `extract.py`?**
+- **Why does `Proposition` connect `main.py` to `diagnose_misses.py`, `llm.py`, `extract.py`, `test_resolve.py`, `embed`, `extract.py`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+- **Why does `active_model()` connect `llm.py` to `diagnose_misses.py`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `resolve()` connect `test_resolve.py` to `main.py`, `llm.py`, `extract.py`?**
+- **Why does `resolve()` connect `test_resolve.py` to `main.py`, `llm.py`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **What connects `_GenerationDefaults`, `name`, `private` to the rest of the system?**
-  _124 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _127 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Should `main.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.13911290322580644 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11265969802555169 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._

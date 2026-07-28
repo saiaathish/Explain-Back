@@ -281,7 +281,7 @@ def _request_payload(prompt: str, config: GenerationConfig) -> dict[str, Any]:
 
 async def _client_call(
     prompt: str,
-    timeout: float = 20.0,
+    timeout: float = 10.0,
     call: str = "generic",
 ) -> str:
     config = _configuration(call)
@@ -355,7 +355,7 @@ def parse_json(raw: str) -> Any:
 async def call_json(
     prompt: str,
     retries: int = 2,
-    timeout: float = 20.0,
+    timeout: float = 10.0,
     call: str = "generic",
 ) -> Any:
     last_error: Exception | None = None

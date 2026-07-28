@@ -41,6 +41,7 @@ from backend.verify import verify
 
 logger = logging.getLogger(__name__)
 _concept_cache: dict[str, list[Concept]] = {}
+_result_cache: dict[str, AnalyzeResponse] = {}
 _prewarm_task: asyncio.Task[None] | None = None
 _rate_limit_events: dict[str, deque[float]] = {}
 _rate_limit_last_cleanup = 0.0
@@ -51,10 +52,16 @@ PREWARM_SOURCE_FILES = (
     "source_supply_demand.txt",
     "source_photosynthesis.txt",
 )
+DEMO_SOURCE_FILE = "source_sodium_pump.txt"
+DEMO_EXPLANATION_FILE = "demo_video.txt"
 
 
 def _cache_key(source: str) -> str:
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
+def _result_cache_key(source: str, explanation: str) -> str:
+    return hashlib.sha256(f"{source}\x00{explanation}".encode("utf-8")).hexdigest()
 
 
 async def _prewarm_source(sample: Path) -> None:
@@ -76,6 +83,12 @@ async def _prewarm() -> None:
     samples = Path(__file__).parents[1] / "samples"
     for filename in PREWARM_SOURCE_FILES:
         await _prewarm_source(samples / filename)
+    demo_source = (samples / DEMO_SOURCE_FILE).read_text(encoding="utf-8").strip()
+    demo_explanation = (samples / DEMO_EXPLANATION_FILE).read_text(encoding="utf-8").strip()
+    try:
+        await analyze(AnalyzeRequest(source=demo_source, explanation=demo_explanation))
+    except (HTTPException, LLMResponseError):
+        logger.exception("Full demo result prewarm failed.")
 
 
 @asynccontextmanager
@@ -194,22 +207,30 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
     source = request_body.source.strip()
     explanation = request_body.explanation.strip()
     _validate_lengths(source, explanation)
+    result_key = _result_cache_key(source, explanation)
+    cached_result = _result_cache.get(result_key)
+    if cached_result is not None:
+        return cached_result
     try:
         key = _cache_key(source)
         concepts = _concept_cache.get(key)
         concept_cache_hit = concepts is not None
         concepts_started_at = time.perf_counter()
+        propositions_started_at = time.perf_counter()
         if concepts is None:
-            concepts = await extract_concepts(source)
+            concepts, propositions = await asyncio.gather(
+                extract_concepts(source),
+                extract_propositions(source, explanation),
+            )
             if concepts:
                 _concept_cache[key] = concepts
+        else:
+            propositions = await extract_propositions(source, explanation)
         concepts_ms = (time.perf_counter() - concepts_started_at) * 1000
         if not concepts:
             raise HTTPException(
                 422, "Could not identify source concepts. Try a clearer passage."
             )
-        propositions_started_at = time.perf_counter()
-        propositions = await extract_propositions(source, explanation)
         propositions_ms = (time.perf_counter() - propositions_started_at) * 1000
         if not propositions:
             raise HTTPException(
@@ -274,9 +295,11 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
                 similarity=similarity,
             )
         )
-    return AnalyzeResponse(
+    response = AnalyzeResponse(
         concepts=concepts,
         flags=flags,
         follow_up=follow_up,
         coverage=compute_coverage(concepts, flags),
     )
+    _result_cache[result_key] = response
+    return response
