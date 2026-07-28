@@ -104,9 +104,16 @@ dashboard I have no access to. Worth eyeballing before relying on it.
 
 Load example → analyse → revise → paste `samples/demo_video_revised.txt` →
 analyse. Measured locally, from clicking "Load example" to the strip appearing:
-**5.6 s**, of which the second analysis was ~5.0 s. Well inside 15 s, but this
-was measured against a local backend — **production was not timed**, because
-timing it means deploying, which was outside what I was asked to do.
+**3.1–5.6 s** across runs, of which the second analysis is ~3–5 s. Well inside
+15 s.
+
+**On production** (`explain-back.vercel.app` → `explain-back.onrender.com`, warm),
+the same sequence: run 1 **2.5 s**, run 2 **7.9 s**, **10.5 s end to end**. Inside
+the 15 s bar but not comfortably — the second analysis is roughly twice its local
+time. Worth one warm-up run before recording so the video does not open on a cold
+Render dyno. Production strip and chips match local exactly:
+`1 gap closed · 1 claim no longer matches the source · coverage 0/6 → 4/6`,
+chips `Covered (4) · Partial (2) · Missing (0)`. No console errors.
 
 390px: no horizontal overflow, strip wraps to 3 lines, the overlay starts
 immediately below it and well above the fold. Opening the revise panel keeps the
@@ -226,7 +233,8 @@ structural, not a tuning failure:
    verification and are described precisely above; the layout assertions
    (overflow, wrap count, element ordering) were taken as measurements rather
    than eyeballed.
-3. **Production timing not measured**, per the note above.
+3. **Production run 2 takes ~7.9 s**, about double local. Not a blocker, but it
+   is most of the 15 s budget and it is the shot the video depends on.
 4. **Extraction segmentation is unstable across runs on identical text.** This is
    the root cause behind both the suppressed add/remove counts and the weak
    fixture. It is an extraction problem, not a diff problem, and the diff should
