@@ -18,6 +18,23 @@ test("landing page explains the product and enters the workspace in one click", 
   ).toBeVisible();
   await expect(page.getByText("Hedges' g = 0.56")).toBeVisible();
   await expect(page.getByText("Actual diagnostic overlay")).toBeVisible();
+  const typography = await page.evaluate(() => {
+    const family = (selector) =>
+      getComputedStyle(document.querySelector(selector)).fontFamily;
+    return {
+      title: family("#landing-title"),
+      lede: family(".landing-lede"),
+      evidence: family(".landing-evidence"),
+      preview: family(".landing-preview .overlay"),
+      eyebrow: family(".landing-eyebrow"),
+      callToAction: family(".landing-cta"),
+    };
+  });
+  expect(typography.lede).toBe(typography.title);
+  expect(typography.evidence).toBe(typography.title);
+  expect(typography.preview).toBe(typography.title);
+  expect(typography.eyebrow).not.toBe(typography.title);
+  expect(typography.callToAction).not.toBe(typography.title);
   await expect(page.getByRole("link", { name: "GitHub" })).toHaveAttribute(
     "href",
     "https://github.com/saiaathish/Explain-Back",

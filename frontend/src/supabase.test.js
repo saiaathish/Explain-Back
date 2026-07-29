@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createAnonymousAuth,
   createSupabaseClient,
   getSupabaseClient,
+  safeOAuthRedirectTo,
 } from "./supabase";
 
 function authClient(overrides = {}) {
@@ -16,6 +17,10 @@ function authClient(overrides = {}) {
         data: { session: null },
         error: null,
       })),
+      linkIdentity: vi.fn(async () => ({
+        data: { url: "https://accounts.google.test/start" },
+        error: null,
+      })),
       signInAnonymously: vi.fn(async () => ({
         data: { session: null },
         error: null,
@@ -24,6 +29,10 @@ function authClient(overrides = {}) {
     },
   };
 }
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("anonymous auth adapter", () => {
   it("restores an existing browser session", async () => {
@@ -49,17 +58,58 @@ describe("anonymous auth adapter", () => {
     ).resolves.toBe(session);
   });
 
+  it("links Google to the current identity with a same-origin redirect", async () => {
+    const client = authClient();
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/learn",
+    });
+    const auth = createAnonymousAuth(client);
+
+    await expect(auth.linkGoogleIdentity()).resolves.toBe(
+      "https://accounts.google.test/start",
+    );
+    expect(client.auth.linkIdentity).toHaveBeenCalledWith({
+      provider: "google",
+      options: {
+        redirectTo: "https://explain-back.example/",
+      },
+    });
+  });
+
+  it("rejects an OAuth response that cannot start a redirect", async () => {
+    const client = authClient({
+      linkIdentity: vi.fn(async () => ({
+        data: { url: null },
+        error: null,
+      })),
+    });
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/",
+    });
+    const auth = createAnonymousAuth(client);
+
+    await expect(auth.linkGoogleIdentity()).rejects.toThrow(/did not return/i);
+  });
+
   it("propagates Supabase auth errors", async () => {
     const error = new Error("auth unavailable");
     const client = authClient({
       getSession: vi.fn(async () => ({ data: null, error })),
       refreshSession: vi.fn(async () => ({ data: null, error })),
       signInAnonymously: vi.fn(async () => ({ data: null, error })),
+      linkIdentity: vi.fn(async () => ({ data: null, error })),
+    });
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/",
     });
     const auth = createAnonymousAuth(client);
 
     await expect(auth.getSession()).rejects.toBe(error);
     await expect(auth.signInAnonymously()).rejects.toBe(error);
+    await expect(auth.linkGoogleIdentity()).rejects.toBe(error);
     await expect(auth.refreshAccessToken()).rejects.toBe(error);
   });
 
@@ -102,6 +152,27 @@ describe("anonymous auth adapter", () => {
   });
 });
 
+describe("Google OAuth redirect safety", () => {
+  it("canonicalizes every callback to the same-origin root", () => {
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/lesson",
+      search: "?token=do-not-forward",
+      hash: "#private",
+    });
+
+    expect(safeOAuthRedirectTo()).toBe("https://explain-back.example/");
+  });
+
+  it.each([
+    { origin: "", pathname: "/" },
+    { origin: "file://local", pathname: "/" },
+  ])("rejects unsafe browser origin data", (location) => {
+    vi.stubGlobal("location", location);
+    expect(() => safeOAuthRedirectTo()).toThrow(/browser origin/i);
+  });
+});
+
 describe("browser Supabase client configuration", () => {
   const url = "https://example.supabase.co";
 
@@ -109,6 +180,25 @@ describe("browser Supabase client configuration", () => {
     expect(() =>
       createSupabaseClient({ url: "", key: "" }, vi.fn()),
     ).toThrow(/not configured/i);
+  });
+
+  it("configures persistent PKCE callback handling explicitly", () => {
+    const factory = vi.fn(() => ({ configured: true }));
+
+    expect(
+      createSupabaseClient(
+        { url, key: "sb_publishable_test" },
+        factory,
+      ),
+    ).toEqual({ configured: true });
+    expect(factory).toHaveBeenCalledWith(url, "sb_publishable_test", {
+      auth: {
+        flowType: "pkce",
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    });
   });
 
   it.each([

@@ -93,6 +93,36 @@ npm run dev
 
 Open `http://localhost:5173`.
 
+### Supabase Auth configuration
+
+Explain-Back starts each new browser with `signInAnonymously()`. An anonymous
+user can then choose **Continue with Google** in the workspace, which calls
+`linkIdentity()` instead of creating a second user. Configure the Supabase
+project before testing either flow:
+
+1. In **Authentication → Providers**, enable **Allow anonymous sign-ins**.
+2. Enable the **Google** provider and enter its client ID and client secret.
+3. In the authentication settings, enable **Manual Linking**. Supabase
+   currently labels manual identity linking as beta.
+4. Set the production site URL to `https://explain-back.vercel.app/` and add
+   these redirect URLs:
+   - `http://localhost:5173/`
+   - `https://explain-back.vercel.app/`
+   - `https://explain-back-*-sai-aathish-karthiks-projects.vercel.app/`
+
+The final entry is intentionally limited to this Vercel project and team; do
+not use a broad `https://*.vercel.app/**` allowlist. In Google Cloud Console,
+set the OAuth client's authorized redirect URI to
+`${SUPABASE_URL}/auth/v1/callback`, where `SUPABASE_URL` is the public URL of
+the Supabase project. The browser callback itself returns to the exact origin
+root, with query strings and fragments discarded.
+
+Local and deployed frontends also need `VITE_SUPABASE_URL` and
+`VITE_SUPABASE_PUBLISHABLE_KEY`; the backend needs the matching
+`SUPABASE_URL`. This repository does not supply a Supabase project or
+credentials, so hosted authentication is not established by the code or these
+instructions alone.
+
 ## Calibration and gates
 
 ```bash
@@ -120,7 +150,9 @@ OpenAI-compatible `LLM_BASE_URL`. `LLM_MODEL_CI` is evaluation-only and must not
 be selected in production.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
-service before building the Vercel deployment.
+service before building the Vercel deployment. Also set
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for the same Supabase
+project configured above.
 
 ## Feature scope and the recorded demo
 

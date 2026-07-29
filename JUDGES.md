@@ -26,3 +26,27 @@ Other things worth knowing about, not required to try:
 - Voice input (speak your explanation instead of typing it)
 - Photograph a textbook page as the source material
 - Works outside biology too — try the Economics or Photosynthesis presets
+
+## Hosted authentication requirement
+
+The walkthrough's one-click entry depends on a real Supabase project; the
+repository does not include one or its credentials. Before treating a hosted
+build as judge-ready:
+
+- Enable **Allow anonymous sign-ins**, the **Google** provider, and **Manual
+  Linking** in Supabase Auth. Supabase currently marks manual identity linking
+  as beta.
+- Set the production site URL to `https://explain-back.vercel.app/`.
+- Allow exactly `http://localhost:5173/` and
+  `https://explain-back.vercel.app/`, plus the project-and-team-scoped preview
+  wildcard
+  `https://explain-back-*-sai-aathish-karthiks-projects.vercel.app/`.
+  Do not substitute a broad `*.vercel.app` wildcard.
+- Set the Google OAuth client's authorized redirect URI to
+  `${SUPABASE_URL}/auth/v1/callback`.
+- Supply `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to the
+  frontend deployment and the matching `SUPABASE_URL` to the backend.
+
+The code preserves an anonymous user's Supabase identity when they link Google,
+but that hosted flow must still be verified against the configured project
+before claiming it works in production.

@@ -46,7 +46,14 @@ export function createSupabaseClient(
   const trimmedUrl = url?.trim();
   const trimmedKey = key?.trim();
   validateBrowserConfig(trimmedUrl, trimmedKey);
-  return factory(trimmedUrl, trimmedKey);
+  return factory(trimmedUrl, trimmedKey, {
+    auth: {
+      flowType: "pkce",
+      detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  });
 }
 
 export function getSupabaseClient() {
@@ -54,6 +61,32 @@ export function getSupabaseClient() {
     supabaseClient = createSupabaseClient();
   }
   return supabaseClient;
+}
+
+export function safeOAuthRedirectTo() {
+  const location = globalThis.location;
+  const rawOrigin = location?.origin?.trim();
+  if (!rawOrigin) {
+    throw new Error("Google sign-in requires a browser origin.");
+  }
+
+  let origin;
+  try {
+    origin = new URL(rawOrigin);
+  } catch {
+    throw new Error("Google sign-in requires a valid browser origin.");
+  }
+  if (!["http:", "https:"].includes(origin.protocol)) {
+    throw new Error("Google sign-in requires an HTTP or HTTPS browser origin.");
+  }
+
+  const redirectTo = new URL("/", `${origin.origin}/`);
+  if (redirectTo.origin !== origin.origin) {
+    throw new Error("Google sign-in redirect must stay on this site.");
+  }
+  redirectTo.search = "";
+  redirectTo.hash = "";
+  return redirectTo.toString();
 }
 
 export function createAnonymousAuth(client) {
@@ -77,6 +110,20 @@ export function createAnonymousAuth(client) {
       return data?.session || null;
     },
 
+    async linkGoogleIdentity() {
+      const { data, error } = await client.auth.linkIdentity({
+        provider: "google",
+        options: {
+          redirectTo: safeOAuthRedirectTo(),
+        },
+      });
+      if (error) throw error;
+      if (!data?.url) {
+        throw new Error("Google identity linking did not return a redirect.");
+      }
+      return data.url;
+    },
+
     async refreshAccessToken() {
       const { data, error } = await client.auth.refreshSession();
       if (error) throw error;
@@ -93,5 +140,6 @@ export const anonymousAuth = {
   getSession: () => productionAuth().getSession(),
   subscribe: (listener) => productionAuth().subscribe(listener),
   signInAnonymously: () => productionAuth().signInAnonymously(),
+  linkGoogleIdentity: () => productionAuth().linkGoogleIdentity(),
   refreshAccessToken: () => productionAuth().refreshAccessToken(),
 };

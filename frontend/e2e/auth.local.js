@@ -34,6 +34,62 @@ function analysisResponse(source) {
   };
 }
 
+async function enterAnonymousWorkspace(page, authApi, path = "/") {
+  await page.goto(path);
+  const tryIt = page.getByRole("button", { name: "Try it", exact: true });
+  await expect(tryIt).toBeEnabled();
+  expect(authApi.signupRequests).toHaveLength(0);
+  expect(authApi.identityLinkRequests).toHaveLength(0);
+
+  await tryIt.click();
+
+  await expect.poll(() => authApi.signupRequests.length).toBe(1);
+  await expect(page.locator("#source")).toBeFocused();
+  expect(authApi.accessTokens).toHaveLength(1);
+}
+
+for (const clickMode of ["one click", "rapid double-click"]) {
+  test(`Google identity linking uses one canonical request after ${clickMode}`, async ({
+    page,
+    authApi,
+  }) => {
+    await enterAnonymousWorkspace(
+      page,
+      authApi,
+      "/?next=https://evil.example",
+    );
+
+    const linkGoogle = page.getByRole("button", {
+      name: "Continue with Google to keep this session across devices",
+      exact: true,
+    });
+    await expect(linkGoogle).toBeEnabled();
+    const expectedRedirectTo = new URL("/", page.url()).toString();
+
+    if (clickMode === "one click") {
+      await linkGoogle.click();
+    } else {
+      await linkGoogle.evaluate((button) => {
+        button.click();
+        button.click();
+      });
+    }
+
+    await expect.poll(() => authApi.identityLinkRequests.length).toBe(1);
+    await page.waitForTimeout(150);
+    expect(authApi.identityLinkRequests).toHaveLength(1);
+
+    const [request] = authApi.identityLinkRequests;
+    expect(request.searchParams.provider).toBe("google");
+    expect(request.searchParams.redirect_to).toBe(expectedRedirectTo);
+    expect(request.searchParams).not.toHaveProperty("next");
+    expect(request.headers.authorization).toBe(
+      `Bearer ${authApi.accessTokens[0]}`,
+    );
+    expect(authApi.signupRequests).toHaveLength(1);
+  });
+}
+
 test("anonymous auth is deferred, restored, and refreshed once", async ({
   page,
   authApi,

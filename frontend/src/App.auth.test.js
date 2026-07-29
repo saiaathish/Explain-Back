@@ -1,5 +1,12 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { boundedSingleFlight, singleFlight, withTimeout } from "./App";
+import {
+  boundedSingleFlight,
+  IdentityUpgrade,
+  singleFlight,
+  withTimeout,
+} from "./App";
 
 describe("auth lifecycle helpers", () => {
   it("bounds a stalled auth operation with a retryable timeout error", async () => {
@@ -108,4 +115,61 @@ describe("auth lifecycle helpers", () => {
       vi.useRealTimers();
     },
   );
+});
+
+describe("anonymous identity upgrade", () => {
+  it("is hidden after the session is no longer anonymous", () => {
+    const markup = renderToStaticMarkup(
+      createElement(IdentityUpgrade, {
+        isAnonymous: false,
+        busy: false,
+        error: "",
+        onLinkGoogleIdentity: vi.fn(),
+      }),
+    );
+
+    expect(markup).toBe("");
+  });
+
+  it("offers a secondary Google link action only for anonymous sessions", () => {
+    const markup = renderToStaticMarkup(
+      createElement(IdentityUpgrade, {
+        isAnonymous: true,
+        busy: false,
+        error: "",
+        onLinkGoogleIdentity: vi.fn(),
+      }),
+    );
+
+    expect(markup).toContain('class="secondary identity-link-button"');
+    expect(markup).toContain(
+      "Continue with Google to keep this session across devices",
+    );
+    expect(markup).not.toContain("scope");
+  });
+
+  it("announces identity-link timeout state accessibly", () => {
+    const errorMarkup = renderToStaticMarkup(
+      createElement(IdentityUpgrade, {
+        isAnonymous: true,
+        busy: false,
+        error: "Google identity linking timed out.",
+        onLinkGoogleIdentity: vi.fn(),
+      }),
+    );
+    const busyMarkup = renderToStaticMarkup(
+      createElement(IdentityUpgrade, {
+        isAnonymous: true,
+        busy: true,
+        error: "",
+        onLinkGoogleIdentity: vi.fn(),
+      }),
+    );
+
+    expect(errorMarkup).toContain('role="alert"');
+    expect(errorMarkup).toContain("Google identity linking timed out");
+    expect(busyMarkup).toContain('aria-busy="true"');
+    expect(busyMarkup).toContain("Taking you to Google…");
+    expect(busyMarkup).toContain("disabled");
+  });
 });

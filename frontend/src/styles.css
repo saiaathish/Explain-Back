@@ -124,6 +124,44 @@ header p {
   line-height: 1.4;
 }
 
+.header-intro {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
+.identity-upgrade {
+  width: min(100%, 360px);
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+}
+
+.identity-link-button {
+  min-height: 40px;
+  border-color: color-mix(in srgb, var(--ink) 38%, var(--rule));
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 5px 14px rgba(18, 23, 19, 0.04);
+}
+
+.identity-link-button:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+.identity-link-error {
+  max-width: 48ch;
+  color: var(--contradicts);
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .brand {
   margin: 0;
   color: var(--ink);
@@ -1627,6 +1665,23 @@ footer {
     flex-direction: column;
     gap: 6px;
     padding-inline: 18px;
+  }
+
+  .header-intro {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .identity-upgrade {
+    width: 100%;
+    justify-items: stretch;
+    margin-top: 10px;
+  }
+
+  .identity-link-error {
+    text-align: left;
   }
 
   main {

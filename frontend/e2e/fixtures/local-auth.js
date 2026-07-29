@@ -78,6 +78,16 @@ async function authorizedFixtureRequest(request) {
   );
 }
 
+async function authorizedIdentityLinkRequest(request, accessTokens) {
+  const authorization = await request.headerValue("authorization");
+  return (
+    (await request.headerValue("apikey")) === LOCAL_PUBLISHABLE_KEY &&
+    accessTokens.some(
+      (accessToken) => authorization === `Bearer ${accessToken}`,
+    )
+  );
+}
+
 export const test = base.extend({
   localAuthFixture: [false, { option: true }],
 
@@ -87,6 +97,7 @@ export const test = base.extend({
         enabled: localAuthFixture,
         signupRequests: [],
         refreshRequests: [],
+        identityLinkRequests: [],
         accessTokens: [],
       };
 
@@ -118,6 +129,37 @@ export const test = base.extend({
           await route.fulfill(
             jsonResponse(403, {
               error: "local_auth_fixture_origin_rejected",
+            }),
+          );
+          return;
+        }
+
+        if (
+          request.method() === "GET" &&
+          url.pathname === `${AUTH_ROOT}/user/identities/authorize`
+        ) {
+          if (
+            !(await authorizedIdentityLinkRequest(
+              request,
+              state.accessTokens,
+            ))
+          ) {
+            await route.fulfill(
+              jsonResponse(401, {
+                error: "local_auth_fixture_access_token_rejected",
+              }),
+            );
+            return;
+          }
+
+          state.identityLinkRequests.push({
+            headers: request.headers(),
+            searchParams: Object.fromEntries(url.searchParams),
+          });
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          await route.fulfill(
+            jsonResponse(200, {
+              url: `${allowedOrigin}/__e2e-google-provider`,
             }),
           );
           return;

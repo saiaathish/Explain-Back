@@ -167,6 +167,36 @@ function Footer() {
   );
 }
 
+function IdentityUpgrade({
+  isAnonymous,
+  busy,
+  error,
+  onLinkGoogleIdentity,
+}) {
+  if (!isAnonymous) return null;
+
+  return (
+    <div className="identity-upgrade">
+      <button
+        aria-busy={busy || undefined}
+        className="secondary identity-link-button"
+        disabled={busy}
+        onClick={onLinkGoogleIdentity}
+        type="button"
+      >
+        {busy
+          ? "Taking you to Google…"
+          : "Continue with Google to keep this session across devices"}
+      </button>
+      {error && (
+        <p className="identity-link-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function validate(source, explanation, focused = false) {
   if (!source.trim() || !explanation.trim()) {
     return "Source or explanation is missing. Paste both texts, then try again.";
@@ -253,7 +283,14 @@ function ExplanationField({
   );
 }
 
-function Workspace({ accessToken, refreshAccessToken }) {
+function Workspace({
+  accessToken,
+  refreshAccessToken,
+  isAnonymous,
+  identityLinkBusy,
+  identityLinkError,
+  onLinkGoogleIdentity,
+}) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
   /* A run snapshot is `{ result, explanation, confidenceRanges }`: flags carry
@@ -841,18 +878,26 @@ function Workspace({ accessToken, refreshAccessToken }) {
   return (
     <div className="app-shell">
       <header>
-        <h1 className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </span>
-          <span>
-            Explain<span className="brand-accent">-</span>Back
-          </span>
-        </h1>
-        <p>Explain it in your own words. See what holds up.</p>
+        <div className="header-intro">
+          <h1 className="brand">
+            <span className="brand-mark" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <span>
+              Explain<span className="brand-accent">-</span>Back
+            </span>
+          </h1>
+          <p>Explain it in your own words. See what holds up.</p>
+        </div>
+        <IdentityUpgrade
+          busy={identityLinkBusy}
+          error={identityLinkError}
+          isAnonymous={isAnonymous}
+          onLinkGoogleIdentity={onLinkGoogleIdentity}
+        />
       </header>
 
       <main>
@@ -1143,18 +1188,25 @@ function Workspace({ accessToken, refreshAccessToken }) {
 function App({ auth = anonymousAuth }) {
   const [entered, setEntered] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [authStatus, setAuthStatus] = useState("restoring");
   const [authError, setAuthError] = useState("");
   const mountedRef = useRef(true);
   const signInPromiseRef = useRef(null);
   const signInAttemptRef = useRef(0);
+  const identityLinkPromiseRef = useRef(null);
+  const identityLinkAttemptRef = useRef(0);
+  const authActionRef = useRef(null);
   const refreshPromiseRef = useRef(null);
+  const [identityLinkBusy, setIdentityLinkBusy] = useState(false);
+  const [identityLinkError, setIdentityLinkError] = useState("");
 
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       signInAttemptRef.current += 1;
+      identityLinkAttemptRef.current += 1;
     };
   }, []);
 
@@ -1167,6 +1219,7 @@ function App({ auth = anonymousAuth }) {
       if (!active) return;
       const token = session?.access_token || "";
       setAccessToken(token);
+      setIsAnonymous(Boolean(token && session?.user?.is_anonymous === true));
       setAuthError("");
       setAuthStatus(token ? "authenticated" : "unauthenticated");
       if (!token) setEntered(false);
@@ -1175,6 +1228,7 @@ function App({ auth = anonymousAuth }) {
     function failRestore(error) {
       if (!active) return;
       setAccessToken("");
+      setIsAnonymous(false);
       setEntered(false);
       setAuthStatus("error");
       setAuthError(
@@ -1211,13 +1265,23 @@ function App({ auth = anonymousAuth }) {
   }, [auth]);
 
   async function start() {
-    if (authStatus === "restoring" || authStatus === "authenticating") return;
+    if (
+      authActionRef.current ||
+      identityLinkBusy ||
+      authStatus === "restoring" ||
+      authStatus === "authenticating"
+    ) {
+      return;
+    }
     if (authStatus === "authenticated" && accessToken) {
       setEntered(true);
       return;
     }
 
+    const action = Symbol("anonymous-sign-in");
+    authActionRef.current = action;
     setAuthError("");
+    setIdentityLinkError("");
     setAuthStatus("authenticating");
     const attempt = ++signInAttemptRef.current;
     try {
@@ -1233,6 +1297,7 @@ function App({ auth = anonymousAuth }) {
         throw new Error("Anonymous sign-in did not return a usable session.");
       }
       setAccessToken(session.access_token);
+      setIsAnonymous(session?.user?.is_anonymous === true);
       setAuthStatus("authenticated");
       setEntered(true);
     } catch (error) {
@@ -1244,6 +1309,50 @@ function App({ auth = anonymousAuth }) {
         error?.message ||
           "Anonymous access could not be started. Check your connection and try again.",
       );
+    } finally {
+      if (authActionRef.current === action) authActionRef.current = null;
+    }
+  }
+
+  async function linkGoogleIdentity() {
+    if (
+      authActionRef.current ||
+      identityLinkBusy ||
+      !isAnonymous ||
+      authStatus === "restoring" ||
+      authStatus === "authenticating"
+    ) {
+      return;
+    }
+
+    const action = Symbol("google-identity-link");
+    authActionRef.current = action;
+    setAuthError("");
+    setIdentityLinkError("");
+    setIdentityLinkBusy(true);
+    const attempt = ++identityLinkAttemptRef.current;
+    try {
+      await boundedSingleFlight(
+        identityLinkPromiseRef,
+        auth,
+        () => auth.linkGoogleIdentity(),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Google identity linking timed out. Check your connection and try again.",
+      );
+    } catch (error) {
+      if (
+        !mountedRef.current ||
+        attempt !== identityLinkAttemptRef.current
+      ) {
+        return;
+      }
+      setIdentityLinkBusy(false);
+      setIdentityLinkError(
+        error?.message ||
+          "Google identity linking could not be started. Check your connection and try again.",
+      );
+    } finally {
+      if (authActionRef.current === action) authActionRef.current = null;
     }
   }
 
@@ -1275,6 +1384,10 @@ function App({ auth = anonymousAuth }) {
   return entered ? (
     <Workspace
       accessToken={accessToken}
+      identityLinkBusy={identityLinkBusy}
+      identityLinkError={identityLinkError}
+      isAnonymous={isAnonymous}
+      onLinkGoogleIdentity={linkGoogleIdentity}
       refreshAccessToken={refreshAccessToken}
     />
   ) : (
@@ -1290,6 +1403,7 @@ function App({ auth = anonymousAuth }) {
 export default App;
 export {
   AUTH_OPERATION_TIMEOUT_MS,
+  IdentityUpgrade,
   PRESETS,
   boundedSingleFlight,
   singleFlight,
