@@ -26,9 +26,9 @@ function cleanFlags(flags, text) {
   return clean;
 }
 
-function FeedbackCard({ flag, tooltipId }) {
+function FeedbackCard({ flag, tooltipId, hidden = false }) {
   return (
-    <span className="feedback-card" id={tooltipId} role="tooltip">
+    <span className="feedback-card" id={tooltipId} role="tooltip" hidden={hidden}>
       <span className="feedback-source">
         <span className="feedback-source-label">Source:</span> <q>{flag.anchor}</q>
       </span>
@@ -103,8 +103,10 @@ export default function Overlay({ explanation, flags, improvedIds, dangerIds = [
                 : { "--diagnostic-delay": `${index * 20}ms` }
             }
             tabIndex={segment.flag.state === "green" ? -1 : 0}
+            role={segment.flag.state === "green" ? undefined : "button"}
             aria-describedby={active === segment.key ? `feedback-${segment.flag.prop_id}` : undefined}
-            aria-expanded={active === segment.key}
+            aria-expanded={segment.flag.state === "green" ? undefined : active === segment.key}
+            aria-controls={segment.flag.state === "green" ? undefined : `feedback-${segment.flag.prop_id}`}
             onPointerEnter={(event) => {
               if (event.pointerType === "mouse") setActive(segment.key);
             }}
@@ -133,10 +135,11 @@ export default function Overlay({ explanation, flags, improvedIds, dangerIds = [
             }}
           >
             {segment.text}
-            {segment.flag.state !== "green" && active === segment.key && (
+            {segment.flag.state !== "green" && (
               <FeedbackCard
                 flag={segment.flag}
                 tooltipId={`feedback-${segment.flag.prop_id}`}
+                hidden={active !== segment.key}
               />
             )}
           </span>

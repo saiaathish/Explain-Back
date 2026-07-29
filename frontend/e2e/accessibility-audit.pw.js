@@ -1,12 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const ROOT = path.resolve(process.cwd(), "..");
-const REPORT_PATH = path.join(ROOT, "docs", "accessibility-audit.json");
+const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
+const FRONTEND_DIR = path.resolve(E2E_DIR, "..");
+const REPO_ROOT = path.resolve(FRONTEND_DIR, "..");
+const REPORT_PATH = path.join(REPO_ROOT, "docs", "accessibility-audit.json");
 const REVISED_EXPLANATION = fs.readFileSync(
-  path.resolve(process.cwd(), "../samples/explanations/06_correct.txt"),
+  path.join(REPO_ROOT, "samples/explanations/06_correct.txt"),
   "utf8",
 ).trim();
 
@@ -21,9 +24,14 @@ function readReport() {
 
 function writeReport(record) {
   fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
-  const records = readReport();
+  const records = readReport().filter(
+    (current) => !(current.project === record.project && current.viewport === record.viewport),
+  );
   records.push(record);
-  fs.writeFileSync(REPORT_PATH, `${JSON.stringify(records, null, 2)}\n`);
+  fs.writeFileSync(
+    REPORT_PATH,
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), records }, null, 2)}\n`,
+  );
 }
 
 async function axeState(page, state) {
