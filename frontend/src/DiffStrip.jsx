@@ -4,10 +4,10 @@
    window. `display: none` also keeps the hidden variant out of the a11y tree. */
 function Label({ item }) {
   return (
-    <>
+    <span className={`diff-item diff-item--${item.key}`}>
       <span className="label-full">{item.label}</span>
       <span className="label-short">{item.shortLabel}</span>
-    </>
+    </span>
   );
 }
 
@@ -22,13 +22,17 @@ export default function DiffStrip({ summary }) {
         <Label item={item} key={item.key} />
       ))
     : [
-        <span key="none">
+        <span className="diff-item diff-item--none" key="none">
           {summary.rewritten
             ? "Your revision reworded claims — none of them changed state."
             : "No changes detected — your revision kept the same claims."}
         </span>,
       ];
-  cells.push(<span key="coverage">{coverageLabel}</span>);
+  cells.push(
+    <span className="diff-item diff-item--coverage" key="coverage">
+      {coverageLabel}
+    </span>,
+  );
 
   return (
     <p
