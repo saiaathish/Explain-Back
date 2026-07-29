@@ -77,7 +77,10 @@ MAX_IMAGE_BYTES = 8 * 1024 * 1024
 _IMAGE_DATA_URL_RE = re.compile(
     r"^data:(?P<mime>image/(?:png|jpeg|webp));base64,(?P<data>[A-Za-z0-9+/]*={0,2})$"
 )
-MAX_AUDIO_BYTES = 12 * 1024 * 1024
+# MAX_RECORDING_MS caps recordings at three minutes, which is roughly 3 MB in
+# any browser's opus or aac output. 4 MB leaves headroom without letting a
+# single request buffer tens of megabytes on a small instance.
+MAX_AUDIO_BYTES = 4 * 1024 * 1024
 # MediaRecorder emits webm/ogg opus in Chrome and Firefox, mp4/aac in Safari.
 _AUDIO_FORMATS = {
     "audio/webm": "webm",
@@ -91,6 +94,23 @@ _AUDIO_DATA_URL_RE = re.compile(
     r"^data:(?P<mime>audio/[A-Za-z0-9.+-]+)(?P<codecs>;codecs=[^;,]+)?"
     r";base64,(?P<data>[A-Za-z0-9+/]*={0,2})$"
 )
+
+
+def _base64_envelope_bytes(raw_bytes: int) -> int:
+    """Room for raw_bytes base64-encoded inside a small JSON object."""
+
+    return (raw_bytes + 2) // 3 * 4 + 4096
+
+
+# The per-endpoint decoded-size guards below only run once the whole body is
+# already parsed in memory. On a small instance a multi-megabyte upload can
+# restart the process before that check is reached, so refuse anything larger
+# than the endpoint could ever legitimately accept before reading the body.
+MAX_REQUEST_BYTES = {
+    "/api/analyze": 256 * 1024,
+    "/api/normalize-image": _base64_envelope_bytes(MAX_IMAGE_BYTES),
+    "/api/transcribe": _base64_envelope_bytes(MAX_AUDIO_BYTES),
+}
 _AUDIO_PROMPT = (
     "Transcribe the spoken explanation in this audio verbatim. "
     "Preserve the speaker's own wording, including technical terms. "
@@ -169,6 +189,14 @@ async def rate_limit_model_calls(request: Request, call_next):
 
     if request.method != "POST" or request.url.path not in RATE_LIMITED_PATHS:
         return await call_next(request)
+
+    max_bytes = MAX_REQUEST_BYTES.get(request.url.path)
+    declared = request.headers.get("content-length", "").strip()
+    if max_bytes is not None and declared.isdigit() and int(declared) > max_bytes:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": "That upload is too large for this endpoint."},
+        )
 
     forwarded_for = request.headers.get("x-forwarded-for", "")
     client_id = forwarded_for.rsplit(",", 1)[-1].strip()
@@ -335,7 +363,7 @@ def _validate_audio_data_url(audio_data_url: str) -> tuple[str, str]:
     if not decoded:
         raise HTTPException(400, "Audio data URL is empty.")
     if len(decoded) > MAX_AUDIO_BYTES:
-        raise HTTPException(413, "Recording is too large. Keep it under 12 MB.")
+        raise HTTPException(413, "Recording is too large. Keep it under 4 MB.")
     return encoded, audio_format
 
 

@@ -365,14 +365,14 @@ def test_transcribe_rejects_unsupported_audio_format() -> None:
     assert "Unsupported audio format" in response.json()["detail"]
 
 
-def test_transcribe_rejects_payload_over_12mb() -> None:
+def test_transcribe_rejects_payload_over_the_decoded_limit() -> None:
     encoded = "data:audio/webm;base64," + (
         "A" * (((main.MAX_AUDIO_BYTES + 2) + 2) // 3 * 4)
     )
     with TestClient(main.app) as client:
         response = client.post("/api/transcribe", json={"audio_data_url": encoded})
     assert response.status_code == 413
-    assert "under 12 MB" in response.json()["detail"]
+    assert "under 4 MB" in response.json()["detail"]
 
 
 def test_transcribe_strips_codecs_and_passes_provider_format(monkeypatch) -> None:
@@ -443,3 +443,39 @@ def test_model_backed_endpoints_are_rate_limited() -> None:
         "/api/normalize-image",
         "/api/transcribe",
     }
+
+
+def test_oversized_body_is_refused_before_parsing() -> None:
+    """A 12 MB guard that runs after body parsing is too late on a small instance."""
+
+    oversize = main.MAX_REQUEST_BYTES["/api/transcribe"] + 1024
+    body = b'{"audio_data_url":"' + b"A" * oversize + b'"}'
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            content=body,
+            headers={"Content-Type": "application/json"},
+        )
+    assert response.status_code == 413
+    assert "too large" in response.json()["detail"]
+
+
+def test_request_size_caps_leave_room_for_the_decoded_limit() -> None:
+    assert main.MAX_REQUEST_BYTES["/api/transcribe"] > main.MAX_AUDIO_BYTES
+    assert main.MAX_REQUEST_BYTES["/api/normalize-image"] > main.MAX_IMAGE_BYTES
+    # A legitimate max-size recording must still fit through the pre-parse gate.
+    encoded = (main.MAX_AUDIO_BYTES + 2) // 3 * 4
+    assert main.MAX_REQUEST_BYTES["/api/transcribe"] >= encoded
+
+
+def test_normal_sized_upload_still_passes_the_gate(monkeypatch) -> None:
+    async def transcribe_audio(*_args, **_kwargs) -> str:
+        return "ok"
+
+    monkeypatch.setattr(main, "call_audio_text", transcribe_audio)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "data:audio/webm;base64," + "A" * 40000},
+        )
+    assert response.status_code == 200
