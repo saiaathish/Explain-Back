@@ -1,5 +1,7 @@
 # Explain-Back
 
+**Judging this project? See [JUDGES.md](JUDGES.md) for a 90-second walkthrough.**
+
 Explain-Back inverts the usual AI study tool. Instead of explaining material
 to a student, it asks the student to explain a short source passage and then
 maps formative guidance over the student's own words:
