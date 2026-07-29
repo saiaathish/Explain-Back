@@ -4,7 +4,19 @@
 
 The branch starts with the existing 15 explanation fixtures and 55 independently labeled propositions in `samples/golden.json`. The checked-in hardening evidence reports **35/37 (94.6%)** on the original sodium-pump set and **44/55 (80.0%)** on the expanded set. No existing labels were changed during this overnight task.
 
-## Why the requested 150+ expansion was skipped
+## Morning discrepancy gate
+
+The expanded gate was rerun three times with the production model configuration (`GOLDEN_LLM_ROLE=prod`, `LLM_ROLE=prod`, `GATE_SAMPLE_INTERVAL_SECONDS=25`) and a 25-second pause between complete invocations. Each run reported the same result:
+
+| Gate | Expanded score | Original score | Result |
+| --- | ---: | ---: | --- |
+| 1 | 45/55 (81.8%) | 34/37 (91.9%) | PASS |
+| 2 | 45/55 (81.8%) | 34/37 (91.9%) | PASS |
+| 3 | 45/55 (81.8%) | 34/37 (91.9%) | PASS |
+
+The previously cited 44/55 and 45/55 values are therefore not a current provider boundary fluctuation in this three-run sample: the fresh production range is **45/55–45/55**. The 44/55 historical value remains unverified by these runs and is retained only as historical evidence. No pipeline, fixture, prompt, alignment, resolver, or configuration file was changed to obtain this result.
+
+
 
 The requested expansion calls for ten new source passages across biology, economics, chemistry, and physics, with three explanations per source. The current executable golden gate cannot safely consume that corpus as-is: `scripts/run_golden.py` loads `samples/source_sodium_pump.txt` once and analyzes every key in `samples/golden.json` against that one source. Appending economics, chemistry, or physics explanations would therefore compare them with the wrong source and produce a misleading score. The structural fixture test also hard-codes the current 15-key count.
 
@@ -20,6 +32,7 @@ A future expansion should first add a source-aware, test-only evaluation harness
 
 - Existing fixture count: 15 explanation files / 55 labeled propositions.
 - New fixtures added: 0.
-- New score: not claimed; no valid expanded score was produced.
-- Existing evidence retained: 35/37 original and 44/55 expanded.
+- Fresh morning gate range: 45/55–45/55 (81.8%–81.8%).
+- Fresh gate classification: stable 45/55; the historical 44/55 value was not reproduced.
+- Existing historical evidence retained: 35/37 original and 44/55 expanded.
 - Forbidden runtime files changed: none.
