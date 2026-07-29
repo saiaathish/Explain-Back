@@ -1,92 +1,38 @@
 # Automated browser timing sweep
 
-Generated: 2026-07-29T12:17:22.202Z
+## Execution status
 
-The sweep requested 1 runs per viewport (3 total). Each run used a fresh Playwright browser context and measured from submit to the requested rendered state. A 0ms inter-run delay was used to avoid bypassing the application's rolling request limit.
+The approved 60-run sweep was **not completed**. A validation run was attempted with one run per viewport (3 requested runs) before any 20× sweep. All three viewport runs reached the production result and revise states, but failed the required initial assertion because the Biology preset's initial result contained no green diagnostic span. The revised result contained five green spans and the diff strip wording passed. The report retains the failed assertions and timing values; no failure was dropped from the record.
 
-## Runner status
+The JSON currently contains 7 raw records from interrupted/validation attempts rather than a valid 60-run dataset. It must not be interpreted as a production percentile baseline.
 
-- desktop-chrome: Playwright exit 1
-- iphone-14: Playwright exit 1
-- ipad: Playwright exit 1
+## Validation-run summary
 
-## desktop-chrome (1280x800)
+| Viewport | Initial analysis min / median / p95 / max | Revise min / median / p95 / max | Result |
+| --- | --- | --- | --- |
+| Desktop Chrome (1280×800) | 0.204s / 0.307s / 0.309s / 0.309s | 3.891s / 4.126s / 4.338s / 4.361s | Failed initial green assertion; revise wording passed |
+| iPhone 14 (390×844) | 0.198s | 0.101s | Failed initial green assertion; revise wording passed |
+| iPad (768×1024) | 0.204s | 0.098s | Failed initial green assertion; revise wording passed |
 
-### Initial analysis
+The desktop values include two validation attempts; the mobile values include one completed record each. These values are diagnostic evidence only, not the requested 20-run statistics.
 
-- Successful timing values: 2/2
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 0.305s / 0.307s / 0.309s / 0.309s
+## Assertion failure
 
-Runs over 15 seconds: none
+Every completed Biology run observed:
 
-### Revise step
+- Initial: `green=0`, `yellow=3`, `red=1`, `grey=1`.
+- Revised: `green=5`, `yellow=0`, `red=0`, `grey=0`.
+- Diff strip: contained the required `gap closed`/`coverage` wording.
 
-- Successful timing values: 2/2
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 3.891s / 4.126s / 4.338s / 4.361s
+The missing initial green span is a real failure of the requested acceptance criterion, not a test relaxation. The checked-in Biology initial explanation is intentionally flawed, and the test records that it does not satisfy the “at least one green” assertion.
 
-Runs over 15 seconds: none
+## Why the full sweep stopped
 
-### Run outcomes
+The run was stopped after the validation failures rather than issuing 60 repeated model-backed requests against a known failing assertion. The 20-per-minute application limiter and the production service's external capacity make repeating a deterministic acceptance failure wasteful. No timing number from this document should be presented as a completed 60-run result.
 
-| Run | Initial | Revise | Status | Errors |
-| ---: | ---: | ---: | --- | --- |
-| 1 | 0.309s | 4.361s | failed | initial green: no visible diagnostic span |
-| 1 | 0.305s | 3.891s | failed | initial green: no visible diagnostic span |
+Raw records, assertion messages, statuses, and counts are in `docs/timing-sweep-automated.json`. The Playwright test remains runnable with:
 
-## iphone-14 (390x664)
-
-### Initial analysis
-
-- Successful timing values: 1/1
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 0.198s / 0.198s / 0.198s / 0.198s
-
-Runs over 15 seconds: none
-
-### Revise step
-
-- Successful timing values: 1/1
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 0.101s / 0.101s / 0.101s / 0.101s
-
-Runs over 15 seconds: none
-
-### Run outcomes
-
-| Run | Initial | Revise | Status | Errors |
-| ---: | ---: | ---: | --- | --- |
-| 1 | 0.198s | 0.101s | failed | initial green: no visible diagnostic span |
-
-## ipad (768x1024)
-
-### Initial analysis
-
-- Successful timing values: 1/1
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 0.204s / 0.204s / 0.204s / 0.204s
-
-Runs over 15 seconds: none
-
-### Revise step
-
-- Successful timing values: 1/1
-- Failed or missing timing values: 0
-- Min / median / p95 / max: 0.098s / 0.098s / 0.098s / 0.098s
-
-Runs over 15 seconds: none
-
-### Run outcomes
-
-| Run | Initial | Revise | Status | Errors |
-| ---: | ---: | ---: | --- | --- |
-| 1 | 0.204s | 0.098s | failed | initial green: no visible diagnostic span |
-
-## Assertion failures
-
-- desktop-chrome run 1: initial green: no visible diagnostic span
-- desktop-chrome run 1: initial green: no visible diagnostic span
-- ipad run 1: initial green: no visible diagnostic span
-- iphone-14 run 1: initial green: no visible diagnostic span
-
+```bash
+cd frontend
+npx playwright test e2e/demo-path.pw.js --workers=1
+```
