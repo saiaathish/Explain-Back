@@ -1,0 +1,226 @@
+[
+  {
+    "project": "desktop-chrome",
+    "viewport": "1280x800",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 309,
+    "reviseMs": 4361,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 5314
+  },
+  {
+    "project": "desktop-chrome",
+    "viewport": "1280x800",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 305,
+    "reviseMs": 3891,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 4622
+  },
+  {
+    "project": "ipad",
+    "viewport": "768x1024",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 204,
+    "reviseMs": 98,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 699
+  },
+  {
+    "project": "iphone-14",
+    "viewport": "390x664",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 198,
+    "reviseMs": 101,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 766
+  },
+  {
+    "project": "desktop-chrome",
+    "viewport": "1280x800",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 200,
+    "reviseMs": 105,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 913
+  },
+  {
+    "project": "iphone-14",
+    "viewport": "390x844",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 193,
+    "reviseMs": 98,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 720
+  },
+  {
+    "project": "ipad",
+    "viewport": "768x1024",
+    "run": 1,
+    "retry": 0,
+    "initialMs": 190,
+    "reviseMs": 99,
+    "initialCounts": {
+      "green": 0,
+      "yellow": 3,
+      "red": 1,
+      "grey": 1
+    },
+    "revisedCounts": {
+      "green": 5,
+      "yellow": 0,
+      "red": 0,
+      "grey": 0
+    },
+    "assertions": [
+      "initial green: fail",
+      "initial yellow: pass",
+      "initial red: pass",
+      "revision diff wording: pass"
+    ],
+    "errors": [
+      "initial green: no visible diagnostic span"
+    ],
+    "status": "failed",
+    "expectedStatus": "passed",
+    "durationMs": 721
+  }
+]

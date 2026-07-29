@@ -1,0 +1,132 @@
+import fs from "node:fs";
+import path from "node:path";
+import { expect, test } from "@playwright/test";
+
+const RESULTS_PATH = path.resolve(
+  process.env.TIMING_RESULTS_PATH || "../docs/timing-sweep-automated.json",
+);
+const REVISED_EXPLANATION = fs.readFileSync(
+  path.resolve(process.cwd(), "../samples/explanations/06_correct.txt"),
+  "utf8",
+).trim();
+const paceMs = Number.parseInt(process.env.TIMING_PACE_MS || "0", 10);
+
+function readRecords() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(RESULTS_PATH, "utf8"));
+    return Array.isArray(parsed) ? parsed : parsed.records || [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRecord(record) {
+  fs.mkdirSync(path.dirname(RESULTS_PATH), { recursive: true });
+  const records = readRecords();
+  records.push(record);
+  fs.writeFileSync(RESULTS_PATH, `${JSON.stringify(records, null, 2)}\n`);
+}
+
+function viewportLabel(testInfo) {
+  const viewport = testInfo.project.use.viewport;
+  return viewport ? `${viewport.width}x${viewport.height}` : "unknown";
+}
+
+test.describe("production demo path", () => {
+  test.afterEach(async ({}, testInfo) => {
+    const record = testInfo._demoRecord;
+    if (!record) return;
+    record.status = testInfo.status;
+    record.expectedStatus = testInfo.expectedStatus;
+    record.durationMs = testInfo.duration;
+    record.retry = testInfo.retry;
+    writeRecord(record);
+  });
+
+  test("biology analysis and revise loop", async ({ page }, testInfo) => {
+    const record = {
+      project: testInfo.project.name,
+      viewport: viewportLabel(testInfo),
+      run: testInfo.repeatEachIndex + 1,
+      retry: testInfo.retry,
+      initialMs: null,
+      reviseMs: null,
+      initialCounts: null,
+      revisedCounts: null,
+      assertions: [],
+      errors: [],
+      status: "unknown",
+    };
+    testInfo._demoRecord = record;
+
+    if (paceMs > 0 && testInfo.repeatEachIndex > 0) {
+      await page.waitForTimeout(paceMs);
+    }
+
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: "Biology", exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: "Biology", exact: true }).click();
+    await expect(page.locator(".source-textarea")).toHaveValue(/sodium/i);
+    await expect(page.locator("#explanation")).not.toHaveValue("");
+
+    const initialStart = Date.now();
+    await page.getByRole("button", { name: "Check my explanation", exact: true }).click();
+    try {
+      await expect(page.locator(".results")).toBeVisible();
+      await expect(page.locator(".diagnostic").first()).toBeVisible();
+      record.initialMs = Date.now() - initialStart;
+      record.initialCounts = await page.locator(".diagnostic").evaluateAll((nodes) =>
+        Object.fromEntries(
+          ["green", "yellow", "red", "grey"].map((state) => [
+            state,
+            nodes.filter((node) => node.classList.contains(`diagnostic--${state}`)).length,
+          ]),
+        ),
+      );
+      for (const state of ["green", "yellow", "red"]) {
+        const count = await page.locator(`.diagnostic--${state}`).count();
+        if (count === 0) {
+          record.assertions.push(`initial ${state}: fail`);
+          record.errors.push(`initial ${state}: no visible diagnostic span`);
+        } else {
+          record.assertions.push(`initial ${state}: pass`);
+        }
+      }
+    } catch (error) {
+      record.errors.push(`initial overlay: ${error.message}`);
+    }
+
+    try {
+      await page.getByRole("button", { name: "Revise your explanation", exact: true }).click();
+      await expect(page.locator("#revision-explanation")).toBeVisible();
+      await page.locator("#revision-explanation").fill(REVISED_EXPLANATION);
+
+      const reviseStart = Date.now();
+      await page.getByRole("button", { name: "Check my revision", exact: true }).click();
+      await expect(page.locator(".diff-strip")).toBeVisible();
+      record.reviseMs = Date.now() - reviseStart;
+      record.revisedCounts = await page.locator(".diagnostic").evaluateAll((nodes) =>
+        Object.fromEntries(
+          ["green", "yellow", "red", "grey"].map((state) => [
+            state,
+            nodes.filter((node) => node.classList.contains(`diagnostic--${state}`)).length,
+          ]),
+        ),
+      );
+      const diffText = (await page.locator(".diff-strip").innerText()).toLowerCase();
+      if (!(diffText.includes("gap closed") || diffText.includes("coverage"))) {
+        record.assertions.push("revision diff wording: fail");
+        record.errors.push(`revision diff did not contain gap closed or coverage: ${diffText}`);
+      } else {
+        record.assertions.push("revision diff wording: pass");
+      }
+    } catch (error) {
+      record.errors.push(`revision path: ${error.message}`);
+    }
+
+    if (record.errors.length) {
+      throw new Error(record.errors.join("\n"));
+    }
+  });
+});

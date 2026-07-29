@@ -1,0 +1,1631 @@
+[
+  {
+    "project": "desktop-chrome",
+    "viewport": "1280x800",
+    "axe": [
+      {
+        "state": "empty",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "preset-loaded",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "analyzed",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "calibration-map-visible",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "revising",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "drill-down-open",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "contrast": [
+      {
+        "phase": "initial",
+        "state": "green",
+        "available": false
+      },
+      {
+        "phase": "initial",
+        "state": "yellow",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.5305 0.0126782 0.108282 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "red",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "grey",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.569754 0.000511438 0.0111726 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "green",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.479416 -0.0737361 0.0252891 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "yellow",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "red",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "grey",
+        "available": false
+      }
+    ],
+    "keyboard": {
+      "status": "complete",
+      "steps": [
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "ADD IMAGE SOURCE"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "TEXTAREA",
+            "id": "",
+            "text": ""
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "RECORD EXPLANATION"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "TEXTAREA",
+            "id": "explanation",
+            "text": ""
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Biology"
+          }
+        },
+        {
+          "action": "Enter Biology",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n0 / 6,000 CHARACTERS\nYO"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Economics"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Photosynthesis"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Check my explanation"
+          }
+        },
+        {
+          "action": "Enter analysis",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 CHARACTERS"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Each pump cycle creates a net negative charge inside the cell.\nDRILL DOWN"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "The pump requires an energy source to move ions against their concentration gradients.\nDRILL DOWN"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "The release of the phosphate group returns the pump to its original shape.\nDRILL DOWN"
+          }
+        },
+        {
+          "action": "Tab",
+          "focus": {
+            "tag": "SPAN",
+            "id": "",
+            "text": "The pump maintains different sodium and potassium concentrations across the cell membrane.\nSOURCE: The sodium-potassium "
+          }
+        },
+        {
+          "action": "Enter diagnostic",
+          "focus": {
+            "tag": "SPAN",
+            "id": "",
+            "text": "The pump maintains different sodium and potassium concentrations across the cell membrane."
+          }
+        },
+        {
+          "action": "Escape diagnostic",
+          "focus": {
+            "tag": "SPAN",
+            "id": "",
+            "text": "The pump maintains different sodium and potassium concentrations across the cell membrane."
+          }
+        },
+        {
+          "action": "Enter revise",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 CHARACTERS"
+          }
+        },
+        {
+          "action": "Type revision",
+          "focus": {
+            "tag": "TEXTAREA",
+            "id": "revision-explanation",
+            "text": ""
+          }
+        },
+        {
+          "action": "Enter revision",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 CHARACTERS"
+          }
+        }
+      ],
+      "error": null
+    },
+    "errors": []
+  },
+  {
+    "project": "iphone-14",
+    "viewport": "390x844",
+    "axe": [
+      {
+        "state": "empty",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "preset-loaded",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "analyzed",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "calibration-map-visible",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "revising",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "drill-down-open",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "contrast": [
+      {
+        "phase": "initial",
+        "state": "green",
+        "available": false
+      },
+      {
+        "phase": "initial",
+        "state": "yellow",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.5305 0.0126782 0.108282 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "red",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "grey",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.569754 0.000511438 0.0111726 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "green",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.479416 -0.0737361 0.0252891 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "yellow",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "red",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "grey",
+        "available": false
+      }
+    ],
+    "keyboard": {
+      "status": "not-run",
+      "steps": [],
+      "error": "Run on desktop project only"
+    },
+    "errors": []
+  },
+  {
+    "project": "ipad",
+    "viewport": "768x1024",
+    "axe": [
+      {
+        "state": "empty",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "preset-loaded",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "analyzed",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "calibration-map-visible",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "revising",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "state": "drill-down-open",
+        "status": "complete",
+        "violations": [
+          {
+            "id": "aria-allowed-attr",
+            "impact": "critical",
+            "help": "Elements must only use supported ARIA attributes",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(1)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 0ms;\">The pump maintains different sodium and potassium concentrations across the cell membrane.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--red"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--red\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 40ms;\">It moves three potassium ions out of the cell and two sodium ions into the cell.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(5)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 80ms;\">It uses ATP</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--grey"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--grey\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 120ms;\">and changes shape during the transport cycle.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              },
+              {
+                "target": [
+                  ".diagnostic--yellow.diagnostic:nth-child(9)"
+                ],
+                "html": "<span class=\"diagnostic diagnostic--yellow\" tabindex=\"0\" aria-expanded=\"false\" style=\"--diagnostic-delay: 160ms;\">The resulting gradients support the resting membrane potential and electrical signaling.</span>",
+                "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"false\""
+              }
+            ]
+          },
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  ".coverage-chip--partial"
+                ],
+                "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (3)</span>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--solid > small"
+                ],
+                "html": "<small>Felt sure + understood</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".calibration-cell--danger > small"
+                ],
+                "html": "<small>Felt sure + system gap</small>",
+                "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "id": "page-has-heading-one",
+            "impact": "moderate",
+            "help": "Page should contain a level-one heading",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
+            "nodes": [
+              {
+                "target": [
+                  "html"
+                ],
+                "html": "<html lang=\"en\">",
+                "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "contrast": [
+      {
+        "phase": "initial",
+        "state": "green",
+        "available": false
+      },
+      {
+        "phase": "initial",
+        "state": "yellow",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.5305 0.0126782 0.108282 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "red",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "initial",
+        "state": "grey",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.569754 0.000511438 0.0111726 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "green",
+        "available": true,
+        "foreground": "rgb(26, 25, 23)",
+        "wash": "oklab(0.479416 -0.0737361 0.0252891 / 0.14)",
+        "pageBackground": "rgb(251, 250, 247)",
+        "textOnWash": null,
+        "textOnPage": null,
+        "underThreshold": false
+      },
+      {
+        "phase": "revised",
+        "state": "yellow",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "red",
+        "available": false
+      },
+      {
+        "phase": "revised",
+        "state": "grey",
+        "available": false
+      }
+    ],
+    "keyboard": {
+      "status": "not-run",
+      "steps": [],
+      "error": "Run on desktop project only"
+    },
+    "errors": []
+  }
+]
