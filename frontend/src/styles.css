@@ -557,6 +557,10 @@ main {
   animation: note-in 150ms ease-out forwards;
 }
 
+.feedback-card[hidden] {
+  display: none;
+}
+
 .feedback-card::before {
   content: "";
   position: absolute;

@@ -1,0 +1,1733 @@
+{
+  "generatedAt": "2026-07-29T14:25:54.433Z",
+  "runsPerProject": 20,
+  "paceMs": 12000,
+  "records": [
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 1,
+      "retry": 0,
+      "initialMs": 7719,
+      "reviseMs": 21822,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 31708
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 2,
+      "retry": 0,
+      "initialMs": 1383,
+      "reviseMs": 265,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3465
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 3,
+      "retry": 0,
+      "initialMs": 1852,
+      "reviseMs": 843,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 8023
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 4,
+      "retry": 0,
+      "initialMs": 2464,
+      "reviseMs": 926,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6230
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 5,
+      "retry": 0,
+      "initialMs": 2347,
+      "reviseMs": 389,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6715
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 6,
+      "retry": 0,
+      "initialMs": null,
+      "reviseMs": null,
+      "initialCounts": null,
+      "revisedCounts": null,
+      "assertions": [],
+      "errors": [],
+      "status": "timedOut",
+      "expectedStatus": "passed",
+      "durationMs": 180008
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 7,
+      "retry": 0,
+      "initialMs": 847,
+      "reviseMs": 225,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3193
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 8,
+      "retry": 0,
+      "initialMs": 1575,
+      "reviseMs": 273,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4227
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 9,
+      "retry": 0,
+      "initialMs": 990,
+      "reviseMs": 312,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4182
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 10,
+      "retry": 0,
+      "initialMs": 2057,
+      "reviseMs": 433,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 9407
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 11,
+      "retry": 0,
+      "initialMs": 938,
+      "reviseMs": 197,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2852
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 12,
+      "retry": 0,
+      "initialMs": 984,
+      "reviseMs": 235,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3056
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 13,
+      "retry": 0,
+      "initialMs": 2357,
+      "reviseMs": 933,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 7050
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 14,
+      "retry": 0,
+      "initialMs": 887,
+      "reviseMs": 258,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2682
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 15,
+      "retry": 0,
+      "initialMs": 905,
+      "reviseMs": 329,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2765
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 16,
+      "retry": 0,
+      "initialMs": 873,
+      "reviseMs": 309,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2761
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 17,
+      "retry": 0,
+      "initialMs": 1026,
+      "reviseMs": 227,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 5808
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 18,
+      "retry": 0,
+      "initialMs": 876,
+      "reviseMs": 227,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2360
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 19,
+      "retry": 0,
+      "initialMs": 830,
+      "reviseMs": 220,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2093
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "run": 20,
+      "retry": 0,
+      "initialMs": 831,
+      "reviseMs": 832,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2571
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 1,
+      "retry": 0,
+      "initialMs": 839,
+      "reviseMs": 224,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2945
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 2,
+      "retry": 0,
+      "initialMs": 840,
+      "reviseMs": 225,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4111
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 3,
+      "retry": 0,
+      "initialMs": 1346,
+      "reviseMs": 222,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2683
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 4,
+      "retry": 0,
+      "initialMs": 828,
+      "reviseMs": 219,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2414
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 5,
+      "retry": 0,
+      "initialMs": 829,
+      "reviseMs": 337,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2932
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 6,
+      "retry": 0,
+      "initialMs": 2350,
+      "reviseMs": 2357,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6709
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 7,
+      "retry": 0,
+      "initialMs": 818,
+      "reviseMs": 244,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 10544
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 8,
+      "retry": 0,
+      "initialMs": 816,
+      "reviseMs": 223,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2096
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 9,
+      "retry": 0,
+      "initialMs": 827,
+      "reviseMs": 223,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1981
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 10,
+      "retry": 0,
+      "initialMs": 819,
+      "reviseMs": 215,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1803
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 11,
+      "retry": 0,
+      "initialMs": 830,
+      "reviseMs": 221,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4370
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 12,
+      "retry": 0,
+      "initialMs": 820,
+      "reviseMs": 222,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2692
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 13,
+      "retry": 0,
+      "initialMs": 1334,
+      "reviseMs": 323,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4493
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 14,
+      "retry": 0,
+      "initialMs": 2354,
+      "reviseMs": 1841,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 6694
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 15,
+      "retry": 0,
+      "initialMs": 1331,
+      "reviseMs": 833,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3417
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 16,
+      "retry": 0,
+      "initialMs": 4896,
+      "reviseMs": 334,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 8372
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 17,
+      "retry": 0,
+      "initialMs": 2352,
+      "reviseMs": 839,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 12745
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 18,
+      "retry": 0,
+      "initialMs": 821,
+      "reviseMs": 837,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2724
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 19,
+      "retry": 0,
+      "initialMs": 823,
+      "reviseMs": 839,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2724
+    },
+    {
+      "project": "ipad",
+      "viewport": "768x1024",
+      "run": 20,
+      "retry": 0,
+      "initialMs": 827,
+      "reviseMs": 223,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2092
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 1,
+      "retry": 0,
+      "initialMs": 819,
+      "reviseMs": 218,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2409
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 2,
+      "retry": 0,
+      "initialMs": 826,
+      "reviseMs": 226,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2146
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 3,
+      "retry": 0,
+      "initialMs": 1333,
+      "reviseMs": 211,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4671
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 4,
+      "retry": 0,
+      "initialMs": 835,
+      "reviseMs": 220,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1963
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 5,
+      "retry": 0,
+      "initialMs": 830,
+      "reviseMs": 219,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2516
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 6,
+      "retry": 0,
+      "initialMs": 821,
+      "reviseMs": 214,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2237
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 7,
+      "retry": 0,
+      "initialMs": 850,
+      "reviseMs": 220,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4888
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 8,
+      "retry": 0,
+      "initialMs": 7931,
+      "reviseMs": 835,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 10047
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 9,
+      "retry": 0,
+      "initialMs": 1333,
+      "reviseMs": 216,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2828
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 10,
+      "retry": 0,
+      "initialMs": 820,
+      "reviseMs": 225,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2304
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 11,
+      "retry": 0,
+      "initialMs": 1335,
+      "reviseMs": 322,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3880
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 12,
+      "retry": 0,
+      "initialMs": 814,
+      "reviseMs": 227,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2236
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 13,
+      "retry": 0,
+      "initialMs": 838,
+      "reviseMs": 219,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3144
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 14,
+      "retry": 0,
+      "initialMs": 829,
+      "reviseMs": 225,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2988
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 15,
+      "retry": 0,
+      "initialMs": 1335,
+      "reviseMs": 317,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2965
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 16,
+      "retry": 0,
+      "initialMs": 837,
+      "reviseMs": 219,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 1976
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 17,
+      "retry": 0,
+      "initialMs": 1857,
+      "reviseMs": 1345,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 4414
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 18,
+      "retry": 0,
+      "initialMs": 1327,
+      "reviseMs": 213,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 3141
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 19,
+      "retry": 0,
+      "initialMs": 1850,
+      "reviseMs": 841,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 5585
+    },
+    {
+      "project": "iphone-14",
+      "viewport": "390x844",
+      "run": 20,
+      "retry": 0,
+      "initialMs": 839,
+      "reviseMs": 215,
+      "initialCounts": {
+        "green": 0,
+        "yellow": 3,
+        "red": 1,
+        "grey": 1
+      },
+      "revisedCounts": {
+        "green": 4,
+        "yellow": 1,
+        "red": 0,
+        "grey": 1
+      },
+      "assertions": [
+        "initial yellow: pass",
+        "initial red: pass",
+        "revision diff wording: pass"
+      ],
+      "errors": [],
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMs": 2408
+    }
+  ]
+}
