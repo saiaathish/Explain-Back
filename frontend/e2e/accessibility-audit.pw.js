@@ -34,6 +34,42 @@ function writeReport(record) {
   );
 }
 
+async function mockAnalysis(page) {
+  await page.route("**/api/analyze", async (route) => {
+    const explanation = route.request().postDataJSON().explanation;
+    const flags = [];
+    const addFlag = (prop_id, state, text, anchor, hint, extra = {}) => {
+      const start = explanation.indexOf(text);
+      if (start < 0) return;
+      flags.push({ prop_id, state, start, end: start + text.length, anchor, hint, similarity: state === "red" ? 0.2 : 0.8, ...extra });
+    };
+    addFlag(
+      "audit-yellow",
+      "yellow",
+      "The pump exports three sodium ions and imports two potassium ions per cycle.",
+      "Three sodium ions leave while two potassium ions enter.",
+      "Add the ATP-driven shape change.",
+    );
+    addFlag(
+      "audit-red",
+      "red",
+      "It moves three potassium ions out of the cell and two sodium ions into the cell.",
+      "Three sodium ions leave while two potassium ions enter.",
+      "Reverse the ion directions and numbers.",
+      { misconception: "The ion directions are reversed.", refutation: "The pump exports sodium and imports potassium." },
+    );
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        concepts: [{ id: "transport", label: "Active transport", anchor: "The pump uses ATP." }],
+        flags,
+        follow_up: "Explain why ATP is necessary.",
+        coverage: { covered: [], partial: ["transport"], missing: [] },
+      }),
+    });
+  });
+}
+
 async function axeState(page, state) {
   try {
     const result = await new AxeBuilder({ page }).analyze();
@@ -206,6 +242,7 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
     keyboard: null,
     errors: [],
   };
+  await mockAnalysis(page);
   await page.goto("/");
   record.axe.push(await axeState(page, "empty"));
   await page.getByRole("button", { name: "Biology", exact: true }).click();
