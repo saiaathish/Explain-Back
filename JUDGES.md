@@ -1,7 +1,7 @@
 # For judges — see everything in 90 seconds
 
 1. Open https://explain-back.vercel.app/
-2. Click **Load Example**
+2. Click the **Biology** preset
 3. Click **Check my explanation**
    → Watch the highlights appear: green means understood, yellow means stated
      but never explained why, red means it contradicts the source, grey means

@@ -13,7 +13,7 @@ written down instead).
 | E | Same sentence three times | Production returned one normal result with no duplicate or overlapping visible diagnostic regions; the repeated explanation text remained intact and the page did not crash. | PASS |
 | F | Double-click analyze | A rapid double-click completed with one stable final analysis view. No flickering, blank state, stuck spinner, or duplicate result region was visible. | PASS |
 | G | Different language | Production returned a bounded analysis in about 10 seconds. It showed 0/6 covered, 6 missing, and one known-unknown diagnostic; there was no crash or hang. | PASS |
-| H | Long unpunctuated sentence | Production completed in about 12 seconds, under the 15-second expectation. The long input returned covered/partial/missing results and a follow-up question with no crash or infinite spinner. | PASS |
+| H | Long unpunctuated sentence | The production result was real, not a silent error: the page showed the submitted 324-character explanation, a populated concept coverage summary of Covered (1), Partial (3), Missing (2), a confidence calibration map, diagnostic legend, follow-up question, and the “Revise your explanation” control. It completed in approximately 12 seconds with no crash or infinite spinner. | PASS |
 
 ## Stop sign — Job 1
 
