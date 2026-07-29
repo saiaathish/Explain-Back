@@ -71,6 +71,7 @@ test.describe("production demo path", () => {
     if (paceMs > 0) await page.waitForTimeout(paceMs);
 
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await expect(page.getByRole("button", { name: "Biology", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Biology", exact: true }).click();
     await expect(page.locator(".source-textarea")).toHaveValue(/sodium/i);

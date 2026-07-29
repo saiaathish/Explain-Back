@@ -7,6 +7,7 @@ import DiffStrip from "./DiffStrip";
 import { calibrationSummary, sentenceRanges } from "./confidence";
 import { diffRuns } from "./diff";
 import FollowUp from "./FollowUp";
+import LandingPage from "./LandingPage";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
 import {
@@ -213,7 +214,7 @@ function ExplanationField({
   );
 }
 
-export default function App() {
+function Workspace() {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
   /* A run snapshot is `{ result, explanation, confidenceRanges }`: flags carry
@@ -791,7 +792,15 @@ export default function App() {
     <div className="app-shell">
       <header>
         <h1 className="brand">
-          Explain<span className="brand-accent">-</span>Back
+          <span className="brand-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
+          <span>
+            Explain<span className="brand-accent">-</span>Back
+          </span>
         </h1>
         <p>Explain it in your own words. See what holds up.</p>
       </header>
@@ -1081,4 +1090,23 @@ export default function App() {
   );
 }
 
+function App() {
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    if (!entered) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector("#source")?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [entered]);
+
+  return entered ? (
+    <Workspace />
+  ) : (
+    <LandingPage onStart={() => setEntered(true)} />
+  );
+}
+
+export default App;
 export { PRESETS, trimRangeSnapshot, validate };

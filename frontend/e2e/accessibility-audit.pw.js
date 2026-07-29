@@ -72,6 +72,15 @@ async function mockAnalysis(page) {
 
 async function axeState(page, state) {
   try {
+    await page.evaluate(async () => {
+      const animations = document
+        .getAnimations()
+        .filter((animation) => {
+          const endTime = animation.effect?.getComputedTiming().endTime;
+          return animation.playState !== "finished" && Number.isFinite(endTime);
+        });
+      await Promise.allSettled(animations.map((animation) => animation.finished));
+    });
     const result = await new AxeBuilder({ page }).analyze();
     return {
       state,
@@ -154,6 +163,7 @@ async function keyboardWalkthrough(page, record) {
   const steps = [];
   const note = (action, extra = {}) => steps.push({ action, ...extra });
   await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   await page.keyboard.press("Tab");
   let presetFocused = false;
   for (let index = 0; index < 40; index += 1) {
@@ -244,6 +254,7 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   };
   await mockAnalysis(page);
   await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   record.axe.push(await axeState(page, "empty"));
   await page.getByRole("button", { name: "Biology", exact: true }).click();
   await expect(page.locator("#explanation")).not.toHaveValue("");
