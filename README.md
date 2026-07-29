@@ -161,6 +161,45 @@ exact Vercel preview origin, then point the preview's `VITE_API_URL` to it.
 This keeps `main` and `https://explain-back.onrender.com` unchanged while the
 authenticated bearer-token and CORS paths are exercised end to end.
 
+### Hosted Phase 2 verification
+
+Run hosted authentication acceptance only against isolated preview URLs:
+
+```bash
+cd frontend
+E2E_BASE_URL=https://your-frontend-preview.vercel.app \
+E2E_API_URL=https://your-backend-preview.onrender.com \
+E2E_VERCEL_BYPASS_SECRET=your-preview-bypass-secret \
+E2E_CONFIRM_NON_PRODUCTION=YES \
+npm run test:e2e:hosted
+```
+
+`E2E_VERCEL_BYPASS_SECRET` is optional when the preview is public. The
+configuration fails closed when either URL is absent, uses HTTP, falls outside
+the project-scoped Vercel or PR-scoped Render hostname patterns, resolves both
+tiers to the same origin, or lacks the explicit non-production confirmation.
+The automated run proves anonymous session creation/restoration, exact preview
+CORS, malformed-token rejection, real JWT acceptance, and one-time 401
+refresh/replay. It disables traces, screenshots, and video for this
+credential-bearing flow and attaches token-free JSON evidence to Playwright's
+temporary output directory.
+
+The Google identity-link gate requires a human OAuth step and must run headed:
+
+```bash
+E2E_BASE_URL=https://your-frontend-preview.vercel.app \
+E2E_API_URL=https://your-backend-preview.onrender.com \
+E2E_VERCEL_BYPASS_SECRET=your-preview-bypass-secret \
+E2E_CONFIRM_NON_PRODUCTION=YES \
+E2E_GOOGLE_LINK=1 \
+npm run test:e2e:hosted -- --headed --grep "Google links"
+```
+
+That gate records only a hash of the user ID and asserts the anonymous UID is
+preserved, `is_anonymous` becomes false, a Google identity exists, the
+malicious `next` input is ignored, callback query/hash data is removed, and
+the linked session survives reload.
+
 ## Feature scope and the recorded demo
 
 The recorded walkthrough covers three features, in this order: the core overlay,

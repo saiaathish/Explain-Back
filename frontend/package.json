@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e:local": "playwright test --config=playwright.local.config.js"
+    "test:e2e:local": "playwright test --config=playwright.local.config.js",
+    "test:e2e:hosted": "playwright test --config=playwright.hosted.config.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.111.0",
