@@ -114,6 +114,44 @@ def test_generation_defaults_are_explicit_for_every_role_and_call(
             )
 
 
+def test_vision_request_payload_uses_content_parts_and_fallback_model(monkeypatch) -> None:
+    _set_prod(monkeypatch, model="prod-model")
+    monkeypatch.delenv("LLM_MODEL_VISION", raising=False)
+
+    payload = llm._vision_request_payload(
+        "Extract text", "data:image/png;base64,AA=="
+    )
+
+    assert payload["model"] == "prod-model"
+    assert payload["messages"] == [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Extract text"},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": "data:image/png;base64,AA=="},
+                },
+            ],
+        }
+    ]
+
+
+def test_vision_request_payload_prefers_vision_model(monkeypatch) -> None:
+    _set_prod(monkeypatch, model="prod-model")
+    monkeypatch.setenv("LLM_MODEL_VISION", "vision-model")
+
+    assert llm._vision_request_payload("prompt", "data:image/webp;base64,AA==")[
+        "model"
+    ] == "vision-model"
+
+
+def test_parse_text_response_accepts_plain_text_and_json_envelope() -> None:
+    assert llm.parse_text_response("  extracted text  ") == "extracted text"
+    assert llm.parse_text_response('{"text": "from json"}') == "from json"
+    assert llm.parse_text_response("```json\n{\"extracted_text\": \"fenced\"}\n```") == "fenced"
+
+
 def test_prod_request_payload_is_legacy_byte_shape(monkeypatch) -> None:
     _set_prod(monkeypatch)
     config = llm._configuration(call="c").generation
@@ -197,3 +235,99 @@ async def test_successful_response_logs_configured_and_provider_model(
     assert await llm._client_call("prompt", call="a") == '{"ok": true}'
     assert "configured_model=prod-model" in caplog.text
     assert "response_model=provider-model" in caplog.text
+
+
+def _status_exc(status: int, headers: dict[str, str] | None = None):
+    import httpx
+
+    request = httpx.Request("POST", "https://example.invalid/chat/completions")
+    response = httpx.Response(status, headers=headers or {}, request=request)
+    return httpx.HTTPStatusError("boom", request=request, response=response)
+
+
+def test_429_maps_to_rate_limit_error_with_retry_after() -> None:
+    error = llm._status_error(_status_exc(429, {"Retry-After": "12"}))
+    assert isinstance(error, llm.LLMRateLimitError)
+    assert error.retry_after == 12.0
+
+
+def test_429_without_retry_after_header_leaves_it_unset() -> None:
+    error = llm._status_error(_status_exc(429))
+    assert isinstance(error, llm.LLMRateLimitError)
+    assert error.retry_after is None
+
+
+def test_malformed_retry_after_header_is_ignored() -> None:
+    error = llm._status_error(_status_exc(429, {"Retry-After": "Wed, 21 Oct 2026"}))
+    assert isinstance(error, llm.LLMRateLimitError)
+    assert error.retry_after is None
+
+
+def test_other_status_codes_stay_generic_response_errors() -> None:
+    error = llm._status_error(_status_exc(500))
+    assert isinstance(error, llm.LLMResponseError)
+    assert not isinstance(error, llm.LLMRateLimitError)
+
+
+def test_rate_limit_backoff_honours_provider_window() -> None:
+    throttled = llm.LLMRateLimitError("throttled", retry_after=30.0)
+    assert llm._backoff_seconds(throttled, 0) == 30.0
+    # With no header the throttle still waits far longer than a parse retry.
+    assert llm._backoff_seconds(llm.LLMRateLimitError("throttled"), 0) == 8.0
+    assert llm._backoff_seconds(llm.LLMResponseError("bad"), 0) == 0.4
+
+
+@pytest.mark.asyncio
+async def test_call_json_reraises_rate_limit_instead_of_parse_failure(
+    monkeypatch,
+) -> None:
+    """A throttled run must not be reported as unparseable model output."""
+
+    slept: list[float] = []
+
+    async def throttled(_prompt: str, timeout: float, call: str) -> str:
+        raise llm.LLMRateLimitError("throttled", retry_after=5.0)
+
+    async def record_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    monkeypatch.setattr(llm, "_client_call", throttled)
+    monkeypatch.setattr(llm.asyncio, "sleep", record_sleep)
+
+    with pytest.raises(llm.LLMRateLimitError):
+        await llm.call_json("prompt", retries=2, call="b")
+    assert slept == [5.0, 5.0]
+
+
+@pytest.mark.asyncio
+async def test_call_audio_text_reraises_rate_limit(monkeypatch) -> None:
+    async def throttled(*_args, **_kwargs) -> str:
+        raise llm.LLMRateLimitError("throttled")
+
+    async def no_sleep(_seconds: float) -> None:
+        return None
+
+    monkeypatch.setattr(llm, "_audio_client_call", throttled)
+    monkeypatch.setattr(llm.asyncio, "sleep", no_sleep)
+
+    with pytest.raises(llm.LLMRateLimitError):
+        await llm.call_audio_text("prompt", "AA==", "webm")
+
+
+def test_audio_request_payload_uses_input_audio_part(monkeypatch) -> None:
+    _set_prod(monkeypatch)
+    monkeypatch.delenv("LLM_MODEL_AUDIO", raising=False)
+    payload = llm._audio_request_payload("transcribe", "AA==", "webm")
+    assert payload["model"] == "prod-model"
+    parts = payload["messages"][0]["content"]
+    assert parts[0] == {"type": "text", "text": "transcribe"}
+    assert parts[1] == {
+        "type": "input_audio",
+        "input_audio": {"data": "AA==", "format": "webm"},
+    }
+
+
+def test_audio_request_payload_prefers_audio_model(monkeypatch) -> None:
+    _set_prod(monkeypatch)
+    monkeypatch.setenv("LLM_MODEL_AUDIO", "audio-model")
+    assert llm._audio_request_payload("p", "AA==", "webm")["model"] == "audio-model"

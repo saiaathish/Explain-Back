@@ -22,6 +22,79 @@ def test_clean_validation_errors(source: str, explanation: str, message: str) ->
         _validate_lengths(source, explanation)
 
 
+def test_normalize_image_rejects_non_data_url() -> None:
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": "https://example.com/image.png"},
+        )
+    assert response.status_code == 400
+    assert "strict base64 data URL" in response.json()["detail"]
+
+
+def test_normalize_image_rejects_unsupported_mime() -> None:
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": "data:image/gif;base64,AA=="},
+        )
+    assert response.status_code == 400
+    assert "PNG, JPEG, or WebP" in response.json()["detail"]
+
+
+def test_normalize_image_rejects_decoded_payload_over_8mb() -> None:
+    encoded = "data:image/png;base64," + ("A" * (((main.MAX_IMAGE_BYTES + 2) + 2) // 3 * 4))
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": encoded},
+        )
+    assert response.status_code == 413
+    assert "under 8 MB" in response.json()["detail"]
+
+
+def test_normalize_image_returns_extracted_text(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+
+    async def extract(prompt: str, image_data_url: str, **_kwargs) -> str:
+        seen["prompt"] = prompt
+        seen["image"] = image_data_url
+        return "The extracted source."
+
+    monkeypatch.setattr(main, "call_vision_text", extract)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": "data:image/jpeg;base64,AA=="},
+        )
+    assert response.status_code == 200
+    assert response.json() == {"text": "The extracted source."}
+    assert seen["image"].startswith("data:image/jpeg;base64,")
+    assert len(seen["prompt"]) <= 6000
+
+
+@pytest.mark.parametrize(
+    ("error", "status", "message"),
+    [
+        (llm.LLMConfigurationError("missing"), 503, "missing"),
+        (llm.LLMTimeoutError("slow"), 504, "timed out"),
+        (llm.LLMResponseError("bad"), 502, "unparseable response"),
+    ],
+)
+def test_normalize_image_maps_provider_errors(monkeypatch, error, status, message) -> None:
+    async def fail(*_args, **_kwargs):
+        raise error
+
+    monkeypatch.setattr(main, "call_vision_text", fail)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": "data:image/png;base64,AA=="},
+        )
+    assert response.status_code == status
+    assert message in response.json()["detail"]
+
+
 def test_corrupt_model_output_is_visible_error_not_all_grey(monkeypatch) -> None:
     async def corrupt(_prompt: str, timeout: float, call: str) -> str:
         assert call == "a"
@@ -260,3 +333,113 @@ def test_low_similarity_claim_does_not_count_as_concept_coverage() -> None:
     assert coverage.covered == []
     assert coverage.partial == []
     assert coverage.missing == ["K1", "K2"]
+
+
+def test_transcribe_rejects_non_data_url() -> None:
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "https://example.com/clip.webm"},
+        )
+    assert response.status_code == 400
+    assert "strict base64 data URL" in response.json()["detail"]
+
+
+def test_transcribe_rejects_non_audio_mime() -> None:
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "data:image/png;base64,AA=="},
+        )
+    assert response.status_code == 400
+    assert "strict base64 data URL" in response.json()["detail"]
+
+
+def test_transcribe_rejects_unsupported_audio_format() -> None:
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "data:audio/flac;base64,AA=="},
+        )
+    assert response.status_code == 400
+    assert "Unsupported audio format" in response.json()["detail"]
+
+
+def test_transcribe_rejects_payload_over_12mb() -> None:
+    encoded = "data:audio/webm;base64," + (
+        "A" * (((main.MAX_AUDIO_BYTES + 2) + 2) // 3 * 4)
+    )
+    with TestClient(main.app) as client:
+        response = client.post("/api/transcribe", json={"audio_data_url": encoded})
+    assert response.status_code == 413
+    assert "under 12 MB" in response.json()["detail"]
+
+
+def test_transcribe_strips_codecs_and_passes_provider_format(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+
+    async def transcribe_audio(prompt: str, data: str, fmt: str, **_kwargs) -> str:
+        seen["prompt"] = prompt
+        seen["data"] = data
+        seen["format"] = fmt
+        return "The pump moves three sodium ions out."
+
+    monkeypatch.setattr(main, "call_audio_text", transcribe_audio)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "data:audio/webm;codecs=opus;base64,AA=="},
+        )
+    assert response.status_code == 200
+    assert response.json() == {"text": "The pump moves three sodium ions out."}
+    # The provider takes bare base64 and a format name, never the data URL prefix.
+    assert seen["data"] == "AA=="
+    assert seen["format"] == "webm"
+
+
+@pytest.mark.parametrize(
+    ("error", "status", "message"),
+    [
+        (llm.LLMConfigurationError("missing"), 503, "missing"),
+        (llm.LLMTimeoutError("slow"), 504, "timed out"),
+        (llm.LLMResponseError("bad"), 502, "unparseable response"),
+        (llm.LLMRateLimitError("throttled"), 429, "rate limiting"),
+    ],
+)
+def test_transcribe_maps_provider_errors(monkeypatch, error, status, message) -> None:
+    async def fail(*_args, **_kwargs):
+        raise error
+
+    monkeypatch.setattr(main, "call_audio_text", fail)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/transcribe",
+            json={"audio_data_url": "data:audio/webm;base64,AA=="},
+        )
+    assert response.status_code == status
+    assert message in response.json()["detail"]
+
+
+def test_provider_throttling_is_429_not_502(monkeypatch) -> None:
+    """A rate limit must never be reported as unparseable model output."""
+
+    async def throttled(*_args, **_kwargs):
+        raise llm.LLMRateLimitError("throttled", retry_after=7.2)
+
+    monkeypatch.setattr(main, "call_vision_text", throttled)
+    with TestClient(main.app) as client:
+        response = client.post(
+            "/api/normalize-image",
+            json={"image_data_url": "data:image/png;base64,AA=="},
+        )
+    assert response.status_code == 429
+    assert response.headers["Retry-After"] == "8"
+    assert "unparseable" not in response.json()["detail"]
+
+
+def test_model_backed_endpoints_are_rate_limited() -> None:
+    assert main.RATE_LIMITED_PATHS == {
+        "/api/analyze",
+        "/api/normalize-image",
+        "/api/transcribe",
+    }

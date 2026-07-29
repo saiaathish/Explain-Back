@@ -1,8 +1,11 @@
 import asyncio
+import base64
+import binascii
 import hashlib
 import logging
 import math
 import os
+import re
 import time
 from collections import deque
 from contextlib import asynccontextmanager, suppress
@@ -24,8 +27,11 @@ from backend.config import (
 from backend.extract import extract_concepts, extract_propositions
 from backend.llm import (
     LLMConfigurationError,
+    LLMRateLimitError,
     LLMResponseError,
     LLMTimeoutError,
+    call_audio_text,
+    call_vision_text,
     is_configured,
 )
 from backend.misconceptions import match
@@ -36,6 +42,10 @@ from backend.schemas import (
     Concept,
     Coverage,
     Flag,
+    NormalizeImageRequest,
+    NormalizeImageResponse,
+    TranscribeRequest,
+    TranscribeResponse,
 )
 from backend.verify import verify
 
@@ -47,6 +57,10 @@ _rate_limit_events: dict[str, deque[float]] = {}
 _rate_limit_last_cleanup = 0.0
 RATE_LIMIT_MAX_REQUESTS = 20
 RATE_LIMIT_WINDOW_SECONDS = 60.0
+# Every endpoint that spends a model call shares one per-client budget.
+RATE_LIMITED_PATHS = frozenset(
+    {"/api/analyze", "/api/normalize-image", "/api/transcribe"}
+)
 PREWARM_SOURCE_FILES = (
     "source_sodium_pump.txt",
     "source_supply_demand.txt",
@@ -59,14 +73,47 @@ DEMO_EXPLANATION_FILES = (
     "demo_video.txt",
     "demo_video_revised.txt",
 )
+MAX_IMAGE_BYTES = 8 * 1024 * 1024
+_IMAGE_DATA_URL_RE = re.compile(
+    r"^data:(?P<mime>image/(?:png|jpeg|webp));base64,(?P<data>[A-Za-z0-9+/]*={0,2})$"
+)
+MAX_AUDIO_BYTES = 12 * 1024 * 1024
+# MediaRecorder emits webm/ogg opus in Chrome and Firefox, mp4/aac in Safari.
+_AUDIO_FORMATS = {
+    "audio/webm": "webm",
+    "audio/ogg": "ogg",
+    "audio/mp4": "mp4",
+    "audio/mpeg": "mp3",
+    "audio/wav": "wav",
+    "audio/x-wav": "wav",
+}
+_AUDIO_DATA_URL_RE = re.compile(
+    r"^data:(?P<mime>audio/[A-Za-z0-9.+-]+)(?P<codecs>;codecs=[^;,]+)?"
+    r";base64,(?P<data>[A-Za-z0-9+/]*={0,2})$"
+)
+_AUDIO_PROMPT = (
+    "Transcribe the spoken explanation in this audio verbatim. "
+    "Preserve the speaker's own wording, including technical terms. "
+    "Do not summarize, correct, translate, or add commentary. "
+    "Return only the transcript. If no speech is present, return an empty string. "
+    "Keep the response under 4000 characters."
+)
+_IMAGE_PROMPT = (
+    "Extract only the readable source-material text from this image. "
+    "Preserve wording, paragraph breaks, and symbols where possible. "
+    "Do not describe the image, add a title, explain anything, or invent text. "
+    "Return only the extracted text. If no readable text is present, return an empty string. "
+    "Keep the response under 6000 characters."
+)
 
 
 def _cache_key(source: str) -> str:
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
-def _result_cache_key(source: str, explanation: str) -> str:
-    return hashlib.sha256(f"{source}\x00{explanation}".encode("utf-8")).hexdigest()
+def _result_cache_key(source: str, explanation: str, focused: bool = False) -> str:
+    mode = "focused" if focused else "standard"
+    return hashlib.sha256(f"{mode}\x00{source}\x00{explanation}".encode("utf-8")).hexdigest()
 
 
 async def _prewarm_source(sample: Path) -> None:
@@ -117,10 +164,10 @@ app = FastAPI(title="Explain-Back", lifespan=lifespan)
 
 
 @app.middleware("http")
-async def rate_limit_analyze(request: Request, call_next):
+async def rate_limit_model_calls(request: Request, call_next):
     global _rate_limit_last_cleanup
 
-    if request.method != "POST" or request.url.path != "/api/analyze":
+    if request.method != "POST" or request.url.path not in RATE_LIMITED_PATHS:
         return await call_next(request)
 
     forwarded_for = request.headers.get("x-forwarded-for", "")
@@ -172,10 +219,10 @@ app.add_middleware(
 )
 
 
-def _validate_lengths(source: str, explanation: str) -> None:
+def _validate_lengths(source: str, explanation: str, focused: bool = False) -> None:
     if not source or not explanation:
         raise HTTPException(400, "Paste both source material and your explanation.")
-    if len(source) < MIN_SOURCE_CHARS:
+    if not focused and len(source) < MIN_SOURCE_CHARS:
         raise HTTPException(400, "Source too short. Paste 2–3 paragraphs.")
     if len(explanation) < MIN_EXPLANATION_CHARS:
         raise HTTPException(400, "Explanation too short. Write at least two full sentences.")
@@ -209,13 +256,123 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+def _retry_after_header(exc: LLMRateLimitError) -> dict[str, str] | None:
+    if exc.retry_after is None:
+        return None
+    return {"Retry-After": str(max(1, math.ceil(exc.retry_after)))}
+
+
+def _validate_image_data_url(image_data_url: str) -> str:
+    if not isinstance(image_data_url, str):
+        raise HTTPException(400, "Image must be a PNG, JPEG, or WebP data URL.")
+    match = _IMAGE_DATA_URL_RE.fullmatch(image_data_url.strip())
+    if match is None:
+        raise HTTPException(
+            400,
+            "Image must be a strict base64 data URL using PNG, JPEG, or WebP.",
+        )
+    encoded = match.group("data")
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise HTTPException(400, "Image data URL contains invalid base64.") from exc
+    if not decoded:
+        raise HTTPException(400, "Image data URL is empty.")
+    if len(decoded) > MAX_IMAGE_BYTES:
+        raise HTTPException(413, "Image is too large. Keep it under 8 MB.")
+    return image_data_url.strip()
+
+
+@app.post("/api/normalize-image", response_model=NormalizeImageResponse)
+async def normalize_image(
+    request_body: NormalizeImageRequest,
+) -> NormalizeImageResponse:
+    image_data_url = _validate_image_data_url(request_body.image_data_url)
+    try:
+        text = await call_vision_text(
+            _IMAGE_PROMPT,
+            image_data_url,
+            max_chars=MAX_SOURCE_CHARS,
+        )
+    except LLMTimeoutError as exc:
+        raise HTTPException(504, "The vision model timed out. Please try again.") from exc
+    except LLMRateLimitError as exc:
+        raise HTTPException(
+            429,
+            "The model provider is rate limiting this app. Please try again shortly.",
+            headers=_retry_after_header(exc),
+        ) from exc
+    except LLMConfigurationError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    except LLMResponseError as exc:
+        raise HTTPException(
+            502,
+            "The vision model returned an unparseable response. Please try again.",
+        ) from exc
+    return NormalizeImageResponse(text=text)
+
+
+def _validate_audio_data_url(audio_data_url: str) -> tuple[str, str]:
+    """Return (base64 payload, provider format) for a strict audio data URL."""
+
+    if not isinstance(audio_data_url, str):
+        raise HTTPException(400, "Audio must be a recorded audio data URL.")
+    match = _AUDIO_DATA_URL_RE.fullmatch(audio_data_url.strip())
+    if match is None:
+        raise HTTPException(
+            400, "Audio must be a strict base64 data URL with an audio MIME type."
+        )
+    audio_format = _AUDIO_FORMATS.get(match.group("mime").lower())
+    if audio_format is None:
+        raise HTTPException(
+            400, "Unsupported audio format. Record WebM, Ogg, MP4, MP3, or WAV."
+        )
+    encoded = match.group("data")
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise HTTPException(400, "Audio data URL contains invalid base64.") from exc
+    if not decoded:
+        raise HTTPException(400, "Audio data URL is empty.")
+    if len(decoded) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Recording is too large. Keep it under 12 MB.")
+    return encoded, audio_format
+
+
+@app.post("/api/transcribe", response_model=TranscribeResponse)
+async def transcribe(request_body: TranscribeRequest) -> TranscribeResponse:
+    audio_base64, audio_format = _validate_audio_data_url(request_body.audio_data_url)
+    try:
+        text = await call_audio_text(
+            _AUDIO_PROMPT,
+            audio_base64,
+            audio_format,
+            max_chars=MAX_EXPLANATION_CHARS,
+        )
+    except LLMTimeoutError as exc:
+        raise HTTPException(504, "Transcription timed out. Please try again.") from exc
+    except LLMRateLimitError as exc:
+        raise HTTPException(
+            429,
+            "The model provider is rate limiting this app. Please try again shortly.",
+            headers=_retry_after_header(exc),
+        ) from exc
+    except LLMConfigurationError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    except LLMResponseError as exc:
+        raise HTTPException(
+            502, "Transcription returned an unparseable response. Please try again."
+        ) from exc
+    return TranscribeResponse(text=text)
+
+
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
     started_at = time.perf_counter()
     source = request_body.source.strip()
     explanation = request_body.explanation.strip()
-    _validate_lengths(source, explanation)
-    result_key = _result_cache_key(source, explanation)
+    _validate_lengths(source, explanation, request_body.focused)
+    result_key = _result_cache_key(source, explanation, request_body.focused)
     cached_result = _result_cache.get(result_key)
     if cached_result is not None:
         return cached_result
@@ -225,7 +382,19 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
         concept_cache_hit = concepts is not None
         concepts_started_at = time.perf_counter()
         propositions_started_at = time.perf_counter()
-        if concepts is None:
+        if request_body.focused:
+            concepts = [
+                Concept(
+                    id="K1",
+                    label="Focused concept",
+                    anchor=source,
+                    anchor_start=0,
+                    anchor_end=len(source),
+                )
+            ]
+            propositions = await extract_propositions(source, explanation)
+            concept_cache_hit = False
+        elif concepts is None:
             concepts, propositions = await asyncio.gather(
                 extract_concepts(source),
                 extract_propositions(source, explanation),
@@ -267,6 +436,12 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
         )
     except LLMTimeoutError as exc:
         raise HTTPException(504, "The model timed out. Please try again.") from exc
+    except LLMRateLimitError as exc:
+        raise HTTPException(
+            429,
+            "The model provider is rate limiting this app. Please try again shortly.",
+            headers=_retry_after_header(exc),
+        ) from exc
     except LLMConfigurationError as exc:
         raise HTTPException(503, str(exc)) from exc
     except LLMResponseError as exc:

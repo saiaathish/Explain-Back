@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 Certainty = Literal["high", "medium", "low"]
@@ -50,6 +50,39 @@ class Flag(BaseModel):
 class AnalyzeRequest(BaseModel):
     source: str
     explanation: str
+    focused: bool = False
+
+
+class NormalizeImageRequest(BaseModel):
+    """Request containing an image data URL kept entirely in memory."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    image_data_url: str = Field(
+        validation_alias=AliasChoices("image_data_url", "image", "data_url")
+    )
+
+
+class NormalizeImageResponse(BaseModel):
+    """Editable text extracted from the submitted image."""
+
+    text: str
+
+
+class TranscribeRequest(BaseModel):
+    """Request containing recorded audio kept entirely in memory."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    audio_data_url: str = Field(
+        validation_alias=AliasChoices("audio_data_url", "audio", "data_url")
+    )
+
+
+class TranscribeResponse(BaseModel):
+    """Editable transcript extracted from the submitted audio."""
+
+    text: str
 
 
 class Coverage(BaseModel):

@@ -26,25 +26,19 @@ function cleanFlags(flags, text) {
   return clean;
 }
 
-function FeedbackCard({ flag }) {
+function FeedbackCard({ flag, tooltipId }) {
   return (
-    <span className="feedback-card" role="tooltip">
-      <strong>Exact source anchor</strong>
-      <q>{flag.anchor}</q>
+    <span className="feedback-card" id={tooltipId} role="tooltip">
+      <span className="feedback-source">
+        <span className="feedback-source-label">Source:</span> <q>{flag.anchor}</q>
+      </span>
       {flag.misconception && (
-        <>
-          <strong>Misconception</strong>
-          <span>{flag.misconception}</span>
-        </>
+        <strong className="feedback-misconception">{flag.misconception}</strong>
       )}
-      {flag.refutation && (
-        <>
-          <strong>Why this doesn’t hold</strong>
-          <span>{flag.refutation}</span>
-        </>
-      )}
-      <strong>Revision hint</strong>
-      <span>{flag.hint}</span>
+      {flag.refutation && <span className="feedback-refutation">{flag.refutation}</span>}
+      <span className="feedback-hint">
+        <strong>Try:</strong> {flag.hint}
+      </span>
     </span>
   );
 }
@@ -58,7 +52,7 @@ const TINTS = {
   grey: "#eceef1",
 };
 
-export default function Overlay({ explanation, flags, improvedIds }) {
+export default function Overlay({ explanation, flags, improvedIds, dangerIds = [] }) {
   const [active, setActive] = useState(null);
   const segments = useMemo(() => {
     const clean = cleanFlags(flags, explanation);
@@ -89,35 +83,61 @@ export default function Overlay({ explanation, flags, improvedIds }) {
 
   return (
     <p className="overlay" aria-label="Your explanation with diagnostic highlights">
-      {segments.map((segment) => {
+      {segments.map((segment, index) => {
         const improvedFrom = segment.flag && improvedIds?.get?.(segment.flag.prop_id);
         return segment.flag ? (
           <span
             className={`diagnostic diagnostic--${segment.flag.state}${
+              dangerIds.includes(segment.flag.prop_id) ? " diagnostic--danger" : ""
+            }${
               improvedFrom ? " hl-improved" : ""
             }`}
             key={segment.key}
             style={
               improvedFrom
                 ? {
+                    "--diagnostic-delay": `${index * 20}ms`,
                     "--hl-from": TINTS[improvedFrom],
                     "--hl-to": TINTS[segment.flag.state],
                   }
-                : undefined
+                : { "--diagnostic-delay": `${index * 20}ms` }
             }
             tabIndex={segment.flag.state === "green" ? -1 : 0}
-            onMouseEnter={() => setActive(segment.key)}
-            onMouseLeave={() => setActive(null)}
-            /* Touch devices have no hover; a tap must open and close the card. */
-            onClick={() =>
-              setActive((current) => (current === segment.key ? null : segment.key))
-            }
-            onFocus={() => setActive(segment.key)}
+            aria-describedby={active === segment.key ? `feedback-${segment.flag.prop_id}` : undefined}
+            aria-expanded={active === segment.key}
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") setActive(segment.key);
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType === "mouse") setActive(null);
+            }}
+            onPointerUp={(event) => {
+              if (event.pointerType !== "mouse") {
+                setActive((current) => (current === segment.key ? null : segment.key));
+              }
+            }}
+            onFocus={(event) => {
+              if (event.currentTarget.matches(":focus-visible")) {
+                setActive(segment.key);
+              }
+            }}
             onBlur={() => setActive(null)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setActive(null);
+              }
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setActive((current) => (current === segment.key ? null : segment.key));
+              }
+            }}
           >
             {segment.text}
             {segment.flag.state !== "green" && active === segment.key && (
-              <FeedbackCard flag={segment.flag} />
+              <FeedbackCard
+                flag={segment.flag}
+                tooltipId={`feedback-${segment.flag.prop_id}`}
+              />
             )}
           </span>
         ) : (

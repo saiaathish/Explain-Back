@@ -1,16 +1,16 @@
-# Graph Report - Explain-Back  (2026-07-27)
+# Graph Report - Explain-Back  (2026-07-28)
 
 ## Corpus Check
-- 54 files · ~31,619 words
+- 67 files · ~45,179 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 410 nodes · 781 edges · 37 communities (28 shown, 9 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.8)
+- 552 nodes · 1058 edges · 39 communities (30 shown, 9 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f51c69be`
+- Built from commit: `84cdc9cd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -30,7 +30,7 @@
 - App.jsx
 - llm.py
 - prompts.py
-- extract.py
+- The Revise Loop — build and acceptance report
 - test_resolve.py
 - Explain-Back
 - vercel.json
@@ -49,18 +49,20 @@
 - prompts.py
 - diagnose_misses.py
 - Pre-submission fix run
+- Implementation plan — Explain-Back visual pass
+- App.jsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `Proposition` - 27 edges
-2. `analyze()` - 23 edges
-3. `Concept` - 22 edges
-4. `active_model()` - 20 edges
-5. `is_configured()` - 16 edges
-6. `run()` - 16 edges
-7. `locate_spans()` - 15 edges
-8. `Flag` - 15 edges
-9. `AnalyzeRequest` - 15 edges
-10. `active_role()` - 14 edges
+2. `analyze()` - 25 edges
+3. `Concept` - 23 edges
+4. `LLMResponseError` - 20 edges
+5. `active_model()` - 20 edges
+6. `is_configured()` - 16 edges
+7. `run()` - 16 edges
+8. `locate_spans()` - 15 edges
+9. `call_json()` - 15 edges
+10. `Flag` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `test_alignment_embeds_student_justification_with_claim()` --indirect_call--> `align()`  [INFERRED]
@@ -77,7 +79,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (37 total, 9 thin omitted)
+## Communities (39 total, 9 thin omitted)
 
 ### Community 0 - "11. Five-day schedule"
 Cohesion: 0.12
@@ -92,36 +94,36 @@ Cohesion: 0.40
 Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo layout, 3. Data model, Explain-Back — Complete Build Blueprint
 
 ### Community 3 - "main.py"
-Cohesion: 0.11
-Nodes (30): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), _cache_key(), compute_coverage(), lifespan() (+22 more)
+Cohesion: 0.15
+Nodes (24): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), Concept, Proposition, _cap_hint() (+16 more)
 
 ### Community 4 - "package.json"
 Cohesion: 0.09
 Nodes (21): dependencies, react, react-dom, vite, @vitejs/plugin-react, devDependencies, vitest, name (+13 more)
 
 ### Community 12 - "App.jsx"
-Cohesion: 0.13
-Nodes (12): analyze(), API_BASE, App(), STAGES, ConceptList(), groupById(), FollowUp(), ITEMS (+4 more)
+Cohesion: 0.16
+Nodes (14): claimEntries(), classifyTransition(), coverageOf(), diffRuns(), isImprovement(), LABELS, normalizeClaim(), ORDER (+6 more)
 
 ### Community 13 - "llm.py"
-Cohesion: 0.10
-Nodes (46): extract_propositions(), active_model(), active_role(), call_json(), _client_call(), _configuration(), _generation_config(), GenerationConfig (+38 more)
+Cohesion: 0.07
+Nodes (63): _audio_client_call(), _audio_configuration(), _audio_generation_config(), _audio_request_payload(), _backoff_seconds(), call_audio_text(), call_json(), call_vision_text() (+55 more)
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.10
 Nodes (19): Architectural invariants, Executive status, Explain-Back hardening report, Files intentionally not changed, Final gate hardening, Five original misses, Golden progression, Phase A — diagnosis (+11 more)
 
-### Community 15 - "extract.py"
-Cohesion: 0.27
-Nodes (13): LLMResponseError, _cap_hint(), _follow_up(), Any, _validate_response(), verify(), RuntimeError, proposition() (+5 more)
+### Community 15 - "The Revise Loop — build and acceptance report"
+Cohesion: 0.14
+Nodes (13): Acceptance tests, Additions and removals are no longer displayed, Correctness of the diff, Demo fixture output, Demo path, Found and not fixed, Functional, Invariants (+5 more)
 
 ### Community 16 - "test_resolve.py"
 Cohesion: 0.41
 Nodes (13): is_specific(), resolve(), Verdict, proposition(), test_categorical_transport_claims_are_specific(), test_hedged_contradiction_is_grey(), test_hedged_entailment_is_grey(), test_low_confidence_entailment_is_grey() (+5 more)
 
 ### Community 17 - "Explain-Back"
-Cohesion: 0.25
-Nodes (7): Architecture, Calibration and gates, Deployment, Explain-Back, Limitations, Local setup, Why this design
+Cohesion: 0.22
+Nodes (8): Architecture, Calibration and gates, Deployment, Explain-Back, Feature scope and the recorded demo, Limitations, Local setup, Why this design
 
 ### Community 19 - "vercel.json"
 Cohesion: 0.33
@@ -132,8 +134,8 @@ Cohesion: 0.14
 Nodes (13): `01_fluent_unjustified.txt`, `02_reversed_stoich.txt`, `06_correct.txt`, `09_mixed_partial.txt`, `10_mixed_justification.txt`, Baseline and method, Class 1: propositions that receive no matching diagnostic, Class 2: valid justification is never selected (+5 more)
 
 ### Community 24 - "embed"
-Cohesion: 0.19
-Nodes (19): _agreement(), best_flag(), characterize(), _determinism(), main(), overlap(), parse_args(), Any (+11 more)
+Cohesion: 0.08
+Nodes (30): _validate_lengths(), RuntimeError, _agreement(), best_flag(), characterize(), _determinism(), main(), _model_header() (+22 more)
 
 ### Community 25 - "extract.py"
 Cohesion: 0.17
@@ -172,32 +174,40 @@ Cohesion: 0.22
 Nodes (14): call_a_prompt(), call_b_prompt(), call_c_prompt(), concept_prompt(), _items_text(), proposition_prompt(), Any, LLM prompt templates for Explain-Back.  The templates state the intended respons (+6 more)
 
 ### Community 35 - "diagnose_misses.py"
-Cohesion: 0.31
-Nodes (12): extract_concepts(), best_flag(), best_proposition(), overlap(), parse_args(), Any, Namespace, Repeat the five known golden misses and capture Call B diagnostics.  This is an (+4 more)
+Cohesion: 0.07
+Nodes (64): extract_concepts(), extract_propositions(), active_model(), active_role(), is_configured(), Return the model selected by the centralized role/call registry., analyze(), _cache_key() (+56 more)
 
 ### Community 36 - "Pre-submission fix run"
 Cohesion: 0.40
-Nodes (4): Batch outcomes, Pre-submission fix run, Regression evidence, Remaining work
+Nodes (4): Batch outcomes, Not fixed, and why, Pre-submission fix run, Regression evidence
+
+### Community 37 - "Implementation plan — Explain-Back visual pass"
+Cohesion: 0.25
+Nodes (7): 1. Confidence calibration — frontend-only, no extra model call, 2. Voice explanation — browser speech recognition, editable transcript, 3. Image source input — in-memory vision normalization, 4. Concept drill-down — focused inline workflow, 5. Subject presets — frontend fixture-backed buttons, 6. Verification and graph maintenance, Upgrade implementation plan
+
+### Community 38 - "App.jsx"
+Cohesion: 0.07
+Nodes (29): analyze(), API_BASE, normalizeImage(), transcribeAudio(), App(), IMAGE_TYPES, PRESETS, STAGES (+21 more)
 
 ## Knowledge Gaps
-- **127 isolated node(s):** `_GenerationDefaults`, `name`, `private`, `version`, `type` (+122 more)
+- **151 isolated node(s):** `_GenerationDefaults`, `name`, `private`, `version`, `type` (+146 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Proposition` connect `main.py` to `diagnose_misses.py`, `llm.py`, `extract.py`, `test_resolve.py`, `embed`, `extract.py`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **Why does `active_model()` connect `llm.py` to `diagnose_misses.py`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `resolve()` connect `test_resolve.py` to `main.py`, `llm.py`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `Proposition` connect `main.py` to `test_resolve.py`, `extract.py`, `diagnose_misses.py`, `embed`?**
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `resolve()` connect `test_resolve.py` to `main.py`, `diagnose_misses.py`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **Why does `active_model()` connect `diagnose_misses.py` to `embed`, `llm.py`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **What connects `_GenerationDefaults`, `name`, `private` to the rest of the system?**
-  _127 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _151 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
-- **Should `main.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.11265969802555169 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
+- **Should `llm.py` be split into smaller, more focused modules?**
+  _Cohesion score 0.07055630936227951 - nodes in this community are weakly interconnected._

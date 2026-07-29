@@ -40,6 +40,13 @@ can retry malformed output for up to three total attempts:
 5. Verify all propositions in one batched model call.
 6. Resolve green/yellow/red/grey in deterministic Python.
 
+Optional voice input records audio locally with `MediaRecorder` and posts it to
+`/api/transcribe`, which transcribes it through `llm.py` like every other model
+call. No browser speech-recognition service is used, so recordings reach the
+same provider as the rest of the pipeline and no other. Image sources follow the
+same shape through `/api/normalize-image`. Both endpoints share the per-client
+rate-limit budget with `/api/analyze`.
+
 `backend/llm.py` is the only backend boundary to the configured model provider.
 Malformed or incomplete model output raises visibly; unparseable output is
 retried for three total attempts and never becomes an empty result that could
@@ -103,6 +110,19 @@ be selected in production.
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
 service before building the Vercel deployment.
 
+## Feature scope and the recorded demo
+
+The recorded walkthrough covers three features, in this order: the core overlay,
+confidence calibration, and the revise loop. That is the whole argument — here
+is what you don't know, here is where you were confident and wrong, here is it
+improving. The remaining features are documented rather than demonstrated,
+because a two-minute feature tour buries the argument:
+
+- Concept drill-down: explain a single missing concept against its source anchor.
+- Subject presets: biology, economics, and photosynthesis starting points.
+- Image source: photograph a passage and edit the extracted text.
+- Voice input: record an explanation instead of typing it.
+
 ## Limitations
 
 - Explain-Back itself has not been validated as a learning intervention.
@@ -128,6 +148,9 @@ service before building the Vercel deployment.
   closed. Extraction also splits and merges propositions across runs on
   untouched text, which is why additions and removals are counted but never
   displayed.
+- Transcription and image extraction are model-assisted and can misread terms.
+  Both surface editable text and ask for review before analysis rather than
+  feeding the pipeline silently.
 - Inputs are sent to the configured LLM provider for analysis. Explain-Back
   does not persist them, but provider handling is governed by that provider's
-  policy.
+  policy. Voice recordings and images go to that same provider and no other.

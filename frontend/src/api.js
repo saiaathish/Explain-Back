@@ -1,10 +1,12 @@
 const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
-export async function analyze(source, explanation, signal) {
+export async function analyze(source, explanation, signal, options = {}) {
+  const body = { source, explanation };
+  if (options.focused) body.focused = true;
   const response = await fetch(`${API_BASE}/api/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ source, explanation }),
+    body: JSON.stringify(body),
     signal,
   });
   let payload = {};
@@ -34,6 +36,51 @@ export async function analyze(source, explanation, signal) {
       );
     }
     throw new Error(payload.detail || "Analysis could not be completed. Check the text and try again.");
+  }
+  return payload;
+}
+
+export async function transcribeAudio(audioDataUrl, signal) {
+  const response = await fetch(`${API_BASE}/api/transcribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ audio_data_url: audioDataUrl }),
+    signal,
+  });
+  let payload = {};
+  try {
+    payload = await response.json();
+  } catch {
+    throw new Error("The transcription service returned an unreadable response.");
+  }
+  if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error("Too many requests were submitted. Wait briefly, then try again.");
+    }
+    throw new Error(
+      payload.detail || "The recording could not be turned into text. You can still type your explanation.",
+    );
+  }
+  return payload;
+}
+
+export async function normalizeImage(imageDataUrl, signal) {
+  const response = await fetch(`${API_BASE}/api/normalize-image`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_data_url: imageDataUrl }),
+    signal,
+  });
+  let payload = {};
+  try {
+    payload = await response.json();
+  } catch {
+    throw new Error("The image service returned an unreadable response.");
+  }
+  if (!response.ok) {
+    throw new Error(
+      payload.detail || "The image could not be converted into editable source text.",
+    );
   }
   return payload;
 }

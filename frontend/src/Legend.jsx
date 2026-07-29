@@ -1,8 +1,8 @@
 const ITEMS = [
-  ["green", "Green = supported and justified"],
-  ["yellow", "Yellow = supported, not justified"],
-  ["red", "Red = contradicts source"],
-  ["grey", "Grey = uncertain"],
+  ["green", "Understood"],
+  ["yellow", "Stated, not explained"],
+  ["red", "Contradicts the source"],
+  ["grey", "Not sure"],
 ];
 
 export default function Legend() {
