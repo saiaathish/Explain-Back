@@ -1,6 +1,11 @@
 import { sentenceRanges } from "./confidence";
 
-export default function ConfidencePass({ explanation, selectedRanges = [], onChange }) {
+export default function ConfidencePass({
+  explanation,
+  selectedRanges = [],
+  onChange,
+  disabled = false,
+}) {
   const ranges = sentenceRanges(explanation);
   if (!ranges.length) return null;
 
@@ -18,7 +23,7 @@ export default function ConfidencePass({ explanation, selectedRanges = [], onCha
   }
 
   return (
-    <fieldset className="confidence-pass">
+    <fieldset className="confidence-pass" disabled={disabled}>
       <legend>Confidence check</legend>
       <p>Tap the sentences you feel sure about before you check your explanation.</p>
       <div className="confidence-sentences">
@@ -29,6 +34,7 @@ export default function ConfidencePass({ explanation, selectedRanges = [], onCha
           return (
             <button
               className={`confidence-sentence${selected ? " is-selected" : ""}`}
+              disabled={disabled}
               key={range.id}
               onClick={() => toggle(range)}
               type="button"
