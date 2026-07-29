@@ -107,11 +107,12 @@ analyse. Measured locally, from clicking "Load example" to the strip appearing:
 **3.1–5.6 s** across runs, of which the second analysis is ~3–5 s. Well inside
 15 s.
 
-**On production** (`explain-back.vercel.app` → `explain-back.onrender.com`, warm),
-the same sequence: run 1 **2.5 s**, run 2 **7.9 s**, **10.5 s end to end**. Inside
-the 15 s bar but not comfortably — the second analysis is roughly twice its local
-time. Worth one warm-up run before recording so the video does not open on a cold
-Render dyno. Production strip and chips match local exactly:
+**On production, after prewarming both demo halves:** run 1 **1.00 s**, run 2
+**0.96 s**, **2.0 s end to end**. Before the prewarm change the same run 2 took
+7.9 s, because only the original explanation was in the result cache and the
+revision was a cold analysis. `main.py` now prewarms the pair, and the revised
+pair answers in **0.29 s** measured directly against the API. Production strip
+and chips match local exactly:
 `1 gap closed · 1 claim no longer matches the source · coverage 0/6 → 4/6`,
 chips `Covered (4) · Partial (2) · Missing (0)`. No console errors.
 
@@ -233,8 +234,19 @@ structural, not a tuning failure:
    verification and are described precisely above; the layout assertions
    (overflow, wrap count, element ordering) were taken as measurements rather
    than eyeballed.
-3. **Production run 2 takes ~7.9 s**, about double local. Not a blocker, but it
-   is most of the 15 s budget and it is the shot the video depends on.
+3. **The regression line in the demo diff is a confidence downgrade, not an
+   error.** "The resulting gradients support the resting membrane potential and
+   electrical signaling." holds similarity 0.847 in both runs — nowhere near
+   `T_LOW`. It greys because the verdict moves `high → low`, and `resolve()`
+   sends any low-confidence verdict to grey. The verify prompt only allows high
+   confidence when the claim is specific (a number, a direction, an ordering, an
+   absolute); that sentence is none of those, so `low` is correct behaviour.
+   Two fixture attempts failed to shift it — adding a justification raised
+   similarity to 0.916 and left confidence low — and the reason is structural:
+   a gap closed needs the claim text byte-identical across runs, while a
+   confident verdict needs specificity *in the claim*, and adding specificity
+   changes the text. For a vague claim those are mutually exclusive. Recorded in
+   the README limitations. The strip reports it rather than hiding it.
 4. **Extraction segmentation is unstable across runs on identical text.** This is
    the root cause behind both the suppressed add/remove counts and the weak
    fixture. It is an extraction problem, not a diff problem, and the diff should
