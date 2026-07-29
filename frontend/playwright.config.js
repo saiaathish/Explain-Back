@@ -7,6 +7,7 @@ export default defineConfig({
   testMatch: "**/*.pw.js",
   fullyParallel: false,
   workers: 1,
+  retries: 0,
   timeout: 180_000,
   expect: {
     timeout: 180_000,

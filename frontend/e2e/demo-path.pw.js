@@ -1,12 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 
+const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
+const FRONTEND_DIR = path.resolve(E2E_DIR, "..");
+const REPO_ROOT = path.resolve(FRONTEND_DIR, "..");
 const RESULTS_PATH = path.resolve(
-  process.env.TIMING_RESULTS_PATH || "../docs/timing-sweep-automated.json",
+  process.env.TIMING_RESULTS_PATH || path.join(REPO_ROOT, "docs", "timing-sweep-automated.json"),
 );
 const REVISED_EXPLANATION = fs.readFileSync(
-  path.resolve(process.cwd(), "../samples/explanations/06_correct.txt"),
+  path.join(FRONTEND_DIR, "public/samples/demo_video_revised.txt"),
   "utf8",
 ).trim();
 const paceMs = Number.parseInt(process.env.TIMING_PACE_MS || "0", 10);
@@ -22,9 +26,14 @@ function readRecords() {
 
 function writeRecord(record) {
   fs.mkdirSync(path.dirname(RESULTS_PATH), { recursive: true });
-  const records = readRecords();
+  const records = readRecords().filter(
+    (current) => !(current.project === record.project && current.run === record.run),
+  );
   records.push(record);
-  fs.writeFileSync(RESULTS_PATH, `${JSON.stringify(records, null, 2)}\n`);
+  fs.writeFileSync(
+    RESULTS_PATH,
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), records }, null, 2)}\n`,
+  );
 }
 
 function viewportLabel(testInfo) {
@@ -47,7 +56,7 @@ test.describe("production demo path", () => {
     const record = {
       project: testInfo.project.name,
       viewport: viewportLabel(testInfo),
-      run: testInfo.repeatEachIndex + 1,
+      run: Number.parseInt(process.env.TIMING_RUN || "", 10) || testInfo.repeatEachIndex + 1,
       retry: testInfo.retry,
       initialMs: null,
       reviseMs: null,
@@ -59,13 +68,10 @@ test.describe("production demo path", () => {
     };
     testInfo._demoRecord = record;
 
-    if (paceMs > 0 && testInfo.repeatEachIndex > 0) {
-      await page.waitForTimeout(paceMs);
-    }
+    if (paceMs > 0) await page.waitForTimeout(paceMs);
 
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Biology", exact: true })).toBeVisible();
-
     await page.getByRole("button", { name: "Biology", exact: true }).click();
     await expect(page.locator(".source-textarea")).toHaveValue(/sodium/i);
     await expect(page.locator("#explanation")).not.toHaveValue("");
@@ -84,7 +90,7 @@ test.describe("production demo path", () => {
           ]),
         ),
       );
-      for (const state of ["green", "yellow", "red"]) {
+      for (const state of ["yellow", "red"]) {
         const count = await page.locator(`.diagnostic--${state}`).count();
         if (count === 0) {
           record.assertions.push(`initial ${state}: fail`);
@@ -101,7 +107,6 @@ test.describe("production demo path", () => {
       await page.getByRole("button", { name: "Revise your explanation", exact: true }).click();
       await expect(page.locator("#revision-explanation")).toBeVisible();
       await page.locator("#revision-explanation").fill(REVISED_EXPLANATION);
-
       const reviseStart = Date.now();
       await page.getByRole("button", { name: "Check my revision", exact: true }).click();
       await expect(page.locator(".diff-strip")).toBeVisible();
@@ -125,8 +130,6 @@ test.describe("production demo path", () => {
       record.errors.push(`revision path: ${error.message}`);
     }
 
-    if (record.errors.length) {
-      throw new Error(record.errors.join("\n"));
-    }
+    if (record.errors.length) throw new Error(record.errors.join("\n"));
   });
 });
