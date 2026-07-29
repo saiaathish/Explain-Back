@@ -42,7 +42,21 @@ const PREVIEW_FLAGS = [
   ),
 ];
 
-export default function LandingPage({ onStart }) {
+export default function LandingPage({
+  onStart,
+  authStatus,
+  authError,
+  busy,
+}) {
+  const buttonLabel =
+    authStatus === "restoring"
+      ? "Restoring access…"
+      : authStatus === "authenticating"
+        ? "Starting…"
+        : authError
+          ? "Try again"
+          : "Try it";
+
   return (
     <div className="landing-shell">
       <header className="landing-header">
@@ -82,10 +96,25 @@ export default function LandingPage({ onStart }) {
             </a>
             ).
           </p>
-          <button className="primary landing-cta" onClick={onStart} type="button">
-            Try it
+          <button
+            aria-busy={busy || undefined}
+            className="primary landing-cta"
+            disabled={busy}
+            onClick={onStart}
+            type="button"
+          >
+            {buttonLabel}
           </button>
           <p className="landing-assurance">One click. No form or password.</p>
+          {authError && (
+            <p className="landing-auth-error" role="alert">
+              {authError}
+            </p>
+          )}
+          <p className="landing-auth-disclosure">
+            This creates a browser-local anonymous identity. Clearing browser
+            data, signing out, or changing devices can lose access.
+          </p>
         </section>
 
         <figure className="landing-preview">

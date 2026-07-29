@@ -1,10 +1,29 @@
+from uuid import UUID
+
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from backend import llm, main
+from backend.auth import AuthenticatedUser
 from backend.main import _validate_lengths, compute_coverage
 from backend.schemas import Concept, Flag, Proposition, Verdict
+
+
+@pytest.fixture(autouse=True)
+def authenticated_model_routes():
+    async def authenticated_user() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            user_id=UUID("c115b779-4e0d-4e1c-92a0-6834e3c08df1"),
+            session_id=UUID("9516ba59-ab7f-4c55-b1a1-18f901eced1c"),
+            is_anonymous=False,
+        )
+
+    main.app.dependency_overrides[main.require_authenticated_user] = authenticated_user
+    try:
+        yield
+    finally:
+        main.app.dependency_overrides.pop(main.require_authenticated_user, None)
 
 
 @pytest.mark.parametrize(

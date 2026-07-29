@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 
 test("landing page explains the product and enters the workspace in one click", async ({
   page,

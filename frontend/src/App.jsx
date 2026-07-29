@@ -10,6 +10,7 @@ import FollowUp from "./FollowUp";
 import LandingPage from "./LandingPage";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
+import { anonymousAuth } from "./supabase";
 import {
   appendTranscript,
   blobToDataUrl,
@@ -24,9 +25,47 @@ const SUBMIT_STAGES = [
 ];
 const SUBMIT_STAGE_INTERVAL_MS = 800;
 const ANALYSIS_TIMEOUT_MS = 90_000;
+const AUTH_OPERATION_TIMEOUT_MS = 10_000;
 const MAX_RECORDING_MS = 180_000;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+function withTimeout(promise, timeoutMs, message) {
+  return new Promise((resolve, reject) => {
+    const timeout = globalThis.setTimeout(() => {
+      const error = new Error(message);
+      error.name = "AuthTimeoutError";
+      reject(error);
+    }, timeoutMs);
+    Promise.resolve(promise).then(
+      (value) => {
+        globalThis.clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        globalThis.clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
+function singleFlight(ref, owner, task) {
+  if (ref.current?.owner === owner) return ref.current.promise;
+
+  const entry = { owner, promise: null };
+  entry.promise = Promise.resolve()
+    .then(task)
+    .finally(() => {
+      if (ref.current === entry) ref.current = null;
+    });
+  ref.current = entry;
+  return entry.promise;
+}
+
+function boundedSingleFlight(ref, owner, task, timeoutMs, message) {
+  return withTimeout(singleFlight(ref, owner, task), timeoutMs, message);
+}
 
 const PRESETS = [
   {
@@ -214,7 +253,7 @@ function ExplanationField({
   );
 }
 
-function Workspace() {
+function Workspace({ accessToken, refreshAccessToken }) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
   /* A run snapshot is `{ result, explanation, confidenceRanges }`: flags carry
@@ -478,7 +517,10 @@ function Workspace() {
       const controller = new AbortController();
       request.controller = controller;
       try {
-        const result = await normalizeImage(dataUrl, controller.signal);
+        const result = await normalizeImage(dataUrl, controller.signal, {
+          accessToken,
+          refreshAccessToken,
+        });
         if (!mountedRef.current || imageRequestRef.current !== request) return;
         resetAnalysisState();
         updateSource(result.text || "");
@@ -621,7 +663,10 @@ function Workspace() {
       const blob = await recorder.stop();
       const audioDataUrl = await blobToDataUrl(blob);
       if (!mountedRef.current || transcribeRequestRef.current !== request) return;
-      const { text } = await transcribeAudio(audioDataUrl, controller.signal);
+      const { text } = await transcribeAudio(audioDataUrl, controller.signal, {
+        accessToken,
+        refreshAccessToken,
+      });
       if (!mountedRef.current || transcribeRequestRef.current !== request) return;
       const transcript = (text || "").trim();
       if (!transcript) {
@@ -683,7 +728,9 @@ function Workspace() {
     try {
       const trimmed = focusedExplanation.trim();
       const result = await analyze(selectedConcept.anchor.trim(), trimmed, controller.signal, {
+        accessToken,
         focused: true,
+        refreshAccessToken,
       });
       if (controller.signal.aborted) {
         throw new DOMException("The request was aborted.", "AbortError");
@@ -750,7 +797,10 @@ function Workspace() {
     try {
       const trimmed = explanation.trim();
       const runRanges = trimRangeSnapshot(explanation, trimmed, confidenceRanges);
-      const result = await analyze(source.trim(), trimmed, controller.signal);
+      const result = await analyze(source.trim(), trimmed, controller.signal, {
+        accessToken,
+        refreshAccessToken,
+      });
       if (controller.signal.aborted) {
         throw new DOMException("The request was aborted.", "AbortError");
       }
@@ -1090,8 +1140,129 @@ function Workspace() {
   );
 }
 
-function App() {
+function App({ auth = anonymousAuth }) {
   const [entered, setEntered] = useState(false);
+  const [accessToken, setAccessToken] = useState("");
+  const [authStatus, setAuthStatus] = useState("restoring");
+  const [authError, setAuthError] = useState("");
+  const mountedRef = useRef(true);
+  const signInPromiseRef = useRef(null);
+  const signInAttemptRef = useRef(0);
+  const refreshPromiseRef = useRef(null);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      signInAttemptRef.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let authEventVersion = 0;
+    let unsubscribe = () => {};
+
+    function applySession(session) {
+      if (!active) return;
+      const token = session?.access_token || "";
+      setAccessToken(token);
+      setAuthError("");
+      setAuthStatus(token ? "authenticated" : "unauthenticated");
+      if (!token) setEntered(false);
+    }
+
+    function failRestore(error) {
+      if (!active) return;
+      setAccessToken("");
+      setEntered(false);
+      setAuthStatus("error");
+      setAuthError(
+        error?.message ||
+          "Anonymous access could not be restored. Check your connection and try again.",
+      );
+    }
+
+    try {
+      unsubscribe = auth.subscribe((session) => {
+        authEventVersion += 1;
+        applySession(session);
+      });
+      const restoreVersion = authEventVersion;
+      withTimeout(
+        Promise.resolve().then(() => auth.getSession()),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Restoring anonymous access timed out. Check your connection and try again.",
+      )
+        .then((session) => {
+          if (authEventVersion === restoreVersion) applySession(session);
+        })
+        .catch((error) => {
+          if (authEventVersion === restoreVersion) failRestore(error);
+        });
+    } catch (error) {
+      failRestore(error);
+    }
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [auth]);
+
+  async function start() {
+    if (authStatus === "restoring" || authStatus === "authenticating") return;
+    if (authStatus === "authenticated" && accessToken) {
+      setEntered(true);
+      return;
+    }
+
+    setAuthError("");
+    setAuthStatus("authenticating");
+    const attempt = ++signInAttemptRef.current;
+    try {
+      const session = await boundedSingleFlight(
+        signInPromiseRef,
+        auth,
+        () => auth.signInAnonymously(),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Anonymous sign-in timed out. Check your connection and try again.",
+      );
+      if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
+      if (!session?.access_token) {
+        throw new Error("Anonymous sign-in did not return a usable session.");
+      }
+      setAccessToken(session.access_token);
+      setAuthStatus("authenticated");
+      setEntered(true);
+    } catch (error) {
+      if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
+      setAccessToken("");
+      setEntered(false);
+      setAuthStatus("error");
+      setAuthError(
+        error?.message ||
+          "Anonymous access could not be started. Check your connection and try again.",
+      );
+    }
+  }
+
+  async function refreshAccessToken() {
+    const token = await boundedSingleFlight(
+      refreshPromiseRef,
+      auth,
+      () => auth.refreshAccessToken(),
+      AUTH_OPERATION_TIMEOUT_MS,
+      "Refreshing anonymous access timed out. Return to the landing page and try again.",
+    );
+    if (!token) {
+      throw new Error(
+        "Your anonymous session could not be refreshed. Return to the landing page and try again.",
+      );
+    }
+    if (mountedRef.current) setAccessToken(token);
+    return token;
+  }
 
   useEffect(() => {
     if (!entered) return undefined;
@@ -1102,11 +1273,27 @@ function App() {
   }, [entered]);
 
   return entered ? (
-    <Workspace />
+    <Workspace
+      accessToken={accessToken}
+      refreshAccessToken={refreshAccessToken}
+    />
   ) : (
-    <LandingPage onStart={() => setEntered(true)} />
+    <LandingPage
+      authError={authError}
+      authStatus={authStatus}
+      busy={authStatus === "restoring" || authStatus === "authenticating"}
+      onStart={start}
+    />
   );
 }
 
 export default App;
-export { PRESETS, trimRangeSnapshot, validate };
+export {
+  AUTH_OPERATION_TIMEOUT_MS,
+  PRESETS,
+  boundedSingleFlight,
+  singleFlight,
+  trimRangeSnapshot,
+  validate,
+  withTimeout,
+};

@@ -1,7 +1,8 @@
 # For judges — see everything in 90 seconds
 
 1. Open https://explain-back.vercel.app/
-2. Click **Try it** — no account form is required
+2. Click **Try it** — no account form is required; a browser-local anonymous
+   session verifies API requests
 3. Click the **Biology** preset
 4. Click **Check my explanation**
    → Watch the highlights appear: green means understood, yellow means stated

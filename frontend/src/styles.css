@@ -270,6 +270,28 @@ header p {
   font-size: 12px;
 }
 
+.landing-auth-error {
+  max-width: 54ch;
+  margin: 16px 0 0;
+  border-left: 2px solid var(--contradicts);
+  padding: 10px 12px;
+  background: var(--wash-contradicts);
+  color: var(--contradicts);
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.landing-auth-disclosure {
+  max-width: 54ch;
+  margin: 14px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--editorial);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .landing-preview {
   position: relative;
   margin: 0;

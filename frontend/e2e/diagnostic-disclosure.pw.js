@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 
 async function mockBiologyAnalysis(page) {
   await page.route("**/api/analyze", async (route) => {

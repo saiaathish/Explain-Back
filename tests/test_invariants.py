@@ -32,25 +32,45 @@ def test_resolver_is_sync_and_model_free() -> None:
     assert "await " not in text
 
 
-def test_no_persistence_or_auth_implementation() -> None:
-    ignored = {"README.md", "test_invariants.py"}
+def test_supabase_auth_boundary_is_backend_only() -> None:
+    auth_text = (ROOT / "backend" / "auth.py").read_text(encoding="utf-8")
+    main_text = (ROOT / "backend" / "main.py").read_text(encoding="utf-8")
+
+    assert "PyJWKClient" in auth_text
+    assert 'algorithms=JWT_ALGORITHMS' in auth_text
+    assert 'audience=JWT_AUDIENCE' in auth_text
+    assert "issuer=settings.issuer" in auth_text
+    assert main_text.count("Depends(require_authenticated_user)") == 3
+    assert '@app.api_route("/api/health", methods=["GET", "HEAD"])' in main_text
+
+    forbidden_frontend_secrets = (
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_SECRET_KEY",
+        "VITE_SUPABASE_SERVICE_ROLE_KEY",
+        "VITE_SUPABASE_SECRET_KEY",
+    )
+    frontend_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "frontend" / "src").rglob("*")
+        if path.is_file() and path.suffix in {".js", ".jsx", ".css"}
+    )
+    assert not any(secret in frontend_text for secret in forbidden_frontend_secrets)
+
+
+def test_no_persistence_implementation() -> None:
     forbidden = (
         "localStorage",
         "sessionStorage",
         "sqlite",
         "sqlalchemy",
         "mongodb",
-        "supabase",
         "firebase",
-        "login",
-        "signup",
     )
     offenders = []
     for directory in (ROOT / "backend", ROOT / "frontend" / "src"):
         for path in directory.rglob("*"):
             if (
                 not path.is_file()
-                or path.name in ignored
                 or path.suffix not in {".py", ".js", ".jsx", ".css"}
             ):
                 continue

@@ -1,14 +1,54 @@
 const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
+function requestHeaders(accessToken) {
+  const headers = { "Content-Type": "application/json" };
+  if (accessToken?.trim()) {
+    headers.Authorization = `Bearer ${accessToken.trim()}`;
+  }
+  return headers;
+}
+
+async function modelRequest(path, body, signal, options) {
+  const url = `${API_BASE}${path}`;
+  const request = {
+    method: "POST",
+    headers: requestHeaders(options.accessToken),
+    body: JSON.stringify(body),
+    signal,
+  };
+  const response = await fetch(url, request);
+  if (
+    response.status !== 401 ||
+    typeof options.refreshAccessToken !== "function"
+  ) {
+    return response;
+  }
+
+  const refreshedAccessToken = await options.refreshAccessToken();
+  if (
+    typeof refreshedAccessToken !== "string" ||
+    !refreshedAccessToken.trim()
+  ) {
+    throw new Error(
+      "Your anonymous session could not be refreshed. Return to the landing page and try again.",
+    );
+  }
+
+  return fetch(url, {
+    ...request,
+    headers: requestHeaders(refreshedAccessToken),
+  });
+}
+
 export async function analyze(source, explanation, signal, options = {}) {
   const body = { source, explanation };
   if (options.focused) body.focused = true;
-  const response = await fetch(`${API_BASE}/api/analyze`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+  const response = await modelRequest(
+    "/api/analyze",
+    body,
     signal,
-  });
+    options,
+  );
   let payload = {};
   try {
     payload = await response.json();
@@ -40,13 +80,13 @@ export async function analyze(source, explanation, signal, options = {}) {
   return payload;
 }
 
-export async function transcribeAudio(audioDataUrl, signal) {
-  const response = await fetch(`${API_BASE}/api/transcribe`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ audio_data_url: audioDataUrl }),
+export async function transcribeAudio(audioDataUrl, signal, options = {}) {
+  const response = await modelRequest(
+    "/api/transcribe",
+    { audio_data_url: audioDataUrl },
     signal,
-  });
+    options,
+  );
   let payload = {};
   try {
     payload = await response.json();
@@ -64,13 +104,13 @@ export async function transcribeAudio(audioDataUrl, signal) {
   return payload;
 }
 
-export async function normalizeImage(imageDataUrl, signal) {
-  const response = await fetch(`${API_BASE}/api/normalize-image`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image_data_url: imageDataUrl }),
+export async function normalizeImage(imageDataUrl, signal, options = {}) {
+  const response = await modelRequest(
+    "/api/normalize-image",
+    { image_data_url: imageDataUrl },
     signal,
-  });
+    options,
+  );
   let payload = {};
   try {
     payload = await response.json();

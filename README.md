@@ -13,9 +13,12 @@ maps formative guidance over the student's own words:
 
 Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question generated
-from the analyzed gaps. There are no learner-facing scores or accounts.
-Explain-Back does not persist submissions; inputs are sent to the configured
-model provider under that provider's data-handling policy.
+from the analyzed gaps. There are no learner-facing scores or account forms.
+Supabase Auth creates a browser-local anonymous identity so the API can verify
+each request. Explain-Back does not persist sources, explanations, or results;
+those inputs are sent to the configured model provider under that provider's
+data-handling policy. Clearing browser data, signing out, or changing devices
+can lose the anonymous identity.
 
 ## Why this design
 
@@ -31,9 +34,11 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 
 ## Architecture
 
-The browser holds input and results in React state. A FastAPI process performs
-two or three logical model stages around deterministic validation. Each stage
-can retry malformed output for up to three total attempts:
+The browser holds input and results in React state. Supabase Auth persists only
+the anonymous browser session; there are no application tables or history
+writes. A FastAPI process verifies the bearer token, then performs two or three
+logical model stages around deterministic validation. Each stage can retry
+malformed output for up to three total attempts:
 
 1. Extract source concepts; cache them by source hash in process memory.
 2. Extract propositions from the student's exact text.
@@ -60,6 +65,8 @@ Requires Python 3.11 and Node.js 20+.
 
 ```bash
 cp .env.example .env
+# Set SUPABASE_URL to the public project URL. Do not use a service-role,
+# sb_secret_, JWT-secret, or private key in backend or frontend config.
 # Set LLM_API_KEY, LLM_MODEL_PROD, LLM_MODEL_CI, and the provider's
 # OpenAI-compatible LLM_BASE_URL in .env. LLM_MODEL is a legacy prod fallback.
 
@@ -78,7 +85,10 @@ In another terminal:
 ```bash
 cd frontend
 npm ci
-VITE_API_URL=http://localhost:8000 npm run dev
+VITE_API_URL=http://localhost:8000 \
+VITE_SUPABASE_URL=https://your-project.supabase.co \
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key \
+npm run dev
 ```
 
 Open `http://localhost:5173`.

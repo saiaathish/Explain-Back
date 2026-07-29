@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 import AxeBuilder from "@axe-core/playwright";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
