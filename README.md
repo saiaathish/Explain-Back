@@ -146,13 +146,20 @@ than replacing live evidence with fixtures.
 bakes the embedding model into the image so `align.py` makes no runtime
 download. Keep `LLM_ROLE=prod` in Render and set `LLM_API_KEY`,
 `LLM_MODEL_PROD` (or legacy `LLM_MODEL`), `FRONTEND_ORIGIN`, and the provider's
-OpenAI-compatible `LLM_BASE_URL`. `LLM_MODEL_CI` is evaluation-only and must not
-be selected in production.
+OpenAI-compatible `LLM_BASE_URL`. Phase 2 deployments also require the public
+`SUPABASE_URL`; do not provide a service-role or secret key. `LLM_MODEL_CI` is
+evaluation-only and must not be selected in production.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
 service before building the Vercel deployment. Also set
 `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for the same Supabase
 project configured above.
+
+Verify Phase 2 against a backend deployed from the same checkpoint SHA, not
+the production fallback backend. Set that backend's `FRONTEND_ORIGIN` to the
+exact Vercel preview origin, then point the preview's `VITE_API_URL` to it.
+This keeps `main` and `https://explain-back.onrender.com` unchanged while the
+authenticated bearer-token and CORS paths are exercised end to end.
 
 ## Feature scope and the recorded demo
 

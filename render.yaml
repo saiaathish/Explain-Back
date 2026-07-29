@@ -18,6 +18,8 @@ services:
         sync: false
       - key: FRONTEND_ORIGIN
         sync: false
+      - key: SUPABASE_URL
+        sync: false
       - key: T_HIGH
         value: "0.732"
       - key: T_LOW

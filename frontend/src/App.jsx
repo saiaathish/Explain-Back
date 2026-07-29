@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { analyze, normalizeImage, transcribeAudio } from "./api";
+import { AuthProvider, useAuth } from "./AuthContext";
 import CalibrationMap from "./CalibrationMap";
 import ConceptList from "./ConceptList";
 import ConfidencePass from "./ConfidencePass";
@@ -1185,7 +1186,7 @@ function Workspace({
   );
 }
 
-function App({ auth = anonymousAuth }) {
+function AuthStateProvider({ auth, children }) {
   const [entered, setEntered] = useState(false);
   const [accessToken, setAccessToken] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -1381,6 +1382,40 @@ function App({ auth = anonymousAuth }) {
     return () => window.cancelAnimationFrame(frame);
   }, [entered]);
 
+  return (
+    <AuthProvider
+      value={{
+        accessToken,
+        authError,
+        authStatus,
+        entered,
+        identityLinkBusy,
+        identityLinkError,
+        isAnonymous,
+        linkGoogleIdentity,
+        refreshAccessToken,
+        start,
+      }}
+    >
+      {children}
+    </AuthProvider>
+  );
+}
+
+function AuthSurface() {
+  const {
+    accessToken,
+    authError,
+    authStatus,
+    entered,
+    identityLinkBusy,
+    identityLinkError,
+    isAnonymous,
+    linkGoogleIdentity,
+    refreshAccessToken,
+    start,
+  } = useAuth();
+
   return entered ? (
     <Workspace
       accessToken={accessToken}
@@ -1397,6 +1432,14 @@ function App({ auth = anonymousAuth }) {
       busy={authStatus === "restoring" || authStatus === "authenticating"}
       onStart={start}
     />
+  );
+}
+
+function App({ auth = anonymousAuth }) {
+  return (
+    <AuthStateProvider auth={auth}>
+      <AuthSurface />
+    </AuthStateProvider>
   );
 }
 
