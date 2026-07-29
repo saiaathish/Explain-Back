@@ -42,3 +42,49 @@ change. Before either phase can pass:
 3. Persistence: owned sessions and attempts, cross-user denial, refresh survival,
    minimal history.
 4. Review: cards derived only from stored non-green flags; no new LLM calls.
+
+## Current gate evidence — July 29, 2026
+
+### Phase 1 — passed
+
+- Checkpoint: `27df743b90e449ebcd19b727b248c16dc76d5d41`.
+- The one-click landing path, actual diagnostic overlay, 390px layout,
+  accessibility, and editorial-versus-utility typography split are covered by
+  `frontend/e2e/landing.pw.js`.
+- On the exact Phase 2 preview, five cache-disabled 390px navigations rendered
+  the landing heading with first contentful paint between 112ms and 588ms.
+  Desktop and mobile Axe scans had zero violations and no horizontal overflow.
+
+### Phase 2 — code complete, hosted gate not passed
+
+- Checkpoint: `3a8d80d8d741cd5fb39217c2b8f2d7e24efe2753`.
+- Local evidence: 159 backend tests, 68 frontend tests, and 14 Playwright tests
+  passed. These cover strict JWT/JWKS validation, malformed and expired token
+  rejection, anonymous-session restoration and refresh, canonical Google
+  identity-link initiation, rapid double-click single-flight behavior, and
+  malicious redirect input. `AuthStateProvider` owns the lifecycle and exposes
+  it to the wrapped application through `AuthContext`.
+- The production-model golden gate passed at 34/37 original agreement and
+  45/55 expanded agreement, with all four diagnostic states represented.
+- Vercel deployment `dpl_94ZzLSykY2781JWbJtgEiLHsDzfJ` is READY from the exact
+  checkpoint SHA. It intentionally fails closed because no Explain-Back
+  Supabase project or preview credentials exist.
+- The gate still requires a real Supabase project and a non-production backend
+  deployed from the same checkpoint SHA. Configure matching public Supabase
+  values, exact frontend/backend origins, Google, anonymous sign-ins, and
+  Manual Linking; then verify anonymous entry, UID-preserving Google linking,
+  callback cleanup, bearer requests, CORS, and reload behavior.
+- Do not start Phase 3 until that hosted matrix passes.
+
+### Later phases — not started
+
+- Phase 3 has no schema, RLS policies, persistence writes, or history UI.
+- Phase 4 has no stored-flag review or mastery implementation.
+
+### Fallback — verified
+
+- `origin/main` remains
+  `e140a3776d7e69078d7aa7d50de3769ada93eeac`.
+- Vercel production metadata points to that exact SHA and the production site
+  returns HTTP 200.
+- Render production health returns HTTP 200 for both HEAD and GET.
