@@ -118,6 +118,16 @@ service before building the Vercel deployment.
 - Exact source anchors show what text informed a flag; they are not model
   attribution or an explanation of model internals.
 - The misconception dictionary is intentionally limited to membrane transport.
+- The revise loop matches claims across runs on their text, so some real
+  improvements cannot be reported as transitions. A verdict is only high
+  confidence when the claim itself is specific (a number, a direction, an
+  ordering, an absolute), but adding that specificity changes the claim's
+  wording, and changed wording no longer matches the previous run. For a vague
+  claim those two requirements are mutually exclusive: it can be revised into a
+  confident one, but the diff will show that as a new claim rather than as a gap
+  closed. Extraction also splits and merges propositions across runs on
+  untouched text, which is why additions and removals are counted but never
+  displayed.
 - Inputs are sent to the configured LLM provider for analysis. Explain-Back
   does not persist them, but provider handling is governed by that provider's
   policy.

@@ -53,7 +53,12 @@ PREWARM_SOURCE_FILES = (
     "source_photosynthesis.txt",
 )
 DEMO_SOURCE_FILE = "source_sodium_pump.txt"
-DEMO_EXPLANATION_FILE = "demo_video.txt"
+# Both halves of the demo: the first submission and the revision the student
+# pastes in. Cold page load must hit the result cache for each.
+DEMO_EXPLANATION_FILES = (
+    "demo_video.txt",
+    "demo_video_revised.txt",
+)
 
 
 def _cache_key(source: str) -> str:
@@ -84,11 +89,14 @@ async def _prewarm() -> None:
     for filename in PREWARM_SOURCE_FILES:
         await _prewarm_source(samples / filename)
     demo_source = (samples / DEMO_SOURCE_FILE).read_text(encoding="utf-8").strip()
-    demo_explanation = (samples / DEMO_EXPLANATION_FILE).read_text(encoding="utf-8").strip()
-    try:
-        await analyze(AnalyzeRequest(source=demo_source, explanation=demo_explanation))
-    except (HTTPException, LLMResponseError):
-        logger.exception("Full demo result prewarm failed.")
+    for filename in DEMO_EXPLANATION_FILES:
+        demo_explanation = (samples / filename).read_text(encoding="utf-8").strip()
+        try:
+            await analyze(
+                AnalyzeRequest(source=demo_source, explanation=demo_explanation)
+            )
+        except (HTTPException, LLMResponseError):
+            logger.exception("Full demo result prewarm failed for %s.", filename)
 
 
 @asynccontextmanager
