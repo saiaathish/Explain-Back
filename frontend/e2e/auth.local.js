@@ -90,6 +90,37 @@ for (const clickMode of ["one click", "rapid double-click"]) {
   });
 }
 
+test("a refused identity link is explained and offers signing in instead", async ({
+  page,
+  authApi,
+}) => {
+  await enterAnonymousWorkspace(page, authApi);
+
+  /* Supabase reports this verdict on the callback, exactly as production did. */
+  await page.goto(
+    "/?error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked+to+another+user",
+  );
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  await expect(page.locator("#source")).toBeFocused();
+
+  const notice = page.locator(".identity-link-error");
+  await expect(notice).toContainText("already connected to an earlier session");
+  await expect(notice).toContainText("stays with the guest session");
+  /* The verdict is cleared from the address bar rather than left to re-fire. */
+  expect(new URL(page.url()).search).toBe("");
+
+  const signIn = page.getByRole("button", {
+    name: "Sign in with Google instead",
+    exact: true,
+  });
+  await expect(signIn).toBeEnabled();
+  await signIn.click();
+  /* Signing in is a different endpoint: no second doomed link attempt. */
+  await page.waitForTimeout(200);
+  expect(authApi.identityLinkRequests).toHaveLength(0);
+  expect(authApi.signupRequests).toHaveLength(1);
+});
+
 test("a restored linked identity enters the workspace without another Try it click", async ({
   page,
   authApi,

@@ -25,6 +25,10 @@ function authClient(overrides = {}) {
         data: { session: null },
         error: null,
       })),
+      signInWithOAuth: vi.fn(async () => ({
+        data: { url: "https://accounts.google.test/signin" },
+        error: null,
+      })),
       ...overrides,
     },
   };
@@ -75,6 +79,39 @@ describe("anonymous auth adapter", () => {
         redirectTo: "https://explain-back.example/",
       },
     });
+  });
+
+  it("signs in with Google using the same origin-pinned redirect as linking", async () => {
+    const client = authClient();
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/learn",
+      search: "?next=https://evil.example",
+    });
+    const auth = createAnonymousAuth(client);
+
+    await expect(auth.signInWithGoogle()).resolves.toBe(
+      "https://accounts.google.test/signin",
+    );
+    expect(client.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "google",
+      options: { redirectTo: "https://explain-back.example/" },
+    });
+    expect(client.auth.linkIdentity).not.toHaveBeenCalled();
+  });
+
+  it("rejects a Google sign-in response that cannot start a redirect", async () => {
+    const client = authClient({
+      signInWithOAuth: vi.fn(async () => ({ data: { url: null }, error: null })),
+    });
+    vi.stubGlobal("location", {
+      origin: "https://explain-back.example",
+      pathname: "/",
+    });
+
+    await expect(
+      createAnonymousAuth(client).signInWithGoogle(),
+    ).rejects.toThrow(/did not return/i);
   });
 
   it("rejects an OAuth response that cannot start a redirect", async () => {
