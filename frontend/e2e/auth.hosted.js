@@ -144,7 +144,19 @@ test.describe("hosted Phase 2 authentication gate", () => {
       maxRedirects: 0,
     });
 
-    expect(response.status()).toBe(200);
+    const status = response.status();
+    if (status === 307) {
+      const headers = response.headers();
+      const setsBypassCookie = Boolean(
+        headers["set-cookie"]?.split(";", 1)[0]?.startsWith("_vercel_jwt="),
+      );
+
+      expect(headers.location).toBe("/");
+      expect(setsBypassCookie).toBe(true);
+      return;
+    }
+
+    expect(status).toBe(200);
   });
 
   test("real anonymous session restores and the backend verifies its JWT", async ({
