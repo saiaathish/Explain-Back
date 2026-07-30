@@ -77,6 +77,36 @@ function shouldOpenWorkspaceOnSessionRestore(session) {
   );
 }
 
+/*
+ * Supabase reports a failed identity link on the callback URL, not to the call
+ * that started it. Without reading this, a refused link silently returns to the
+ * page and the learner retries the same impossible link forever.
+ */
+function readOAuthCallbackError(search = "", hash = "") {
+  const params = new URLSearchParams(String(search).replace(/^\?/, ""));
+  const fragment = new URLSearchParams(String(hash).replace(/^#/, ""));
+  const read = (name) => params.get(name) || fragment.get(name) || "";
+  const code = read("error_code");
+  if (!read("error") && !code) return null;
+
+  if (code === "identity_already_exists") {
+    return {
+      code,
+      alreadyLinked: true,
+      message:
+        "That Google account is already connected to an earlier session. Sign in with Google to reach it — anything saved in this guest session stays with the guest session.",
+    };
+  }
+
+  return {
+    code: code || "oauth_error",
+    alreadyLinked: false,
+    message:
+      read("error_description").replace(/\+/g, " ") ||
+      "Google sign-in did not complete. You can keep going as a guest and try again.",
+  };
+}
+
 const PRESETS = [
   {
     id: "biology",
@@ -181,7 +211,9 @@ function IdentityUpgrade({
   isAnonymous,
   busy,
   error,
+  alreadyLinked,
   onLinkGoogleIdentity,
+  onSignInWithGoogle,
 }) {
   if (!isAnonymous) return null;
 
@@ -202,6 +234,18 @@ function IdentityUpgrade({
         <p className="identity-link-error" role="alert">
           {error}
         </p>
+      )}
+      {/* Retrying the link would fail identically, so offer the way through. */}
+      {alreadyLinked && (
+        <button
+          aria-busy={busy || undefined}
+          className="secondary identity-link-button"
+          disabled={busy}
+          onClick={onSignInWithGoogle}
+          type="button"
+        >
+          Sign in with Google instead
+        </button>
       )}
     </div>
   );
@@ -300,6 +344,8 @@ function Workspace({
   identityLinkBusy,
   identityLinkError,
   onLinkGoogleIdentity,
+  onSignInWithGoogle,
+  identityAlreadyLinked,
   onOpenHistory,
   onOpenReview,
 }) {
@@ -946,10 +992,12 @@ function Workspace({
             Review gaps
           </button>
           <IdentityUpgrade
+            alreadyLinked={identityAlreadyLinked}
             busy={identityLinkBusy}
             error={identityLinkError}
             isAnonymous={isAnonymous}
             onLinkGoogleIdentity={onLinkGoogleIdentity}
+            onSignInWithGoogle={onSignInWithGoogle}
           />
         </div>
       </header>
@@ -1259,6 +1307,19 @@ function AuthStateProvider({ auth, children }) {
   const refreshPromiseRef = useRef(null);
   const [identityLinkBusy, setIdentityLinkBusy] = useState(false);
   const [identityLinkError, setIdentityLinkError] = useState("");
+  const [identityAlreadyLinked, setIdentityAlreadyLinked] = useState(false);
+
+  /* Read the callback's verdict once, then clean it out of the address bar. */
+  useEffect(() => {
+    const location = globalThis.location;
+    const failure = readOAuthCallbackError(location?.search, location?.hash);
+    if (!failure) return;
+    setIdentityLinkError(failure.message);
+    setIdentityAlreadyLinked(failure.alreadyLinked);
+    if (globalThis.history?.replaceState && location?.pathname) {
+      globalThis.history.replaceState(null, "", location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -1385,7 +1446,35 @@ function AuthStateProvider({ auth, children }) {
       return;
     }
 
-    const action = Symbol("google-identity-link");
+    await runGoogleRedirect(
+      "google-identity-link",
+      () => auth.linkGoogleIdentity(),
+      "Google identity linking timed out. Check your connection and try again.",
+      "Google identity linking could not be started. Check your connection and try again.",
+    );
+  }
+
+  /* Offered only after the callback said the identity belongs to another user. */
+  async function signInWithGoogle() {
+    if (
+      authActionRef.current ||
+      identityLinkBusy ||
+      authStatus === "restoring" ||
+      authStatus === "authenticating"
+    ) {
+      return;
+    }
+
+    await runGoogleRedirect(
+      "google-sign-in",
+      () => auth.signInWithGoogle(),
+      "Google sign-in timed out. Check your connection and try again.",
+      "Google sign-in could not be started. Check your connection and try again.",
+    );
+  }
+
+  async function runGoogleRedirect(label, task, timeoutMessage, failureMessage) {
+    const action = Symbol(label);
     authActionRef.current = action;
     setAuthError("");
     setIdentityLinkError("");
@@ -1395,9 +1484,9 @@ function AuthStateProvider({ auth, children }) {
       await boundedSingleFlight(
         identityLinkPromiseRef,
         auth,
-        () => auth.linkGoogleIdentity(),
+        task,
         AUTH_OPERATION_TIMEOUT_MS,
-        "Google identity linking timed out. Check your connection and try again.",
+        timeoutMessage,
       );
     } catch (error) {
       if (
@@ -1407,10 +1496,7 @@ function AuthStateProvider({ auth, children }) {
         return;
       }
       setIdentityLinkBusy(false);
-      setIdentityLinkError(
-        error?.message ||
-          "Google identity linking could not be started. Check your connection and try again.",
-      );
+      setIdentityLinkError(error?.message || failureMessage);
     } finally {
       if (authActionRef.current === action) authActionRef.current = null;
     }
@@ -1448,11 +1534,13 @@ function AuthStateProvider({ auth, children }) {
         authError,
         authStatus,
         entered,
+        identityAlreadyLinked,
         identityLinkBusy,
         identityLinkError,
         isAnonymous,
         linkGoogleIdentity,
         refreshAccessToken,
+        signInWithGoogle,
         start,
       }}
     >
@@ -1467,11 +1555,13 @@ function AuthSurface() {
     authError,
     authStatus,
     entered,
+    identityAlreadyLinked,
     identityLinkBusy,
     identityLinkError,
     isAnonymous,
     linkGoogleIdentity,
     refreshAccessToken,
+    signInWithGoogle,
     start,
   } = useAuth();
   const [screen, setScreen] = useState("workspace");
@@ -1485,10 +1575,12 @@ function AuthSurface() {
       <div hidden={screen !== "workspace"}>
         <Workspace
           accessToken={accessToken}
+          identityAlreadyLinked={identityAlreadyLinked}
           identityLinkBusy={identityLinkBusy}
           identityLinkError={identityLinkError}
           isAnonymous={isAnonymous}
           onLinkGoogleIdentity={linkGoogleIdentity}
+          onSignInWithGoogle={signInWithGoogle}
           onOpenHistory={() => setScreen("history")}
           onOpenReview={() => setScreen("review")}
           refreshAccessToken={refreshAccessToken}
@@ -1525,6 +1617,7 @@ export {
   IdentityUpgrade,
   PRESETS,
   boundedSingleFlight,
+  readOAuthCallbackError,
   singleFlight,
   shouldOpenWorkspaceOnSessionRestore,
   trimRangeSnapshot,

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   boundedSingleFlight,
   IdentityUpgrade,
+  readOAuthCallbackError,
   singleFlight,
   shouldOpenWorkspaceOnSessionRestore,
   withTimeout,
@@ -199,5 +200,62 @@ describe("anonymous identity upgrade", () => {
     expect(busyMarkup).toContain('aria-busy="true"');
     expect(busyMarkup).toContain("Taking you to Google…");
     expect(busyMarkup).toContain("disabled");
+  });
+
+  it("offers signing in instead only once the identity is known to be taken", () => {
+    const props = {
+      isAnonymous: true,
+      busy: false,
+      error: "That Google account is already connected to an earlier session.",
+      onLinkGoogleIdentity: vi.fn(),
+      onSignInWithGoogle: vi.fn(),
+    };
+
+    expect(
+      renderToStaticMarkup(createElement(IdentityUpgrade, props)),
+    ).not.toContain("Sign in with Google instead");
+    expect(
+      renderToStaticMarkup(
+        createElement(IdentityUpgrade, { ...props, alreadyLinked: true }),
+      ),
+    ).toContain("Sign in with Google instead");
+  });
+});
+
+describe("OAuth callback verdict", () => {
+  it("reads nothing from a clean return", () => {
+    expect(readOAuthCallbackError("", "")).toBeNull();
+    expect(readOAuthCallbackError("?code=abc", "")).toBeNull();
+  });
+
+  it("names the already-linked case and offers the way through", () => {
+    const failure = readOAuthCallbackError(
+      "?error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked",
+      "",
+    );
+
+    expect(failure).toMatchObject({
+      code: "identity_already_exists",
+      alreadyLinked: true,
+    });
+    expect(failure.message).toContain("Sign in with Google");
+    expect(failure.message).toContain("stays with the guest session");
+  });
+
+  it("reads a verdict from the fragment and keeps other failures recoverable", () => {
+    const failure = readOAuthCallbackError(
+      "",
+      "#error=access_denied&error_description=User+denied+access",
+    );
+
+    expect(failure.alreadyLinked).toBe(false);
+    expect(failure.message).toBe("User denied access");
+  });
+
+  it("falls back to plain guidance when the provider sends no description", () => {
+    const failure = readOAuthCallbackError("?error=access_denied", "");
+
+    expect(failure).toMatchObject({ code: "oauth_error", alreadyLinked: false });
+    expect(failure.message).toContain("keep going as a guest");
   });
 });

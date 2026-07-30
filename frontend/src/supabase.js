@@ -110,6 +110,22 @@ export function createAnonymousAuth(client) {
       return data?.session || null;
     },
 
+    /* Used when the Google identity already belongs to another user: linking is
+     * impossible, but signing in reaches the account that owns it. */
+    async signInWithGoogle() {
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: safeOAuthRedirectTo(),
+        },
+      });
+      if (error) throw error;
+      if (!data?.url) {
+        throw new Error("Google sign-in did not return a redirect.");
+      }
+      return data.url;
+    },
+
     async linkGoogleIdentity() {
       const { data, error } = await client.auth.linkIdentity({
         provider: "google",
@@ -141,5 +157,6 @@ export const anonymousAuth = {
   subscribe: (listener) => productionAuth().subscribe(listener),
   signInAnonymously: () => productionAuth().signInAnonymously(),
   linkGoogleIdentity: () => productionAuth().linkGoogleIdentity(),
+  signInWithGoogle: () => productionAuth().signInWithGoogle(),
   refreshAccessToken: () => productionAuth().refreshAccessToken(),
 };
