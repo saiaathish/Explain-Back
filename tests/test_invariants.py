@@ -81,8 +81,27 @@ def test_no_persistence_implementation() -> None:
 
 
 def test_footer_contract_is_present() -> None:
-    text = (ROOT / "frontend" / "src" / "App.jsx").read_text(encoding="utf-8")
-    assert (
-        "Formative guidance only. Not a grade. Explain-Back does not persist"
-        in text
+    disclosure = (
+        "Formative guidance only. Not a grade. This signed-in session stores source"
     )
+    for name in ("App.jsx", "HistoryView.jsx"):
+        text = (ROOT / "frontend" / "src" / name).read_text(encoding="utf-8")
+        assert disclosure in text
+        assert "successful explanation attempts." in text
+
+
+def test_persistence_is_owner_scoped_by_row_level_security() -> None:
+    migrations = sorted((ROOT / "supabase" / "migrations").glob("*.sql"))
+    assert migrations
+    text = "\n".join(path.read_text(encoding="utf-8") for path in migrations)
+
+    for table in ("public.sessions", "public.explanation_attempts"):
+        assert f"alter table {table} enable row level security;" in text
+        assert f"revoke all on table {table} from anon, authenticated;" in text
+        assert f"grant select, insert on table {table} to authenticated;" in text
+
+    assert "(select auth.uid()) = user_id" in text
+    assert "sessions.user_id = (select auth.uid())" in text
+    assert "for update" not in text
+    assert "for delete" not in text
+    assert "service_role" not in text

@@ -15,10 +15,12 @@ Every non-green flag includes an exact contiguous span from the supplied source 
 a short revision hint. The response ends with one follow-up question generated
 from the analyzed gaps. There are no learner-facing scores or account forms.
 Supabase Auth creates a browser-local anonymous identity so the API can verify
-each request. Explain-Back does not persist sources, explanations, or results;
-those inputs are sent to the configured model provider under that provider's
+each request. Explain-Back stores exactly two things for that identity: the
+source text you submit and each successful explanation attempt with its concepts
+and flags. Nothing else is written, every row is readable only by its owner, and
+those inputs are also sent to the configured model provider under that provider's
 data-handling policy. Clearing browser data, signing out, or changing devices
-can lose the anonymous identity.
+can lose the anonymous identity and therefore access to its saved history.
 
 ## Why this design
 
@@ -34,9 +36,11 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 
 ## Architecture
 
-The browser holds input and results in React state. Supabase Auth persists only
-the anonymous browser session; there are no application tables or history
-writes. A FastAPI process verifies the bearer token, then performs two or three
+The browser holds live input and results in React state. Two Supabase tables,
+`sessions` and `explanation_attempts`, hold saved history; the browser writes
+them with its own authenticated session, so row-level security — not backend
+code — is what enforces ownership. A failed write never blocks an analysis, it
+only shows a notice. A FastAPI process verifies the bearer token, then performs two or three
 logical model stages around deterministic validation. Each stage can retry
 malformed output for up to three total attempts:
 
@@ -116,6 +120,15 @@ set the OAuth client's authorized redirect URI to
 `${SUPABASE_URL}/auth/v1/callback`, where `SUPABASE_URL` is the public URL of
 the Supabase project. The browser callback itself returns to the exact origin
 root, with query strings and fragments discarded.
+
+### Saved history schema
+
+Apply `supabase/migrations/20260730000000_phase3_persistence.sql` to the same
+project. It creates `sessions` and `explanation_attempts`, grants only `select`
+and `insert` to the `authenticated` role, and enables row-level security with
+owner-scoped policies. There is no update or delete path and no service-role
+access. Verify after applying that a second identity cannot read the first
+identity's rows.
 
 Local and deployed frontends also need `VITE_SUPABASE_URL` and
 `VITE_SUPABASE_PUBLISHABLE_KEY`; the backend needs the matching
@@ -241,6 +254,7 @@ because a two-minute feature tour buries the argument:
 - Transcription and image extraction are model-assisted and can misread terms.
   Both surface editable text and ask for review before analysis rather than
   feeding the pipeline silently.
-- Inputs are sent to the configured LLM provider for analysis. Explain-Back
-  does not persist them, but provider handling is governed by that provider's
-  policy. Voice recordings and images go to that same provider and no other.
+- Inputs are sent to the configured LLM provider for analysis, and provider
+  handling is governed by that provider's policy. Voice recordings and images go
+  to that same provider and no other; neither is stored by Explain-Back, which
+  saves only submitted source text and successful explanation attempts.

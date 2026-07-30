@@ -277,6 +277,14 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   await page.getByRole("button", { name: "Check my revision", exact: true }).click();
   await expect(page.locator(".diff-strip")).toBeVisible();
   record.contrast.push(...(await contrastState(page, "revised")));
+  await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+  await expect(page.locator(".history-view")).toBeVisible();
+  const history = await axeState(page, "saved-history");
+  record.axe.push(history);
+  expect(history.status).toBe("complete");
+  expect(history.violations).toEqual([]);
+  await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
+  await expect(page.locator(".results")).toBeVisible();
   if (testInfo.project.name === "desktop-chrome") {
     try {
       await keyboardWalkthrough(page, record);

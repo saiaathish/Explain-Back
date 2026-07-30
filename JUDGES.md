@@ -21,6 +21,8 @@ TO the student. This one makes the student explain, and shows them exactly
 where their explanation is supported, incomplete, or contradicted by the source.
 
 Other things worth knowing about, not required to try:
+- **Past sessions** — the source and every attempt from that loop are saved to
+  the anonymous session, readable only by it, and still there after a reload
 - Confidence marking + the "danger zone" map (mark what you feel sure about,
   then see where confidence and understanding disagree)
 - Voice input (speak your explanation instead of typing it)

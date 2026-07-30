@@ -559,8 +559,10 @@ main {
 }
 
 .history-detail h3 {
-  font-size: clamp(23px, 3vw, 31px);
-  line-height: 1.2;
+  /* A saved source reads as a lede, not a second display headline. */
+  font-size: clamp(19px, 2.1vw, 24px);
+  letter-spacing: -0.015em;
+  line-height: 1.35;
 }
 
 .history-attempts {

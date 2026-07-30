@@ -2,7 +2,9 @@ import { expect, test as base } from "@playwright/test";
 
 const LOCAL_PUBLISHABLE_KEY = "sb_publishable_e2e_local";
 const AUTH_ROOT = "/__e2e-supabase/auth/v1";
+const REST_ROOT = "/__e2e-supabase/rest/v1";
 const USER_ID = "3f501cb4-3783-4b55-9d75-d732f9555b5f";
+const OTHER_USER_ID = "8c1d4a20-6d1f-4c53-9a0e-5b02de0f9d41";
 const REFRESH_TOKEN = "e2e-refresh-token";
 
 function jsonResponse(status, body, headers = {}) {
@@ -93,6 +95,141 @@ async function authorizedIdentityLinkRequest(request, accessTokens) {
       (accessToken) => authorization === `Bearer ${accessToken}`,
     )
   );
+}
+
+function tokenSubject(authorization) {
+  const token = String(authorization || "").replace(/^Bearer /, "");
+  const payload = token.split(".")[1];
+  if (!payload) return "";
+  try {
+    return JSON.parse(Buffer.from(payload, "base64url").toString("utf8")).sub || "";
+  } catch {
+    return "";
+  }
+}
+
+/*
+ * A deliberately small PostgREST stand-in. It answers only the four requests
+ * `analysisHistory.js` makes, and it models the migration's row-level security
+ * by deriving the owner from the bearer token instead of trusting any column.
+ */
+function restFixture() {
+  const rows = { sessions: [], explanation_attempts: [] };
+  let inserts = 0;
+
+  const ownedSessions = (userId) =>
+    rows.sessions.filter((session) => session.user_id === userId);
+
+  function embedAttempts(session, select) {
+    if (!select.includes("explanation_attempts(")) return session;
+    return {
+      ...session,
+      explanation_attempts: rows.explanation_attempts
+        .filter((attempt) => attempt.session_id === session.id)
+        .sort((left, right) => left.attempt_number - right.attempt_number),
+    };
+  }
+
+  function selectSessions(userId, url) {
+    const select = url.searchParams.get("select") || "";
+    const idFilter = url.searchParams.get("id");
+    let matches = ownedSessions(userId);
+    if (idFilter) {
+      const wanted = idFilter.replace(/^eq\./, "");
+      matches = matches.filter((session) => session.id === wanted);
+    }
+    return matches
+      .slice()
+      .sort((left, right) => right.created_at.localeCompare(left.created_at))
+      .map((session) => embedAttempts(session, select));
+  }
+
+  function selectAttempts(userId, url) {
+    const sessionFilter = (url.searchParams.get("session_id") || "").replace(
+      /^eq\./,
+      "",
+    );
+    const visible = new Set(ownedSessions(userId).map((session) => session.id));
+    let matches = rows.explanation_attempts.filter(
+      (attempt) => visible.has(attempt.session_id) &&
+        (!sessionFilter || attempt.session_id === sessionFilter),
+    );
+    if ((url.searchParams.get("order") || "").includes("desc")) {
+      matches = matches
+        .slice()
+        .sort((left, right) => right.attempt_number - left.attempt_number);
+    }
+    const limit = Number(url.searchParams.get("limit"));
+    return Number.isInteger(limit) && limit > 0 ? matches.slice(0, limit) : matches;
+  }
+
+  function insertSession(userId, body) {
+    inserts += 1;
+    const row = {
+      id: `e2e-session-${inserts}`,
+      user_id: userId,
+      source_text: body.source_text,
+      created_at: new Date(Date.now() + inserts).toISOString(),
+    };
+    rows.sessions.push(row);
+    return row;
+  }
+
+  function insertAttempt(userId, body) {
+    /* The insert policy checks the parent session's owner, not the payload. */
+    const parent = rows.sessions.find(
+      (session) => session.id === body.session_id && session.user_id === userId,
+    );
+    if (!parent) return { error: { code: "42501", message: "row violates policy" } };
+    if (
+      rows.explanation_attempts.some(
+        (attempt) =>
+          attempt.session_id === body.session_id &&
+          attempt.attempt_number === body.attempt_number,
+      )
+    ) {
+      return {
+        error: {
+          code: "23505",
+          message: "duplicate key value violates unique constraint",
+        },
+      };
+    }
+
+    inserts += 1;
+    const row = {
+      id: `e2e-attempt-${inserts}`,
+      session_id: body.session_id,
+      explanation_text: body.explanation_text,
+      concepts: body.concepts,
+      flags: body.flags,
+      attempt_number: body.attempt_number,
+      created_at: new Date(Date.now() + inserts).toISOString(),
+    };
+    rows.explanation_attempts.push(row);
+    return { row };
+  }
+
+  return {
+    rows,
+    requests: [],
+    otherUserId: OTHER_USER_ID,
+    seedForeignSession({ sourceText = "Another learner's source", flags = [] } = {}) {
+      const session = insertSession(OTHER_USER_ID, { source_text: sourceText });
+      insertAttempt(OTHER_USER_ID, {
+        session_id: session.id,
+        explanation_text: "Another learner's explanation",
+        concepts: [],
+        flags,
+        attempt_number: 1,
+      });
+      return session;
+    },
+    selectSessions,
+    selectAttempts,
+    insertSession,
+    insertAttempt,
+  };
 }
 
 export const test = base.extend({
@@ -238,6 +375,128 @@ export const test = base.extend({
             },
             { allow: "POST" },
           ),
+        );
+      });
+
+      await use(state);
+    },
+    { auto: true },
+  ],
+
+  restApi: [
+    async ({ page, baseURL, localAuthFixture, authApi }, use) => {
+      const state = restFixture();
+
+      if (!localAuthFixture) {
+        await use(state);
+        return;
+      }
+
+      const allowedOrigin = new URL(baseURL).origin;
+
+      await page.route(`**${REST_ROOT}/**`, async (route) => {
+        const request = route.request();
+        const url = new URL(request.url());
+        const table = url.pathname.slice(`${REST_ROOT}/`.length);
+        const authorization = await request.headerValue("authorization");
+        const wantsObject = (
+          (await request.headerValue("accept")) || ""
+        ).includes("application/vnd.pgrst.object+json");
+
+        if (url.origin !== allowedOrigin) {
+          await route.fulfill(
+            jsonResponse(403, { code: "PGRST301", message: "origin rejected" }),
+          );
+          return;
+        }
+
+        const subject = tokenSubject(authorization);
+        const authorized =
+          (await request.headerValue("apikey")) === LOCAL_PUBLISHABLE_KEY &&
+          authApi.accessTokens.some(
+            (accessToken) => authorization === `Bearer ${accessToken}`,
+          ) &&
+          subject === USER_ID;
+
+        if (!authorized) {
+          await route.fulfill(
+            jsonResponse(401, {
+              code: "PGRST301",
+              message: "JWT verification failed",
+            }),
+          );
+          return;
+        }
+
+        state.requests.push({
+          method: request.method(),
+          table,
+          searchParams: Object.fromEntries(url.searchParams),
+        });
+
+        if (!["sessions", "explanation_attempts"].includes(table)) {
+          await route.fulfill(
+            jsonResponse(404, { code: "PGRST205", message: "unknown table" }),
+          );
+          return;
+        }
+
+        if (request.method() === "GET") {
+          const matches =
+            table === "sessions"
+              ? state.selectSessions(subject, url)
+              : state.selectAttempts(subject, url);
+          if (wantsObject) {
+            await route.fulfill(
+              matches.length === 1
+                ? jsonResponse(200, matches[0])
+                : jsonResponse(406, {
+                    code: "PGRST116",
+                    details: `Results contain ${matches.length} rows`,
+                    hint: null,
+                    message: "JSON object requested, multiple (or no) rows returned",
+                  }),
+            );
+            return;
+          }
+          await route.fulfill(jsonResponse(200, matches));
+          return;
+        }
+
+        if (request.method() !== "POST") {
+          await route.fulfill(
+            jsonResponse(405, { code: "PGRST102", message: "method rejected" }),
+          );
+          return;
+        }
+
+        const body = request.postDataJSON();
+        if (body?.user_id) {
+          await route.fulfill(
+            jsonResponse(403, {
+              code: "42501",
+              message: "the browser must not choose a row owner",
+            }),
+          );
+          return;
+        }
+
+        if (table === "sessions") {
+          const row = state.insertSession(subject, body);
+          await route.fulfill(jsonResponse(201, wantsObject ? row : [row]));
+          return;
+        }
+
+        const { row, error } = state.insertAttempt(subject, body);
+        await route.fulfill(
+          error
+            ? jsonResponse(error.code === "23505" ? 409 : 403, {
+                code: error.code,
+                details: null,
+                hint: null,
+                message: error.message,
+              })
+            : jsonResponse(201, wantsObject ? row : [row]),
         );
       });
 

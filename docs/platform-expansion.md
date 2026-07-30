@@ -74,11 +74,42 @@ change. Before either phase can pass:
   values, exact frontend/backend origins, Google, anonymous sign-ins, and
   Manual Linking; then verify anonymous entry, UID-preserving Google linking,
   callback cleanup, bearer requests, CORS, and reload behavior.
-- Do not start Phase 3 until that hosted matrix passes.
+- Phase 3 code was written while this hosted matrix was still blocked on account
+  provisioning, which departs from the original "verify Phase 2 first" order.
+  The gate itself is not relaxed: Phase 2 and Phase 3 both remain unpassed until
+  a real Supabase project and a same-SHA backend exist, and the demoable
+  fallback is still Phase 1.
 
-### Later phases — not started
+### Phase 3 — code complete, hosted gate not passed
 
-- Phase 3 has no schema, RLS policies, persistence writes, or history UI.
+- Schema: `supabase/migrations/20260730000000_phase3_persistence.sql` creates
+  `sessions` and `explanation_attempts` only, grants the `authenticated` role
+  only `select` and `insert`, and enables owner-scoped row-level security. There
+  is no update path, no delete path, and no service-role usage. Ownership comes
+  from `auth.uid()`, never from a browser-supplied column;
+  `tests/test_invariants.py` now asserts each of those properties.
+- Writes: the browser saves an attempt after a successful analysis using its own
+  authenticated session. A revision on the same source reuses the session and
+  increments `attempt_number`; a duplicate number is retried once. A failed save
+  never blocks or alters an analysis — it surfaces one notice.
+- Local evidence at this checkpoint: 160 backend tests, 73 frontend tests, and
+  17 Playwright tests passed, plus a clean production build. Two new browser
+  tests (`frontend/e2e/history.local.js`) drive a real Chromium against a
+  PostgREST stand-in that derives the row owner from the bearer token:
+  analysis then revision produce one session with two ordered attempts, saved
+  history survives a reload, another identity's seeded session is absent from
+  the list, and a direct `id=eq.<foreign>` read returns no rows.
+- The saved-history screen scans clean: zero Axe violations at desktop and no
+  horizontal overflow at 390px, with the editorial serif holding for source and
+  attempt prose while compact metadata stays in the utility sans.
+- The analysis pipeline is untouched: the diff against production `main` still
+  changes no file under `backend/` except `auth.py` and `main.py`.
+- Still required for the hosted gate, and blocked with Phase 2: apply the
+  migration to a real Supabase project, then prove cross-identity denial and
+  refresh survival against that project rather than against the local stand-in.
+
+### Phase 4 — not started
+
 - Phase 4 has no stored-flag review or mastery implementation.
 
 ### Fallback — verified
