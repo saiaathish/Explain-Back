@@ -819,6 +819,9 @@ test.describe("interactivity pass", () => {
     await installImmediateAnalysis(page);
     await page.goto("/");
     await page.getByRole("button", { name: "Try it", exact: true }).click();
+    /* Entering the workspace moves focus to the source field. Wait for that
+     * handoff, or it lands after this test takes focus and steals it back. */
+    await expect(page.locator("#source")).toBeFocused();
 
     const submit = page.getByRole("button", {
       name: "Check my explanation",

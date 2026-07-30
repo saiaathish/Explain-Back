@@ -218,13 +218,18 @@ Google account, so `E2E_GOOGLE_LINK=1` and a headed run remain the owner's step.
 Phase 2 and Phase 3 are therefore passed for the guest path, which is the judge
 path, with optional identity linking unverified end to end.
 
-### Known flake
+### Resolved flake
 
-`e2e/interactivity.pw.js` — "focus rings and reduced motion disable every
-representative motion family" failed twice in six full local runs and passes in
-isolation every time. It predates this checkpoint's changes and no fix is
-attempted here; it is order- or timing-sensitive and should be stabilized before
-it is trusted as a gate.
+"focus rings and reduced motion disable every representative motion family" in
+`e2e/interactivity.pw.js` failed three times in ten full local runs and passed in
+isolation every time. The trace shows it was never a motion or focus-ring
+problem: the failing assertion was `toBeFocused()` on the submit button, because
+entering the workspace moves focus to the source field asynchronously. Under
+full-suite load that handoff landed *after* the test focused the submit button
+and stole focus back.
+
+The fix waits for the app's own focus handoff before the test takes focus. No
+assertion was relaxed. Six consecutive full-suite runs then passed 17/17.
 
 ### Phase 4 — not started
 
