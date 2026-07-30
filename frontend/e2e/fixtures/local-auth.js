@@ -105,7 +105,7 @@ function tokenSubject(authorization) {
  * by deriving the owner from the bearer token instead of trusting any column.
  */
 function restFixture() {
-  const rows = { sessions: [], explanation_attempts: [] };
+  const rows = { sessions: [], explanation_attempts: [], cleared_gaps: [] };
   let inserts = 0;
 
   const ownedSessions = (userId) =>
@@ -201,9 +201,49 @@ function restFixture() {
     return { row };
   }
 
+  function selectCleared(userId, url) {
+    const matches = rows.cleared_gaps.filter((row) => row.user_id === userId);
+    return (url.searchParams.get("order") || "").includes("desc")
+      ? matches.slice().sort((l, r) => r.created_at.localeCompare(l.created_at))
+      : matches.slice().sort((l, r) => l.created_at.localeCompare(r.created_at));
+  }
+
+  function insertCleared(userId, body) {
+    /* The insert policy also requires the session to be the learner's own. */
+    const parent = rows.sessions.find(
+      (session) => session.id === body.session_id && session.user_id === userId,
+    );
+    if (!parent) return { error: { code: "42501", message: "row violates policy" } };
+    if (
+      rows.cleared_gaps.some(
+        (row) =>
+          row.user_id === userId &&
+          row.session_id === body.session_id &&
+          row.prop_id === body.prop_id,
+      )
+    ) {
+      return {
+        error: { code: "23505", message: "duplicate key value violates unique constraint" },
+      };
+    }
+
+    inserts += 1;
+    const row = {
+      id: `e2e-cleared-${inserts}`,
+      user_id: userId,
+      session_id: body.session_id,
+      prop_id: body.prop_id,
+      created_at: new Date(Date.now() + inserts).toISOString(),
+    };
+    rows.cleared_gaps.push(row);
+    return { row };
+  }
+
   return {
     rows,
     requests: [],
+    selectCleared,
+    insertCleared,
     otherUserId: OTHER_USER_ID,
     seedForeignSession({ sourceText = "Another learner's source", flags = [] } = {}) {
       const session = insertSession(OTHER_USER_ID, { source_text: sourceText });
@@ -452,7 +492,9 @@ export const test = base.extend({
           searchParams: Object.fromEntries(url.searchParams),
         });
 
-        if (!["sessions", "explanation_attempts"].includes(table)) {
+        if (
+          !["sessions", "explanation_attempts", "cleared_gaps"].includes(table)
+        ) {
           await route.fulfill(
             jsonResponse(404, { code: "PGRST205", message: "unknown table" }),
           );
@@ -463,7 +505,9 @@ export const test = base.extend({
           const matches =
             table === "sessions"
               ? state.selectSessions(subject, url)
-              : state.selectAttempts(subject, url);
+              : table === "cleared_gaps"
+                ? state.selectCleared(subject, url)
+                : state.selectAttempts(subject, url);
           if (wantsObject) {
             await route.fulfill(
               matches.length === 1
@@ -505,7 +549,10 @@ export const test = base.extend({
           return;
         }
 
-        const { row, error } = state.insertAttempt(subject, body);
+        const { row, error } =
+          table === "cleared_gaps"
+            ? state.insertCleared(subject, body)
+            : state.insertAttempt(subject, body);
         await route.fulfill(
           error
             ? jsonResponse(error.code === "23505" ? 409 : 403, {

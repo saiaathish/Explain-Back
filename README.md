@@ -13,21 +13,16 @@ maps formative guidance over the student's own words:
 
 Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question generated
-from the analyzed gaps. There are no learner-facing scores or account forms.
-Supabase Auth creates a browser-local anonymous identity so the API can verify
-each request. Explain-Back stores exactly two things for that identity: the
-source text you submit and each successful explanation attempt with its concepts
-and flags. What you mark during a review round is never stored. Nothing else is
-written, every row is readable only by its owner, and
-Google sign-in is required before any analysis, and Supabase Auth issues the
+from the analyzed gaps. There are no learner-facing scores and no password to
+create. Google sign-in is required before any analysis, and Supabase Auth issues the
 session the API verifies on every request. Explain-Back stores exactly three
-things for that account: the
-source text you submit, each successful explanation attempt with its concepts and
-flags, and whether you marked a recorded gap understood or still shaky. Nothing
-else is written, every row is readable only by its owner, and
+things for that account: the source text you submit, each successful explanation
+attempt with its concepts and flags, and which gaps you have explained again in
+review. Marking a card "still shaky" is never stored. Nothing else is written,
+every row is readable only by its owner, and
 those inputs are also sent to the configured model provider under that provider's
-data-handling policy. Clearing browser data, signing out, or changing devices
-follows the account, so signing in on another device restores it.
+data-handling policy. Saved work follows the account, so signing in on another
+device restores it.
 
 ## Why this design
 
@@ -43,13 +38,14 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 
 ## Architecture
 
-The browser holds live input and results in React state. Two Supabase tables
-hold saved work: `sessions` and `explanation_attempts`. Both are append-only to
-the browser, which writes them with its own authenticated session, so row-level
+The browser holds live input and results in React state. Three Supabase tables
+hold saved work: `sessions` and `explanation_attempts` for history, and
+`cleared_gaps` for the gaps you have explained again. All are append-only to the
+browser, which writes them with its own authenticated session, so row-level
 security — not backend code — is what enforces ownership. A failed write never
 blocks an analysis, it only shows a notice. Review cards are derived from stored
-flags, so reviewing makes no model call, and a review round is held in memory
-only: nothing about what you marked is written down. A FastAPI process verifies the bearer token, then performs two or three
+flags, so reviewing makes no model call, and the review deck is every recorded
+gap minus the ones already cleared. A FastAPI process verifies the bearer token, then performs two or three
 logical model stages around deterministic validation. Each stage can retry
 malformed output for up to three total attempts:
 
@@ -135,7 +131,8 @@ root, with query strings and fragments discarded.
 Apply both migrations in `supabase/migrations/` in filename order. The first
 creates `sessions` and `explanation_attempts`, granting only `select` and
 `insert` to the `authenticated` role with owner-scoped row-level security. The
-second drops the retired `flag_reviews` table. There is no update or delete path
+second drops the retired `flag_reviews` table, and the third creates
+`cleared_gaps` under the same rules. There is no update or delete path
 and no service-role access, so saved history is append-only. Verify after
 applying that a second identity cannot read the first identity's rows.
 

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { deriveCards, promptFor, roundSummary } from "./flashcards";
+import {
+  deriveCards,
+  outstandingCards,
+  promptFor,
+  roundSummary,
+} from "./flashcards";
 
 function session(id, attempts) {
   return { id, source_text: `Source ${id}`, explanation_attempts: attempts };
@@ -81,6 +86,50 @@ describe("flashcard derivation", () => {
       complete: false,
       label: "No recorded gaps yet",
     });
+  });
+
+  it("drops gaps already explained and keeps ones recorded later", () => {
+    const sessionA = session("a", [{ attempt_number: 1, flags: [YELLOW, RED] }]);
+    const sessionB = session("b", [{ attempt_number: 1, flags: [RED] }]);
+    const cards = deriveCards([sessionA, sessionB]);
+    expect(cards).toHaveLength(3);
+
+    /* Session A fully cleared: only session B is still owed. */
+    const clearedA = [
+      { session_id: "a", prop_id: "direction" },
+      { session_id: "a", prop_id: "gradients" },
+    ];
+    expect(outstandingCards(cards, clearedA).map((card) => card.sessionId)).toEqual([
+      "b",
+    ]);
+
+    /* A later attempt records a new gap on the cleared source. */
+    const withNewGap = deriveCards([
+      session("a", [
+        { attempt_number: 1, flags: [YELLOW, RED] },
+        {
+          attempt_number: 2,
+          flags: [{ ...RED, prop_id: "energy", claim: "ATP is used somehow." }],
+        },
+      ]),
+      sessionB,
+    ]);
+    expect(
+      outstandingCards(withNewGap, clearedA).map((card) => card.id),
+    ).toEqual(["a:energy", "b:direction"]);
+  });
+
+  it("treats partial progress as progress", () => {
+    const cards = deriveCards([
+      session("a", [{ attempt_number: 1, flags: [YELLOW, RED] }]),
+    ]);
+
+    const outstanding = outstandingCards(cards, [
+      { session_id: "a", prop_id: "direction" },
+    ]);
+    expect(outstanding.map((card) => card.propId)).toEqual(["gradients"]);
+    expect(outstandingCards(cards, [])).toHaveLength(2);
+    expect(outstandingCards(cards, undefined)).toHaveLength(2);
   });
 
   it("frames the prompt from the source anchor, not from the learner's claim", () => {
