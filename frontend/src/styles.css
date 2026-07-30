@@ -138,6 +138,23 @@ header p {
   gap: 7px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.history-link,
+.history-back {
+  min-height: 40px;
+  padding-inline: 14px;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .identity-link-button {
   min-height: 40px;
   border-color: color-mix(in srgb, var(--ink) 38%, var(--rule));
@@ -407,6 +424,184 @@ main {
 .results {
   width: min(100%, 720px);
   margin-inline: auto;
+}
+
+.history-view {
+  width: min(100%, 820px);
+  margin-inline: auto;
+}
+
+.history-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.history-heading h2,
+.history-detail h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--editorial);
+  font-size: clamp(30px, 5vw, 42px);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.history-heading p {
+  max-width: 52ch;
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.history-message {
+  margin: 28px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.history-message--error,
+.history-save-error {
+  border-left: 3px solid var(--contradicts);
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--contradicts) 8%, transparent);
+  color: var(--contradicts);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.history-save-error {
+  width: min(100%, 720px);
+  margin: 18px auto 0;
+}
+
+.history-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  gap: 34px;
+  margin-top: 28px;
+}
+
+.history-sessions,
+.history-attempts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-sessions {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.history-sessions button {
+  width: 100%;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 15px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 7px;
+  text-align: left;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.history-sessions button:hover,
+.history-sessions button.is-selected {
+  border-color: var(--understood);
+  background: var(--wash-understood);
+}
+
+.history-session-source {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.history-session-meta,
+.history-session-date,
+.history-detail-label,
+.history-attempt-heading,
+.history-attempts small,
+.history-empty-attempts {
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.history-session-date {
+  font-weight: 500;
+}
+
+.history-detail {
+  min-width: 0;
+  border-left: 1px solid var(--rule);
+  padding-left: 34px;
+}
+
+.history-detail-label {
+  margin: 0 0 9px;
+}
+
+.history-detail h3 {
+  font-size: clamp(23px, 3vw, 31px);
+  line-height: 1.2;
+}
+
+.history-attempts {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.history-attempts li {
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.history-attempt-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ink-soft);
+}
+
+.history-attempt-heading strong {
+  color: var(--ink);
+}
+
+.history-attempts p {
+  margin: 10px 0 8px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.history-attempts small {
+  display: block;
+  font-weight: 500;
+}
+
+.history-empty-attempts {
+  margin: 22px 0 0;
 }
 
 .workspace {
@@ -1680,12 +1875,35 @@ footer {
     margin-top: 10px;
   }
 
+  .header-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .history-link,
+  .history-back {
+    width: 100%;
+  }
+
   .identity-link-error {
     text-align: left;
   }
 
   main {
     padding: 32px 18px 54px;
+  }
+
+  .history-layout {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .history-detail {
+    border-top: 1px solid var(--rule);
+    border-left: 0;
+    padding-top: 26px;
+    padding-left: 0;
   }
 
   .workspace textarea {

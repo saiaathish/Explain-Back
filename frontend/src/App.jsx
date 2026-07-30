@@ -8,9 +8,11 @@ import DiffStrip from "./DiffStrip";
 import { calibrationSummary, sentenceRanges } from "./confidence";
 import { diffRuns } from "./diff";
 import FollowUp from "./FollowUp";
+import HistoryView from "./HistoryView";
 import LandingPage from "./LandingPage";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
+import { getAnalysisHistory } from "./analysisHistory";
 import { anonymousAuth } from "./supabase";
 import {
   appendTranscript,
@@ -168,8 +170,8 @@ function toDomIdFragment(value) {
 function Footer() {
   return (
     <footer>
-      Formative guidance only. Not a grade. Explain-Back does not persist
-      submissions.
+      Formative guidance only. Not a grade. This signed-in session stores source
+      material and successful explanation attempts.
     </footer>
   );
 }
@@ -297,6 +299,7 @@ function Workspace({
   identityLinkBusy,
   identityLinkError,
   onLinkGoogleIdentity,
+  onOpenHistory,
 }) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
@@ -327,6 +330,8 @@ function Workspace({
   const [focusedCurrent, setFocusedCurrent] = useState(null);
   const [focusedLoading, setFocusedLoading] = useState(false);
   const [focusedError, setFocusedError] = useState("");
+  const [savedSession, setSavedSession] = useState(null);
+  const [historySaveError, setHistorySaveError] = useState("");
   const mainRequestRef = useRef(null);
   const focusedRequestRef = useRef(null);
   const selectedConceptRef = useRef(selectedConcept);
@@ -502,6 +507,7 @@ function Workspace({
     setConfidenceRanges([]);
     setRevising(false);
     setError("");
+    setHistorySaveError("");
   }
 
   function resetTransientState() {
@@ -814,6 +820,7 @@ function Workspace({
       return;
     }
     setError("");
+    setHistorySaveError("");
     abortMainRequest();
     abortFocusedRequest();
     setLoading(true);
@@ -841,7 +848,8 @@ function Workspace({
     try {
       const trimmed = explanation.trim();
       const runRanges = trimRangeSnapshot(explanation, trimmed, confidenceRanges);
-      const result = await analyze(source.trim(), trimmed, controller.signal, {
+      const sourceText = source.trim();
+      const result = await analyze(sourceText, trimmed, controller.signal, {
         accessToken,
         refreshAccessToken,
       });
@@ -856,6 +864,27 @@ function Workspace({
       setResultRunId((runId) => runId + 1);
       setConfidenceRanges(runRanges);
       setRevising(false);
+      try {
+        const saved = await getAnalysisHistory().saveAnalysis({
+          sessionId:
+            savedSession?.sourceText === sourceText ? savedSession.id : undefined,
+          sourceText,
+          explanationText: trimmed,
+          result,
+        });
+        if (mountedRef.current) {
+          setSavedSession({ id: saved.session.id, sourceText });
+        }
+      } catch (saveError) {
+        if (mountedRef.current) {
+          if (saveError?.sessionId) {
+            setSavedSession({ id: saveError.sessionId, sourceText });
+          }
+          setHistorySaveError(
+            "Your analysis is ready, but it could not be saved to history. Try revising once more after checking your connection.",
+          );
+        }
+      }
     } catch (requestError) {
       if (!mountedRef.current || mainRequestRef.current !== request) return;
       setError(
@@ -899,12 +928,21 @@ function Workspace({
           </h1>
           <p>Explain it in your own words. See what holds up.</p>
         </div>
-        <IdentityUpgrade
-          busy={identityLinkBusy}
-          error={identityLinkError}
-          isAnonymous={isAnonymous}
-          onLinkGoogleIdentity={onLinkGoogleIdentity}
-        />
+        <div className="header-actions">
+          <button
+            className="secondary history-link"
+            onClick={onOpenHistory}
+            type="button"
+          >
+            Past sessions
+          </button>
+          <IdentityUpgrade
+            busy={identityLinkBusy}
+            error={identityLinkError}
+            isAnonymous={isAnonymous}
+            onLinkGoogleIdentity={onLinkGoogleIdentity}
+          />
+        </div>
       </header>
 
       <main>
@@ -1039,6 +1077,11 @@ function Workspace({
         {error && (
           <p className="error" role="alert">
             {error}
+          </p>
+        )}
+        {historySaveError && (
+          <p className="history-save-error" role="alert">
+            {historySaveError}
           </p>
         )}
 
@@ -1422,16 +1465,26 @@ function AuthSurface() {
     refreshAccessToken,
     start,
   } = useAuth();
+  const [screen, setScreen] = useState("workspace");
+
+  useEffect(() => {
+    if (!entered) setScreen("workspace");
+  }, [entered]);
 
   return entered ? (
-    <Workspace
-      accessToken={accessToken}
-      identityLinkBusy={identityLinkBusy}
-      identityLinkError={identityLinkError}
-      isAnonymous={isAnonymous}
-      onLinkGoogleIdentity={linkGoogleIdentity}
-      refreshAccessToken={refreshAccessToken}
-    />
+    screen === "history" ? (
+      <HistoryView onBack={() => setScreen("workspace")} />
+    ) : (
+      <Workspace
+        accessToken={accessToken}
+        identityLinkBusy={identityLinkBusy}
+        identityLinkError={identityLinkError}
+        isAnonymous={isAnonymous}
+        onLinkGoogleIdentity={linkGoogleIdentity}
+        onOpenHistory={() => setScreen("history")}
+        refreshAccessToken={refreshAccessToken}
+      />
+    )
   ) : (
     <LandingPage
       authError={authError}

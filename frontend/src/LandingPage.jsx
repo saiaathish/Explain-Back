@@ -112,8 +112,10 @@ export default function LandingPage({
             </p>
           )}
           <p className="landing-auth-disclosure">
-            This creates a browser-local anonymous identity. Clearing browser
-            data, signing out, or changing devices can lose access.
+            This creates a browser-local anonymous identity. After a successful
+            analysis, its source material and explanation attempt are saved to
+            that signed-in session. Clearing browser data, signing out, or
+            changing devices can lose access.
           </p>
         </section>
 
