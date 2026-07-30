@@ -330,6 +330,75 @@ test.describe("hosted Phase 2 authentication gate", () => {
     });
   });
 
+  /*
+   * Phase 3 on the deployed origin. Analysis is fulfilled locally so the gate
+   * does not depend on a model call, but every write and read below is the real
+   * app talking to the real project under row-level security.
+   */
+  test("saved history is written and read back from the deployed origin", async ({
+    page,
+  }, testInfo) => {
+    await page.route(`${API_ORIGIN}/api/analyze`, async (route) => {
+      const body = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(analysisResponse(body.source)),
+      });
+    });
+
+    const session = await enterAnonymousWorkspace(page);
+    await page.locator("#source").fill(SOURCE);
+    await page.locator("#explanation").fill(EXPLANATION);
+    await page
+      .getByRole("button", { name: "Check my explanation", exact: true })
+      .click();
+    await expect(page.locator(".results")).toBeVisible();
+    await expect(page.locator(".history-save-error")).toHaveCount(0);
+
+    await page
+      .getByRole("button", { name: "Revise your explanation", exact: true })
+      .click();
+    await page.locator("#revision-explanation").fill(`${EXPLANATION} The gradient holds.`);
+    await page
+      .getByRole("button", { name: "Check my revision", exact: true })
+      .click();
+    await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
+    await expect(page.locator(".history-save-error")).toHaveCount(0);
+
+    /* A reload proves the rows came from the project, not from React state. */
+    await page.reload();
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await expect(page.locator("#source")).toBeFocused();
+    const restored = await waitForStoredAuth(page);
+    expect(restored.userId).toBe(session.userId);
+
+    await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+    const savedSessions = page.locator(".history-sessions > li");
+    await expect(savedSessions).toHaveCount(1);
+    await expect(savedSessions.first()).toContainText("2 attempts");
+    await expect(page.locator(".history-attempts > li")).toHaveCount(2);
+    await expect(page.locator(".history-detail")).toContainText(
+      "The gradient holds.",
+    );
+
+    await testInfo.attach("phase3-hosted-persistence-evidence", {
+      body: JSON.stringify(
+        {
+          frontendOrigin: FRONTEND_ORIGIN,
+          uidHash: uidHash(session.userId),
+          uidStableAfterReload: restored.userId === session.userId,
+          savedSessionsListed: await savedSessions.count(),
+          attemptsListed: await page.locator(".history-attempts > li").count(),
+          saveErrorShown: (await page.locator(".history-save-error").count()) > 0,
+        },
+        null,
+        2,
+      ),
+      contentType: "application/json",
+    });
+  });
+
   test("Google links to the existing anonymous UID and returns cleanly", async ({
     page,
   }, testInfo) => {

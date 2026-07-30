@@ -190,12 +190,41 @@ Confirmed in a real browser against that origin:
 - Zero console errors, and at 390px the history screen has no horizontal
   overflow (`scrollWidth` equals `innerWidth`).
 
-Remaining before Phase 2 can be called passed: the scripted matrix in
-`frontend/e2e/auth.hosted.js` has not been run against this deployment, because
-it needs the project's automation bypass secret and reading that secret is the
-owner's to do. Until that suite passes, the demoable fallback remains Phase 1.
-The Google identity link was deliberately not completed — that requires signing
-in to a Google account, which is also the owner's to do.
+### Scripted hosted matrix — passed on July 29, 2026
+
+`frontend/e2e/auth.hosted.js` was run against this deployment with the owner's
+automation bypass secret. Three tests passed and the Google leg was skipped:
+
+- Real anonymous entry with no email or password field anywhere on the path;
+  preflight from the deployed origin `200` with that exact origin echoed back;
+  `https://evil.example` refused `400` with no allow-origin header; a malformed
+  bearer `401`; a real bearer reaching request validation; and the same anonymous
+  user id restored after a reload.
+- One backend `401` produces exactly one refresh and one replay, with a changed
+  bearer and a byte-identical body.
+- Phase 3 on the deployed origin: an analysis and its revision are saved without
+  a save error, and after a reload the restored session's **Past sessions**
+  screen lists one session with both attempts read back from the project. The
+  analysis response is fulfilled locally so the gate never depends on a model
+  call; every write and read is the real app against the real project.
+
+The first attempt at this matrix failed on a 15-second preflight timeout. The
+cause was Render free-tier cold start — a first health request measured 34
+seconds — not a CORS or auth fault. Warm the PR-14 service before running.
+
+Not proven, and deliberately left to the owner: completing a Google sign-in.
+The link request itself is verified as canonical, but the round trip needs a real
+Google account, so `E2E_GOOGLE_LINK=1` and a headed run remain the owner's step.
+Phase 2 and Phase 3 are therefore passed for the guest path, which is the judge
+path, with optional identity linking unverified end to end.
+
+### Known flake
+
+`e2e/interactivity.pw.js` — "focus rings and reduced motion disable every
+representative motion family" failed twice in six full local runs and passes in
+isolation every time. It predates this checkpoint's changes and no fix is
+attempted here; it is order- or timing-sensitive and should be stabilized before
+it is trusted as a gate.
 
 ### Phase 4 — not started
 
