@@ -1,8 +1,9 @@
 # For judges — see everything in 90 seconds
 
 1. Open https://explain-back.vercel.app/
-2. Click **Try it** — no account form is required; a browser-local anonymous
-   session verifies API requests
+2. Click **Sign in to start**, then **Continue with Google** — one tap, no
+   password to create. Signing in is required: it lands you straight in the
+   workspace, and your work is saved to your account on any device
 3. Click the **Biology** preset
 4. Click **Check my explanation**
    → Watch the highlights appear: green means understood, yellow means stated
@@ -22,7 +23,7 @@ where their explanation is supported, incomplete, or contradicted by the source.
 
 Other things worth knowing about, not required to try:
 - **Past sessions** — the source and every attempt from that loop are saved to
-  the anonymous session, readable only by it, and still there after a reload
+  your account, readable only by you, and still there after a reload
 - **Review gaps** — every claim that did not hold up becomes a card: the source
   anchor as the prompt, what you said, and why it fell short. Mark it understood
   or still shaky. No new model call happens here; it is your own recorded data

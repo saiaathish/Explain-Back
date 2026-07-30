@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, signIn } from "./fixtures/local-auth.js";
 import AxeBuilder from "@axe-core/playwright";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -162,8 +162,7 @@ async function activeElement(page) {
 async function keyboardWalkthrough(page, record) {
   const steps = [];
   const note = (action, extra = {}) => steps.push({ action, ...extra });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  await signIn(page, "/");
   await page.keyboard.press("Tab");
   let presetFocused = false;
   for (let index = 0; index < 40; index += 1) {
@@ -243,6 +242,8 @@ async function keyboardWalkthrough(page, record) {
 }
 
 test("accessibility states, keyboard walkthrough, and contrast", async ({ page }, testInfo) => {
+  /* Two full sign-in redirects plus every Axe scan need more than the default. */
+  test.setTimeout(90_000);
   const viewport = testInfo.project.use.viewport;
   const record = {
     project: testInfo.project.name,
@@ -253,8 +254,7 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
     errors: [],
   };
   await mockAnalysis(page);
-  await page.goto("/");
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  await signIn(page, "/");
   record.axe.push(await axeState(page, "empty"));
   await page.getByRole("button", { name: "Biology", exact: true }).click();
   await expect(page.locator("#explanation")).not.toHaveValue("");
