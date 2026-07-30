@@ -19,9 +19,15 @@ each request. Explain-Back stores exactly two things for that identity: the
 source text you submit and each successful explanation attempt with its concepts
 and flags. What you mark during a review round is never stored. Nothing else is
 written, every row is readable only by its owner, and
+Google sign-in is required before any analysis, and Supabase Auth issues the
+session the API verifies on every request. Explain-Back stores exactly three
+things for that account: the
+source text you submit, each successful explanation attempt with its concepts and
+flags, and whether you marked a recorded gap understood or still shaky. Nothing
+else is written, every row is readable only by its owner, and
 those inputs are also sent to the configured model provider under that provider's
 data-handling policy. Clearing browser data, signing out, or changing devices
-can lose the anonymous identity and therefore access to its saved history.
+follows the account, so signing in on another device restores it.
 
 ## Why this design
 
