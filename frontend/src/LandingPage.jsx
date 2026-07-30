@@ -50,12 +50,12 @@ export default function LandingPage({
 }) {
   const buttonLabel =
     authStatus === "restoring"
-      ? "Restoring access…"
+      ? "Restoring your session…"
       : authStatus === "authenticating"
         ? "Starting…"
         : authError
           ? "Try again"
-          : "Try it";
+          : "Sign in to start";
 
   return (
     <div className="landing-shell">
@@ -105,17 +105,18 @@ export default function LandingPage({
           >
             {buttonLabel}
           </button>
-          <p className="landing-assurance">One click. No form or password.</p>
+          <p className="landing-assurance">
+            Google sign-in. No password to create.
+          </p>
           {authError && (
             <p className="landing-auth-error" role="alert">
               {authError}
             </p>
           )}
           <p className="landing-auth-disclosure">
-            This creates a browser-local anonymous identity. After a successful
-            analysis, its source material and explanation attempt are saved to
-            that signed-in session. Clearing browser data, signing out, or
-            changing devices can lose access.
+            An account is required. Your source material, every explanation
+            attempt, and your review marks are saved to it and readable only by
+            you, on any device you sign in from.
           </p>
         </section>
 

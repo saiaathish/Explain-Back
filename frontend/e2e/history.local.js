@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, signIn } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -52,9 +52,7 @@ async function installAnalysis(page) {
 }
 
 async function enterWorkspace(page, authApi) {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
-  await expect.poll(() => authApi.signupRequests.length).toBe(1);
+  await signIn(page, "/");
   await expect(page.locator("#source")).toBeFocused();
 }
 
@@ -137,9 +135,10 @@ test("past sessions survive a reload and exclude another learner's rows", async 
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
 
   await page.reload();
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  /* The stored session reopens the workspace with no landing page. */
+  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".landing-shell")).toHaveCount(0);
   await expect(page.locator("#source")).toBeFocused();
-  expect(authApi.signupRequests).toHaveLength(1);
 
   await page.getByRole("button", { name: "Past sessions", exact: true }).click();
   const savedSessions = page.locator(".history-sessions > li");

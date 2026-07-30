@@ -2500,3 +2500,237 @@ footer {
     align-items: stretch;
   }
 }
+
+/* ==========================================================================
+   Login screen — required Google sign-in before the workspace.
+   Motion here is CSS only, so the global reduced-motion rule already stops it.
+   ========================================================================== */
+
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 22% 40%, rgba(91, 211, 133, 0.16), transparent 32rem),
+    linear-gradient(180deg, #f4fcf6 0%, var(--paper) 72%);
+}
+
+.login-aside {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-right: 1px solid var(--rule);
+}
+
+.login-ripple,
+.login-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.login-ripple-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: calc(150px + var(--ring) * 96px);
+  height: calc(150px + var(--ring) * 96px);
+  border: 1px solid color-mix(in srgb, var(--understood) 26%, transparent);
+  border-radius: 50%;
+  opacity: calc(0.34 - var(--ring) * 0.06);
+  animation: login-ripple 4.5s ease-in-out infinite;
+  animation-delay: calc(var(--ring) * 0.28s);
+}
+
+.login-ripple-ring:last-child {
+  border-style: dashed;
+}
+
+.login-orbit {
+  width: calc(var(--orbit-radius) * 2);
+  height: calc(var(--orbit-radius) * 2);
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 50%;
+  animation: login-orbit var(--orbit-duration) linear infinite;
+  animation-delay: var(--orbit-delay);
+}
+
+.login-orbit--reverse {
+  animation-direction: reverse;
+}
+
+.login-orbit-dot {
+  position: absolute;
+  top: -5px;
+  left: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.login-orbit-dot--green {
+  background: var(--understood);
+}
+
+.login-orbit-dot--amber {
+  background: var(--unjustified);
+}
+
+.login-orbit-dot--red {
+  background: var(--contradicts);
+}
+
+.login-aside-caption {
+  position: relative;
+  margin: 0;
+  max-width: 18ch;
+  color: var(--ink);
+  font-family: var(--editorial);
+  font-size: clamp(26px, 3vw, 38px);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.login-aside-caption span {
+  display: block;
+  color: var(--ink-soft);
+}
+
+.login-main {
+  display: grid;
+  place-items: center;
+  padding: 40px 7vw;
+}
+
+.login-panel {
+  width: min(100%, 440px);
+  display: grid;
+  gap: 14px;
+}
+
+.login-eyebrow {
+  margin: 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.login-panel h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--editorial);
+  font-size: clamp(32px, 4.4vw, 46px);
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+}
+
+.login-panel h1:focus-visible {
+  outline: 2px solid var(--understood);
+  outline-offset: 6px;
+}
+
+.login-lede {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--ink-soft);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.login-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 6px;
+}
+
+.login-google-mark {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.login-settling,
+.login-disclosure {
+  margin: 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.login-error {
+  margin: 0;
+  border-left: 3px solid var(--contradicts);
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--contradicts) 8%, transparent);
+  color: var(--contradicts);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-back {
+  justify-self: start;
+  min-height: 40px;
+}
+
+.login-reveal {
+  animation: login-reveal 0.5s ease both;
+  animation-delay: calc(var(--reveal-order) * 90ms);
+}
+
+@keyframes login-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes login-ripple {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.94);
+  }
+}
+
+@keyframes login-orbit {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .login-aside {
+    display: none;
+  }
+
+  .login-main {
+    padding: 32px 8vw;
+  }
+}

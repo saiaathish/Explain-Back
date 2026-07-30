@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  createAnonymousAuth,
+  createBrowserAuth,
   createSupabaseClient,
   getSupabaseClient,
   safeOAuthRedirectTo,
@@ -17,14 +17,6 @@ function authClient(overrides = {}) {
         data: { session: null },
         error: null,
       })),
-      linkIdentity: vi.fn(async () => ({
-        data: { url: "https://accounts.google.test/start" },
-        error: null,
-      })),
-      signInAnonymously: vi.fn(async () => ({
-        data: { session: null },
-        error: null,
-      })),
       signInWithOAuth: vi.fn(async () => ({
         data: { url: "https://accounts.google.test/signin" },
         error: null,
@@ -38,57 +30,26 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("anonymous auth adapter", () => {
+describe("browser auth adapter", () => {
   it("restores an existing browser session", async () => {
     const session = { access_token: "restored-token" };
     const client = authClient({
       getSession: vi.fn(async () => ({ data: { session }, error: null })),
     });
 
-    await expect(createAnonymousAuth(client).getSession()).resolves.toBe(session);
+    await expect(createBrowserAuth(client).getSession()).resolves.toBe(session);
   });
 
-  it("returns the session created by anonymous sign-in", async () => {
-    const session = { access_token: "new-token" };
-    const client = authClient({
-      signInAnonymously: vi.fn(async () => ({
-        data: { session },
-        error: null,
-      })),
-    });
 
-    await expect(
-      createAnonymousAuth(client).signInAnonymously(),
-    ).resolves.toBe(session);
-  });
 
-  it("links Google to the current identity with a same-origin redirect", async () => {
-    const client = authClient();
-    vi.stubGlobal("location", {
-      origin: "https://explain-back.example",
-      pathname: "/learn",
-    });
-    const auth = createAnonymousAuth(client);
-
-    await expect(auth.linkGoogleIdentity()).resolves.toBe(
-      "https://accounts.google.test/start",
-    );
-    expect(client.auth.linkIdentity).toHaveBeenCalledWith({
-      provider: "google",
-      options: {
-        redirectTo: "https://explain-back.example/",
-      },
-    });
-  });
-
-  it("signs in with Google using the same origin-pinned redirect as linking", async () => {
+  it("signs in with Google using an origin-pinned redirect", async () => {
     const client = authClient();
     vi.stubGlobal("location", {
       origin: "https://explain-back.example",
       pathname: "/learn",
       search: "?next=https://evil.example",
     });
-    const auth = createAnonymousAuth(client);
+    const auth = createBrowserAuth(client);
 
     await expect(auth.signInWithGoogle()).resolves.toBe(
       "https://accounts.google.test/signin",
@@ -97,7 +58,6 @@ describe("anonymous auth adapter", () => {
       provider: "google",
       options: { redirectTo: "https://explain-back.example/" },
     });
-    expect(client.auth.linkIdentity).not.toHaveBeenCalled();
   });
 
   it("rejects a Google sign-in response that cannot start a redirect", async () => {
@@ -110,43 +70,26 @@ describe("anonymous auth adapter", () => {
     });
 
     await expect(
-      createAnonymousAuth(client).signInWithGoogle(),
+      createBrowserAuth(client).signInWithGoogle(),
     ).rejects.toThrow(/did not return/i);
   });
 
-  it("rejects an OAuth response that cannot start a redirect", async () => {
-    const client = authClient({
-      linkIdentity: vi.fn(async () => ({
-        data: { url: null },
-        error: null,
-      })),
-    });
-    vi.stubGlobal("location", {
-      origin: "https://explain-back.example",
-      pathname: "/",
-    });
-    const auth = createAnonymousAuth(client);
-
-    await expect(auth.linkGoogleIdentity()).rejects.toThrow(/did not return/i);
-  });
 
   it("propagates Supabase auth errors", async () => {
     const error = new Error("auth unavailable");
     const client = authClient({
       getSession: vi.fn(async () => ({ data: null, error })),
       refreshSession: vi.fn(async () => ({ data: null, error })),
-      signInAnonymously: vi.fn(async () => ({ data: null, error })),
-      linkIdentity: vi.fn(async () => ({ data: null, error })),
+      signInWithOAuth: vi.fn(async () => ({ data: null, error })),
     });
     vi.stubGlobal("location", {
       origin: "https://explain-back.example",
       pathname: "/",
     });
-    const auth = createAnonymousAuth(client);
+    const auth = createBrowserAuth(client);
 
     await expect(auth.getSession()).rejects.toBe(error);
-    await expect(auth.signInAnonymously()).rejects.toBe(error);
-    await expect(auth.linkGoogleIdentity()).rejects.toBe(error);
+    await expect(auth.signInWithGoogle()).rejects.toBe(error);
     await expect(auth.refreshAccessToken()).rejects.toBe(error);
   });
 
@@ -164,7 +107,7 @@ describe("anonymous auth adapter", () => {
     });
 
     await expect(
-      createAnonymousAuth(client).refreshAccessToken(),
+      createBrowserAuth(client).refreshAccessToken(),
     ).resolves.toBe("fresh-access-token");
   });
 
@@ -179,7 +122,7 @@ describe("anonymous auth adapter", () => {
     });
     const listener = vi.fn();
 
-    const cleanup = createAnonymousAuth(client).subscribe(listener);
+    const cleanup = createBrowserAuth(client).subscribe(listener);
     const session = { access_token: "changed-token" };
     emit("TOKEN_REFRESHED", session);
     cleanup();

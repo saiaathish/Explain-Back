@@ -1,9 +1,7 @@
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import {
   boundedSingleFlight,
-  IdentityUpgrade,
+  isOAuthReturn,
   readOAuthCallbackError,
   singleFlight,
   shouldOpenWorkspaceOnSessionRestore,
@@ -119,14 +117,15 @@ describe("auth lifecycle helpers", () => {
   );
 });
 
-describe("anonymous identity upgrade", () => {
-  it("opens the workspace after a linked Google session restores", () => {
+describe("required sign-in gate", () => {
+  it("opens the workspace only for a real signed-in session", () => {
     expect(
       shouldOpenWorkspaceOnSessionRestore({
-        access_token: "linked-session",
+        access_token: "google-session",
         user: { is_anonymous: false },
       }),
     ).toBe(true);
+    /* Anonymous sign-in was removed: a guest session must never open the app. */
     expect(
       shouldOpenWorkspaceOnSessionRestore({
         access_token: "anonymous-session",
@@ -139,86 +138,14 @@ describe("anonymous identity upgrade", () => {
         user: {},
       }),
     ).toBe(false);
-    expect(
-      shouldOpenWorkspaceOnSessionRestore({
-        access_token: "missing-user-session",
-      }),
-    ).toBe(false);
     expect(shouldOpenWorkspaceOnSessionRestore(null)).toBe(false);
   });
 
-  it("is hidden after the session is no longer anonymous", () => {
-    const markup = renderToStaticMarkup(
-      createElement(IdentityUpgrade, {
-        isAnonymous: false,
-        busy: false,
-        error: "",
-        onLinkGoogleIdentity: vi.fn(),
-      }),
-    );
-
-    expect(markup).toBe("");
-  });
-
-  it("offers a secondary Google link action only for anonymous sessions", () => {
-    const markup = renderToStaticMarkup(
-      createElement(IdentityUpgrade, {
-        isAnonymous: true,
-        busy: false,
-        error: "",
-        onLinkGoogleIdentity: vi.fn(),
-      }),
-    );
-
-    expect(markup).toContain('class="secondary identity-link-button"');
-    expect(markup).toContain(
-      "Continue with Google to keep this session across devices",
-    );
-    expect(markup).not.toContain("scope");
-  });
-
-  it("announces identity-link timeout state accessibly", () => {
-    const errorMarkup = renderToStaticMarkup(
-      createElement(IdentityUpgrade, {
-        isAnonymous: true,
-        busy: false,
-        error: "Google identity linking timed out.",
-        onLinkGoogleIdentity: vi.fn(),
-      }),
-    );
-    const busyMarkup = renderToStaticMarkup(
-      createElement(IdentityUpgrade, {
-        isAnonymous: true,
-        busy: true,
-        error: "",
-        onLinkGoogleIdentity: vi.fn(),
-      }),
-    );
-
-    expect(errorMarkup).toContain('role="alert"');
-    expect(errorMarkup).toContain("Google identity linking timed out");
-    expect(busyMarkup).toContain('aria-busy="true"');
-    expect(busyMarkup).toContain("Taking you to Google…");
-    expect(busyMarkup).toContain("disabled");
-  });
-
-  it("offers signing in instead only once the identity is known to be taken", () => {
-    const props = {
-      isAnonymous: true,
-      busy: false,
-      error: "That Google account is already connected to an earlier session.",
-      onLinkGoogleIdentity: vi.fn(),
-      onSignInWithGoogle: vi.fn(),
-    };
-
-    expect(
-      renderToStaticMarkup(createElement(IdentityUpgrade, props)),
-    ).not.toContain("Sign in with Google instead");
-    expect(
-      renderToStaticMarkup(
-        createElement(IdentityUpgrade, { ...props, alreadyLinked: true }),
-      ),
-    ).toContain("Sign in with Google instead");
+  it("recognises a provider return so the landing page is never shown again", () => {
+    expect(isOAuthReturn("?code=abc", "")).toBe(true);
+    expect(isOAuthReturn("", "#access_token=abc&refresh_token=def")).toBe(true);
+    expect(isOAuthReturn("", "")).toBe(false);
+    expect(isOAuthReturn("?next=/somewhere", "")).toBe(false);
   });
 });
 
@@ -228,18 +155,14 @@ describe("OAuth callback verdict", () => {
     expect(readOAuthCallbackError("?code=abc", "")).toBeNull();
   });
 
-  it("names the already-linked case and offers the way through", () => {
+  it("carries the provider's own reason back to the login screen", () => {
     const failure = readOAuthCallbackError(
-      "?error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked",
+      "?error=server_error&error_code=server_error&error_description=Google+is+unavailable",
       "",
     );
 
-    expect(failure).toMatchObject({
-      code: "identity_already_exists",
-      alreadyLinked: true,
-    });
-    expect(failure.message).toContain("Sign in with Google");
-    expect(failure.message).toContain("stays with the guest session");
+    expect(failure).toMatchObject({ code: "server_error" });
+    expect(failure.message).toBe("Google is unavailable");
   });
 
   it("reads a verdict from the fragment and keeps other failures recoverable", () => {
@@ -248,14 +171,13 @@ describe("OAuth callback verdict", () => {
       "#error=access_denied&error_description=User+denied+access",
     );
 
-    expect(failure.alreadyLinked).toBe(false);
     expect(failure.message).toBe("User denied access");
   });
 
   it("falls back to plain guidance when the provider sends no description", () => {
     const failure = readOAuthCallbackError("?error=access_denied", "");
 
-    expect(failure).toMatchObject({ code: "oauth_error", alreadyLinked: false });
-    expect(failure.message).toContain("keep going as a guest");
+    expect(failure).toMatchObject({ code: "oauth_error" });
+    expect(failure.message).toContain("Try again");
   });
 });

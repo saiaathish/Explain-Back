@@ -11,10 +11,11 @@ import FollowUp from "./FollowUp";
 import HistoryView from "./HistoryView";
 import ReviewView from "./ReviewView";
 import LandingPage from "./LandingPage";
+import LoginScreen from "./LoginScreen";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
 import { getAnalysisHistory } from "./analysisHistory";
-import { anonymousAuth } from "./supabase";
+import { browserAuth } from "./supabase";
 import {
   appendTranscript,
   blobToDataUrl,
@@ -78,9 +79,9 @@ function shouldOpenWorkspaceOnSessionRestore(session) {
 }
 
 /*
- * Supabase reports a failed identity link on the callback URL, not to the call
- * that started it. Without reading this, a refused link silently returns to the
- * page and the learner retries the same impossible link forever.
+ * Supabase reports a failed sign-in on the callback URL, not to the call that
+ * started it. Without reading this, a refused sign-in silently returns to the
+ * page with no explanation and the learner retries the same failure forever.
  */
 function readOAuthCallbackError(search = "", hash = "") {
   const params = new URLSearchParams(String(search).replace(/^\?/, ""));
@@ -89,22 +90,27 @@ function readOAuthCallbackError(search = "", hash = "") {
   const code = read("error_code");
   if (!read("error") && !code) return null;
 
-  if (code === "identity_already_exists") {
-    return {
-      code,
-      alreadyLinked: true,
-      message:
-        "That Google account is already connected to an earlier session. Sign in with Google to reach it — anything saved in this guest session stays with the guest session.",
-    };
-  }
-
   return {
     code: code || "oauth_error",
-    alreadyLinked: false,
     message:
       read("error_description").replace(/\+/g, " ") ||
-      "Google sign-in did not complete. You can keep going as a guest and try again.",
+      "Google sign-in did not complete. Try again.",
   };
+}
+
+/*
+ * A provider return carries either an authorization code or a token fragment.
+ * Recognising it is what keeps the landing page from flashing between Google
+ * and the workspace while the session is still being exchanged.
+ */
+function isOAuthReturn(search = "", hash = "") {
+  const params = new URLSearchParams(String(search).replace(/^\?/, ""));
+  const fragment = new URLSearchParams(String(hash).replace(/^#/, ""));
+  return Boolean(
+    params.get("code") ||
+      fragment.get("access_token") ||
+      fragment.get("refresh_token"),
+  );
 }
 
 const PRESETS = [
@@ -207,50 +213,6 @@ function Footer() {
   );
 }
 
-function IdentityUpgrade({
-  isAnonymous,
-  busy,
-  error,
-  alreadyLinked,
-  onLinkGoogleIdentity,
-  onSignInWithGoogle,
-}) {
-  if (!isAnonymous) return null;
-
-  return (
-    <div className="identity-upgrade">
-      <button
-        aria-busy={busy || undefined}
-        className="secondary identity-link-button"
-        disabled={busy}
-        onClick={onLinkGoogleIdentity}
-        type="button"
-      >
-        {busy
-          ? "Taking you to Google…"
-          : "Continue with Google to keep this session across devices"}
-      </button>
-      {error && (
-        <p className="identity-link-error" role="alert">
-          {error}
-        </p>
-      )}
-      {/* Retrying the link would fail identically, so offer the way through. */}
-      {alreadyLinked && (
-        <button
-          aria-busy={busy || undefined}
-          className="secondary identity-link-button"
-          disabled={busy}
-          onClick={onSignInWithGoogle}
-          type="button"
-        >
-          Sign in with Google instead
-        </button>
-      )}
-    </div>
-  );
-}
-
 function validate(source, explanation, focused = false) {
   if (!source.trim() || !explanation.trim()) {
     return "Source or explanation is missing. Paste both texts, then try again.";
@@ -340,14 +302,9 @@ function ExplanationField({
 function Workspace({
   accessToken,
   refreshAccessToken,
-  isAnonymous,
-  identityLinkBusy,
-  identityLinkError,
-  onLinkGoogleIdentity,
-  onSignInWithGoogle,
-  identityAlreadyLinked,
   onOpenHistory,
   onOpenReview,
+  onSignOut,
 }) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
@@ -991,14 +948,13 @@ function Workspace({
           >
             Review gaps
           </button>
-          <IdentityUpgrade
-            alreadyLinked={identityAlreadyLinked}
-            busy={identityLinkBusy}
-            error={identityLinkError}
-            isAnonymous={isAnonymous}
-            onLinkGoogleIdentity={onLinkGoogleIdentity}
-            onSignInWithGoogle={onSignInWithGoogle}
-          />
+          <button
+            className="secondary history-link"
+            onClick={onSignOut}
+            type="button"
+          >
+            Sign out
+          </button>
         </div>
       </header>
 
@@ -1295,27 +1251,29 @@ function Workspace({
 function AuthStateProvider({ auth, children }) {
   const [entered, setEntered] = useState(false);
   const [accessToken, setAccessToken] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [authStatus, setAuthStatus] = useState("restoring");
   const [authError, setAuthError] = useState("");
   const mountedRef = useRef(true);
   const signInPromiseRef = useRef(null);
   const signInAttemptRef = useRef(0);
-  const identityLinkPromiseRef = useRef(null);
-  const identityLinkAttemptRef = useRef(0);
   const authActionRef = useRef(null);
   const refreshPromiseRef = useRef(null);
-  const [identityLinkBusy, setIdentityLinkBusy] = useState(false);
-  const [identityLinkError, setIdentityLinkError] = useState("");
-  const [identityAlreadyLinked, setIdentityAlreadyLinked] = useState(false);
+  const [signInBusy, setSignInBusy] = useState(false);
+  /* A provider return is still in flight, so never show the landing page. */
+  const [returningFromProvider, setReturningFromProvider] = useState(() =>
+    isOAuthReturn(globalThis.location?.search, globalThis.location?.hash),
+  );
 
   /* Read the callback's verdict once, then clean it out of the address bar. */
   useEffect(() => {
     const location = globalThis.location;
     const failure = readOAuthCallbackError(location?.search, location?.hash);
     if (!failure) return;
-    setIdentityLinkError(failure.message);
-    setIdentityAlreadyLinked(failure.alreadyLinked);
+    setAuthError(failure.message);
+    setReturningFromProvider(false);
+    /* Only a failed return is cleaned here. A successful one still carries the
+     * authorization code, and the Supabase client needs it to get a session —
+     * stripping it first leaves the learner stranded on the login screen. */
     if (globalThis.history?.replaceState && location?.pathname) {
       globalThis.history.replaceState(null, "", location.pathname);
     }
@@ -1326,7 +1284,6 @@ function AuthStateProvider({ auth, children }) {
     return () => {
       mountedRef.current = false;
       signInAttemptRef.current += 1;
-      identityLinkAttemptRef.current += 1;
     };
   }, []);
 
@@ -1339,22 +1296,30 @@ function AuthStateProvider({ auth, children }) {
       if (!active) return;
       const token = session?.access_token || "";
       setAccessToken(token);
-      setIsAnonymous(Boolean(token && session?.user?.is_anonymous === true));
-      setAuthError("");
       setAuthStatus(token ? "authenticated" : "unauthenticated");
-      if (!token) setEntered(false);
-      else if (shouldOpenWorkspaceOnSessionRestore(session)) setEntered(true);
+      if (!token) {
+        setEntered(false);
+        setSignInBusy(false);
+        return;
+      }
+      setAuthError("");
+      setSignInBusy(false);
+      setReturningFromProvider(false);
+      /* A signed-in session is the only way in, so it opens the workspace
+       * directly. Returning from Google must never land on the landing page. */
+      if (shouldOpenWorkspaceOnSessionRestore(session)) setEntered(true);
     }
 
     function failRestore(error) {
       if (!active) return;
       setAccessToken("");
-      setIsAnonymous(false);
       setEntered(false);
+      setSignInBusy(false);
+      setReturningFromProvider(false);
       setAuthStatus("error");
       setAuthError(
         error?.message ||
-          "Anonymous access could not be restored. Check your connection and try again.",
+          "Your session could not be restored. Check your connection and sign in again.",
       );
     }
 
@@ -1367,7 +1332,7 @@ function AuthStateProvider({ auth, children }) {
       withTimeout(
         Promise.resolve().then(() => auth.getSession()),
         AUTH_OPERATION_TIMEOUT_MS,
-        "Restoring anonymous access timed out. Check your connection and try again.",
+        "Restoring your session timed out. Check your connection and try again.",
       )
         .then((session) => {
           if (authEventVersion === restoreVersion) applySession(session);
@@ -1385,10 +1350,11 @@ function AuthStateProvider({ auth, children }) {
     };
   }, [auth]);
 
-  async function start() {
+  /* Signing in is the only way in, so this is the single entry action. */
+  async function signInWithGoogle() {
     if (
       authActionRef.current ||
-      identityLinkBusy ||
+      signInBusy ||
       authStatus === "restoring" ||
       authStatus === "authenticating"
     ) {
@@ -1399,107 +1365,46 @@ function AuthStateProvider({ auth, children }) {
       return;
     }
 
-    const action = Symbol("anonymous-sign-in");
+    const action = Symbol("google-sign-in");
     authActionRef.current = action;
     setAuthError("");
-    setIdentityLinkError("");
-    setAuthStatus("authenticating");
+    setSignInBusy(true);
     const attempt = ++signInAttemptRef.current;
     try {
-      const session = await boundedSingleFlight(
+      await boundedSingleFlight(
         signInPromiseRef,
         auth,
-        () => auth.signInAnonymously(),
+        () => auth.signInWithGoogle(),
         AUTH_OPERATION_TIMEOUT_MS,
-        "Anonymous sign-in timed out. Check your connection and try again.",
+        "Google sign-in timed out. Check your connection and try again.",
       );
-      if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
-      if (!session?.access_token) {
-        throw new Error("Anonymous sign-in did not return a usable session.");
-      }
-      setAccessToken(session.access_token);
-      setIsAnonymous(session?.user?.is_anonymous === true);
-      setAuthStatus("authenticated");
-      setEntered(true);
     } catch (error) {
       if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
-      setAccessToken("");
-      setEntered(false);
-      setAuthStatus("error");
+      setSignInBusy(false);
+      setAuthStatus("unauthenticated");
       setAuthError(
         error?.message ||
-          "Anonymous access could not be started. Check your connection and try again.",
+          "Google sign-in could not be started. Check your connection and try again.",
       );
     } finally {
       if (authActionRef.current === action) authActionRef.current = null;
     }
   }
 
-  async function linkGoogleIdentity() {
-    if (
-      authActionRef.current ||
-      identityLinkBusy ||
-      !isAnonymous ||
-      authStatus === "restoring" ||
-      authStatus === "authenticating"
-    ) {
-      return;
-    }
-
-    await runGoogleRedirect(
-      "google-identity-link",
-      () => auth.linkGoogleIdentity(),
-      "Google identity linking timed out. Check your connection and try again.",
-      "Google identity linking could not be started. Check your connection and try again.",
-    );
-  }
-
-  /* Offered only after the callback said the identity belongs to another user. */
-  async function signInWithGoogle() {
-    if (
-      authActionRef.current ||
-      identityLinkBusy ||
-      authStatus === "restoring" ||
-      authStatus === "authenticating"
-    ) {
-      return;
-    }
-
-    await runGoogleRedirect(
-      "google-sign-in",
-      () => auth.signInWithGoogle(),
-      "Google sign-in timed out. Check your connection and try again.",
-      "Google sign-in could not be started. Check your connection and try again.",
-    );
-  }
-
-  async function runGoogleRedirect(label, task, timeoutMessage, failureMessage) {
-    const action = Symbol(label);
-    authActionRef.current = action;
+  async function signOut() {
     setAuthError("");
-    setIdentityLinkError("");
-    setIdentityLinkBusy(true);
-    const attempt = ++identityLinkAttemptRef.current;
     try {
-      await boundedSingleFlight(
-        identityLinkPromiseRef,
-        auth,
-        task,
-        AUTH_OPERATION_TIMEOUT_MS,
-        timeoutMessage,
-      );
+      await auth.signOut();
     } catch (error) {
-      if (
-        !mountedRef.current ||
-        attempt !== identityLinkAttemptRef.current
-      ) {
-        return;
+      if (mountedRef.current) {
+        setAuthError(error?.message || "Signing out did not complete.");
       }
-      setIdentityLinkBusy(false);
-      setIdentityLinkError(error?.message || failureMessage);
-    } finally {
-      if (authActionRef.current === action) authActionRef.current = null;
+      return;
     }
+    if (!mountedRef.current) return;
+    setAccessToken("");
+    setEntered(false);
+    setAuthStatus("unauthenticated");
   }
 
   async function refreshAccessToken() {
@@ -1508,11 +1413,11 @@ function AuthStateProvider({ auth, children }) {
       auth,
       () => auth.refreshAccessToken(),
       AUTH_OPERATION_TIMEOUT_MS,
-      "Refreshing anonymous access timed out. Return to the landing page and try again.",
+      "Refreshing your session timed out. Sign in again to continue.",
     );
     if (!token) {
       throw new Error(
-        "Your anonymous session could not be refreshed. Return to the landing page and try again.",
+        "Your session could not be refreshed. Sign in again to continue.",
       );
     }
     if (mountedRef.current) setAccessToken(token);
@@ -1534,14 +1439,11 @@ function AuthStateProvider({ auth, children }) {
         authError,
         authStatus,
         entered,
-        identityAlreadyLinked,
-        identityLinkBusy,
-        identityLinkError,
-        isAnonymous,
-        linkGoogleIdentity,
         refreshAccessToken,
+        returningFromProvider,
+        signInBusy,
         signInWithGoogle,
-        start,
+        signOut,
       }}
     >
       {children}
@@ -1555,55 +1457,74 @@ function AuthSurface() {
     authError,
     authStatus,
     entered,
-    identityAlreadyLinked,
-    identityLinkBusy,
-    identityLinkError,
-    isAnonymous,
-    linkGoogleIdentity,
     refreshAccessToken,
+    returningFromProvider,
+    signInBusy,
     signInWithGoogle,
-    start,
+    signOut,
   } = useAuth();
   const [screen, setScreen] = useState("workspace");
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     if (!entered) setScreen("workspace");
   }, [entered]);
 
-  return entered ? (
-    <>
-      <div hidden={screen !== "workspace"}>
-        <Workspace
-          accessToken={accessToken}
-          identityAlreadyLinked={identityAlreadyLinked}
-          identityLinkBusy={identityLinkBusy}
-          identityLinkError={identityLinkError}
-          isAnonymous={isAnonymous}
-          onLinkGoogleIdentity={linkGoogleIdentity}
-          onSignInWithGoogle={signInWithGoogle}
-          onOpenHistory={() => setScreen("history")}
-          onOpenReview={() => setScreen("review")}
-          refreshAccessToken={refreshAccessToken}
-        />
-      </div>
-      {screen === "history" && (
-        <HistoryView onBack={() => setScreen("workspace")} />
-      )}
-      {screen === "review" && (
-        <ReviewView onBack={() => setScreen("workspace")} />
-      )}
-    </>
-  ) : (
+  if (entered) {
+    return (
+      <>
+        <div hidden={screen !== "workspace"}>
+          <Workspace
+            accessToken={accessToken}
+            onOpenHistory={() => setScreen("history")}
+            onOpenReview={() => setScreen("review")}
+            onSignOut={signOut}
+            refreshAccessToken={refreshAccessToken}
+          />
+        </div>
+        {screen === "history" && (
+          <HistoryView onBack={() => setScreen("workspace")} />
+        )}
+        {screen === "review" && (
+          <ReviewView onBack={() => setScreen("workspace")} />
+        )}
+      </>
+    );
+  }
+
+  /*
+   * Landing → login → Google → app. Coming back from the provider, or restoring
+   * a stored session, holds the login screen rather than falling back to the
+   * landing page, so the learner never sees the landing page twice.
+   */
+  const settling =
+    returningFromProvider ||
+    authStatus === "restoring" ||
+    authStatus === "authenticating";
+
+  if (showLogin || settling) {
+    return (
+      <LoginScreen
+        authError={authError}
+        busy={signInBusy || settling}
+        onBack={settling ? null : () => setShowLogin(false)}
+        onSignInWithGoogle={signInWithGoogle}
+        settling={settling}
+      />
+    );
+  }
+
+  return (
     <LandingPage
       authError={authError}
       authStatus={authStatus}
-      busy={authStatus === "restoring" || authStatus === "authenticating"}
-      onStart={start}
+      busy={signInBusy}
+      onStart={() => setShowLogin(true)}
     />
   );
 }
 
-function App({ auth = anonymousAuth }) {
+function App({ auth = browserAuth }) {
   return (
     <AuthStateProvider auth={auth}>
       <AuthSurface />
@@ -1614,9 +1535,9 @@ function App({ auth = anonymousAuth }) {
 export default App;
 export {
   AUTH_OPERATION_TIMEOUT_MS,
-  IdentityUpgrade,
   PRESETS,
   boundedSingleFlight,
+  isOAuthReturn,
   readOAuthCallbackError,
   singleFlight,
   shouldOpenWorkspaceOnSessionRestore,

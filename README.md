@@ -13,15 +13,16 @@ maps formative guidance over the student's own words:
 
 Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question generated
-from the analyzed gaps. There are no learner-facing scores or account forms.
-Supabase Auth creates a browser-local anonymous identity so the API can verify
-each request. Explain-Back stores exactly three things for that identity: the
-source text you submit, each successful explanation attempt with its concepts and
-flags, and which gaps you have explained again in review. Marking a card "still
-shaky" is never stored. Nothing else is written, every row is readable only by its owner, and
+from the analyzed gaps. There are no learner-facing scores and no password to
+create. Google sign-in is required before any analysis, and Supabase Auth issues the
+session the API verifies on every request. Explain-Back stores exactly three
+things for that account: the source text you submit, each successful explanation
+attempt with its concepts and flags, and which gaps you have explained again in
+review. Marking a card "still shaky" is never stored. Nothing else is written,
+every row is readable only by its owner, and
 those inputs are also sent to the configured model provider under that provider's
-data-handling policy. Clearing browser data, signing out, or changing devices
-can lose the anonymous identity and therefore access to its saved history.
+data-handling policy. Saved work follows the account, so signing in on another
+device restores it.
 
 ## Why this design
 
