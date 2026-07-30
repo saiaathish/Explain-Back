@@ -585,15 +585,182 @@ main {
   font-weight: 500;
 }
 
-.review-card {
+.review-stage {
   margin-top: 14px;
+}
+
+.review-layout-toggle {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+}
+
+.review-layout-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding-inline: 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-layout-button .button-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.review-layout-button.is-selected {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.review-deck {
+  margin-top: 18px;
+}
+
+.review-deck--stack {
+  position: relative;
+  padding-bottom: 76px;
+}
+
+/* Only the cards behind are taken out of flow, so an opened card can grow and
+   push the round's actions down instead of covering them. */
+.review-deck--stack .review-card {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  /* A uniform height is what makes the cards behind read as a deck. */
+  min-height: 196px;
+  transform-origin: top center;
+}
+
+.review-deck--stack .review-card.is-top {
+  position: relative;
+}
+
+/* The cards still owed sit behind the top one, peeking by a fixed step. */
+.review-deck--stack .review-card:not(.is-top) {
+  pointer-events: none;
+  background: var(--paper);
+  border-color: color-mix(in srgb, var(--ink) 45%, var(--rule));
+  box-shadow: none;
+}
+
+.review-deck--stack .review-card:not(.is-top) .review-front {
+  opacity: 0.4;
+}
+
+.review-deck--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.review-card {
   border: 1px solid var(--ink);
   background: var(--paper);
   box-shadow: 8px 8px 0 var(--paper-edge);
 }
 
+.review-deck--stack .review-card.is-top {
+  cursor: grab;
+  box-shadow: 10px 12px 0 var(--paper-edge);
+}
+
+.review-deck--stack .review-card.is-top:active {
+  cursor: grabbing;
+}
+
+.review-swipe-hint {
+  margin: 0;
+  padding: 0 26px 16px;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.review-back-wrap {
+  overflow: hidden;
+}
+
+.review-progress-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.review-progress--muted {
+  font-weight: 500;
+}
+
+.review-done {
+  margin-top: 22px;
+  border: 1px solid var(--understood);
+  padding: 34px 30px 30px;
+  background: var(--wash-understood);
+}
+
+.review-done .review-done-count {
+  margin: 0;
+  color: var(--understood);
+  font-family: var(--editorial);
+  font-size: clamp(56px, 9vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.review-done h3 {
+  margin: 10px 0 0;
+  color: var(--ink);
+  font-family: var(--editorial);
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -0.03em;
+}
+
+.review-done p {
+  max-width: 52ch;
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-label--red {
+  color: var(--contradicts);
+}
+
+.review-label--yellow {
+  color: var(--unjustified);
+}
+
+@media (max-width: 620px) {
+
+  .review-deck--grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .review-front {
   display: grid;
+  border: 0;
   gap: 10px;
   width: 100%;
   border: 0;

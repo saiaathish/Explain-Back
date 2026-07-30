@@ -1,10 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import {
-  createFlashcardReviews,
-  deriveCards,
-  promptFor,
-  reviewProgress,
-} from "./flashcards";
+import { describe, expect, it } from "vitest";
+import { deriveCards, promptFor, roundSummary } from "./flashcards";
 
 function session(id, attempts) {
   return { id, source_text: `Source ${id}`, explanation_attempts: attempts };
@@ -40,6 +35,7 @@ describe("flashcard derivation", () => {
       ]),
     ]);
 
+    /* Red sorts first: a contradiction is worth explaining before a thin claim. */
     expect(cards.map((card) => card.propId)).toEqual(["direction", "gradients"]);
     expect(cards.every((card) => card.state !== "green")).toBe(true);
   });
@@ -60,33 +56,30 @@ describe("flashcard derivation", () => {
     expect(card.resolvedLater).toBe(true);
   });
 
-  it("applies only the latest mark for a card and orders unreviewed gaps first", () => {
-    const sessions = [session("s1", [{ attempt_number: 1, flags: [YELLOW, RED] }])];
-    const cards = deriveCards(sessions, [
-      {
-        session_id: "s1",
-        prop_id: "direction",
-        mastered: false,
-        created_at: "2026-07-30T00:00:00Z",
-      },
-      {
-        session_id: "s1",
-        prop_id: "direction",
-        mastered: true,
-        created_at: "2026-07-30T01:00:00Z",
-      },
+  it("counts a round down without recording anything", () => {
+    const deck = deriveCards([
+      session("s1", [{ attempt_number: 1, flags: [YELLOW, RED] }]),
     ]);
 
-    expect(cards.map((card) => [card.propId, card.mastered])).toEqual([
-      ["gradients", null],
-      ["direction", true],
-    ]);
-    expect(reviewProgress(cards)).toMatchObject({
+    expect(deck).toHaveLength(2);
+    /* Cards carry no review state: a round is rebuilt from gaps every visit. */
+    expect(deck.every((card) => !("mastered" in card))).toBe(true);
+    expect(roundSummary(deck, 2)).toMatchObject({
       total: 2,
-      mastered: 1,
-      shaky: 0,
-      unreviewed: 1,
-      label: "1 of 2 marked as understood",
+      remaining: 2,
+      cleared: 0,
+      complete: false,
+      label: "2 cards left",
+    });
+    expect(roundSummary(deck, 1).label).toBe("1 card left");
+    expect(roundSummary(deck, 0)).toMatchObject({
+      cleared: 2,
+      complete: true,
+      label: "Nothing left in this round",
+    });
+    expect(roundSummary([], 0)).toMatchObject({
+      complete: false,
+      label: "No recorded gaps yet",
     });
   });
 
@@ -107,50 +100,6 @@ describe("flashcard derivation", () => {
         session("s2", null),
       ]),
     ).toEqual([]);
-    expect(reviewProgress([]).label).toBe("No recorded gaps yet");
-  });
-});
-
-describe("review marks", () => {
-  it("inserts a mark without naming an owner and reads marks oldest first", async () => {
-    const insert = vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn(() =>
-          Promise.resolve({
-            data: {
-              session_id: "s1",
-              prop_id: "direction",
-              mastered: true,
-              created_at: "2026-07-30T02:00:00Z",
-            },
-            error: null,
-          }),
-        ),
-      })),
-    }));
-    const order = vi.fn(() => Promise.resolve({ data: [], error: null }));
-    const client = {
-      from: vi.fn(() => ({ insert, select: vi.fn(() => ({ order })) })),
-    };
-    const reviews = createFlashcardReviews(client);
-
-    const saved = await reviews.markCard({
-      sessionId: "s1",
-      propId: "direction",
-      mastered: true,
-    });
-    expect(insert).toHaveBeenCalledWith({
-      session_id: "s1",
-      prop_id: "direction",
-      mastered: true,
-    });
-    expect(saved.mastered).toBe(true);
-
-    await reviews.listReviews();
-    expect(order).toHaveBeenCalledWith("created_at", { ascending: true });
-  });
-
-  it("refuses a client that cannot query", () => {
-    expect(() => createFlashcardReviews(null)).toThrow(/browser client is required/);
+    expect(roundSummary([], 0).label).toBe("No recorded gaps yet");
   });
 });

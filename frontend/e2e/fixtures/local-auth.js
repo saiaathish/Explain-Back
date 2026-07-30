@@ -114,7 +114,7 @@ function tokenSubject(authorization) {
  * by deriving the owner from the bearer token instead of trusting any column.
  */
 function restFixture() {
-  const rows = { sessions: [], explanation_attempts: [], flag_reviews: [] };
+  const rows = { sessions: [], explanation_attempts: [] };
   let inserts = 0;
 
   const ownedSessions = (userId) =>
@@ -210,39 +210,10 @@ function restFixture() {
     return { row };
   }
 
-  function selectReviews(userId, url) {
-    const matches = rows.flag_reviews.filter((review) => review.user_id === userId);
-    return (url.searchParams.get("order") || "").includes("desc")
-      ? matches.slice().sort((left, right) => right.created_at.localeCompare(left.created_at))
-      : matches.slice().sort((left, right) => left.created_at.localeCompare(right.created_at));
-  }
-
-  function insertReview(userId, body) {
-    /* The insert policy also requires the reviewed session to be the owner's. */
-    const parent = rows.sessions.find(
-      (session) => session.id === body.session_id && session.user_id === userId,
-    );
-    if (!parent) return { error: { code: "42501", message: "row violates policy" } };
-
-    inserts += 1;
-    const row = {
-      id: `e2e-review-${inserts}`,
-      user_id: userId,
-      session_id: body.session_id,
-      prop_id: body.prop_id,
-      mastered: body.mastered,
-      created_at: new Date(Date.now() + inserts).toISOString(),
-    };
-    rows.flag_reviews.push(row);
-    return { row };
-  }
-
   return {
     rows,
     requests: [],
     otherUserId: OTHER_USER_ID,
-    selectReviews,
-    insertReview,
     seedForeignSession({ sourceText = "Another learner's source", flags = [] } = {}) {
       const session = insertSession(OTHER_USER_ID, { source_text: sourceText });
       insertAttempt(OTHER_USER_ID, {
@@ -463,9 +434,7 @@ export const test = base.extend({
           searchParams: Object.fromEntries(url.searchParams),
         });
 
-        if (
-          !["sessions", "explanation_attempts", "flag_reviews"].includes(table)
-        ) {
+        if (!["sessions", "explanation_attempts"].includes(table)) {
           await route.fulfill(
             jsonResponse(404, { code: "PGRST205", message: "unknown table" }),
           );
@@ -476,9 +445,7 @@ export const test = base.extend({
           const matches =
             table === "sessions"
               ? state.selectSessions(subject, url)
-              : table === "flag_reviews"
-                ? state.selectReviews(subject, url)
-                : state.selectAttempts(subject, url);
+              : state.selectAttempts(subject, url);
           if (wantsObject) {
             await route.fulfill(
               matches.length === 1
@@ -520,10 +487,7 @@ export const test = base.extend({
           return;
         }
 
-        const { row, error } =
-          table === "flag_reviews"
-            ? state.insertReview(subject, body)
-            : state.insertAttempt(subject, body);
+        const { row, error } = state.insertAttempt(subject, body);
         await route.fulfill(
           error
             ? jsonResponse(error.code === "23505" ? 409 : 403, {

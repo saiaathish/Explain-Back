@@ -1,5 +1,3 @@
-import { getSupabaseClient } from "./supabase";
-
 /*
  * A flashcard is a repackaging of data the learner already produced. Every field
  * below comes from a stored flag: its claim, its source anchor, its hint, and
@@ -56,22 +54,12 @@ function latestStateFor(attempts, key) {
 }
 
 /* One card per gap per session, keyed so a later attempt updates the same card. */
-export function deriveCards(sessions, reviews = []) {
-  const latestReview = new Map();
-  [...reviews]
-    .sort((left, right) =>
-      String(left.created_at || "").localeCompare(String(right.created_at || "")),
-    )
-    .forEach((review) => {
-      latestReview.set(`${review.session_id}:${review.prop_id}`, review);
-    });
-
+export function deriveCards(sessions) {
   const cards = [];
   (sessions || []).forEach((session) => {
     const attempts = attemptsInOrder(session);
     firstGapFor(attempts).forEach(({ flag, attempt }, key) => {
       const latestState = latestStateFor(attempts, key);
-      const review = latestReview.get(`${session.id}:${key}`) || null;
       cards.push({
         id: `${session.id}:${key}`,
         sessionId: session.id,
@@ -85,76 +73,36 @@ export function deriveCards(sessions, reviews = []) {
         state: flag.state,
         attemptNumber: attempt.attempt_number || 1,
         resolvedLater: latestState === "green",
-        mastered: review ? Boolean(review.mastered) : null,
-        lastReviewedAt: review?.created_at || null,
       });
     });
   });
 
-  /* Unreviewed gaps first, then shaky ones, then what they already know. */
-  const rank = (card) => (card.mastered === null ? 0 : card.mastered ? 2 : 1);
+  /* Red gaps first: a contradiction is worth explaining before a thin claim. */
+  const rank = (card) => (card.state === "red" ? 0 : card.state === "yellow" ? 1 : 2);
   return cards.sort(
     (left, right) => rank(left) - rank(right) || left.id.localeCompare(right.id),
   );
 }
 
-export function reviewProgress(cards) {
-  const total = cards.length;
-  const mastered = cards.filter((card) => card.mastered === true).length;
-  const shaky = cards.filter((card) => card.mastered === false).length;
+/*
+ * The round itself is deliberately not persisted. Marks used to be written to a
+ * `flag_reviews` table, which meant a gap tapped once stayed "understood"
+ * forever and the count stopped reflecting what the learner could actually
+ * explain. A round now starts from the recorded gaps every time.
+ */
+export function roundSummary(deck, remaining) {
+  const total = deck.length;
+  const cleared = Math.max(0, total - remaining);
   return {
     total,
-    mastered,
-    shaky,
-    unreviewed: total - mastered - shaky,
+    remaining,
+    cleared,
+    complete: total > 0 && remaining === 0,
     label:
       total === 0
         ? "No recorded gaps yet"
-        : `${mastered} of ${total} marked as understood`,
+        : remaining === 0
+          ? "Nothing left in this round"
+          : `${remaining} ${remaining === 1 ? "card" : "cards"} left`,
   };
-}
-
-export function createFlashcardReviews(client) {
-  if (!client || typeof client.from !== "function") {
-    throw new Error("A Supabase browser client is required for review marks.");
-  }
-
-  async function listReviews() {
-    const { data, error } = await client
-      .from("flag_reviews")
-      .select("session_id, prop_id, mastered, created_at")
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      const failure = new Error(error.message || "Review marks could not load.");
-      failure.name = "FlashcardReviewError";
-      failure.code = error.code;
-      throw failure;
-    }
-
-    return data || [];
-  }
-
-  async function markCard({ sessionId, propId, mastered }) {
-    const { data, error } = await client
-      .from("flag_reviews")
-      .insert({ session_id: sessionId, prop_id: propId, mastered })
-      .select("session_id, prop_id, mastered, created_at")
-      .single();
-
-    if (error || !data) {
-      const failure = new Error(error?.message || "That mark could not be saved.");
-      failure.name = "FlashcardReviewError";
-      failure.code = error?.code;
-      throw failure;
-    }
-
-    return data;
-  }
-
-  return { listReviews, markCard };
-}
-
-export function getFlashcardReviews() {
-  return createFlashcardReviews(getSupabaseClient());
 }

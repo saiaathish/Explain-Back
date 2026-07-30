@@ -95,11 +95,7 @@ def test_persistence_is_owner_scoped_by_row_level_security() -> None:
     assert migrations
     text = "\n".join(path.read_text(encoding="utf-8") for path in migrations)
 
-    for table in (
-        "public.sessions",
-        "public.explanation_attempts",
-        "public.flag_reviews",
-    ):
+    for table in ("public.sessions", "public.explanation_attempts"):
         assert f"alter table {table} enable row level security;" in text
         assert f"revoke all on table {table} from anon, authenticated;" in text
         assert f"grant select, insert on table {table} to authenticated;" in text

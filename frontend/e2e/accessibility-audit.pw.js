@@ -286,11 +286,12 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
   await expect(page.locator(".results")).toBeVisible();
   await page.getByRole("button", { name: "Review gaps", exact: true }).click();
-  await expect(page.locator(".review-front")).toBeVisible();
+  await expect(page.locator(".review-card.is-top .review-front")).toBeVisible();
   const reviewFaceDown = await axeState(page, "review-card-face-down");
   record.axe.push(reviewFaceDown);
-  await page.locator(".review-front").click();
+  await page.locator(".review-card.is-top .review-front").click();
   await expect(page.locator(".review-back")).toBeVisible();
+  await page.waitForTimeout(400);
   const reviewRevealed = await axeState(page, "review-card-revealed");
   record.axe.push(reviewRevealed);
   for (const state of [reviewFaceDown, reviewRevealed]) {
