@@ -104,9 +104,41 @@ change. Before either phase can pass:
   attempt prose while compact metadata stays in the utility sans.
 - The analysis pipeline is untouched: the diff against production `main` still
   changes no file under `backend/` except `auth.py` and `main.py`.
-- Still required for the hosted gate, and blocked with Phase 2: apply the
-  migration to a real Supabase project, then prove cross-identity denial and
-  refresh survival against that project rather than against the local stand-in.
+### Phase 3 — hosted database gate passed on July 29, 2026
+
+Project `mkdshmetakgizbseqpkt` ("Explain-Back", organization "Sai") was created
+and configured by the repository owner. Verified directly against it:
+
+- Schema matches the migration exactly — two tables, the expected columns,
+  `user_id default auth.uid()` with a cascade to `auth.users`, unique
+  `(session_id, attempt_number)`, `attempt_number >= 1`, RLS enabled, and the
+  four owner-scoped policies. Re-running the migration was refused as already
+  applied and rolled back without changing anything.
+- Grants to `authenticated` are exactly `select` and `insert`. `anon` has none.
+- Auth configuration: anonymous sign-ins on, Google on, manual linking on, site
+  URL and three exact redirect URLs, no broad `*.vercel.app` allowlist.
+- Two real anonymous identities were created against the hosted project. All
+  thirteen checks behaved correctly: owner insert `201` with the server-assigned
+  owner; duplicate attempt number `409` `23505`; forging another `user_id` `403`
+  `42501`; owner list returns its own session with the embedded attempt; the
+  second identity's list, direct `id=eq.` read, and attempt read all return `[]`;
+  writing into the owner's session `403`; owner update and delete `403` for lack
+  of grant; the publishable key with no user session `401`; a malformed bearer
+  `401`.
+- The PR-14 backend already verifies tokens from this project: no token and a
+  malformed token are `401`, while a real anonymous token reaches request
+  validation (`422`). Its CORS allowlist admits only the exact
+  `explain-back-9f4h76quw-…` preview origin and rejects production and
+  `evil.example` with `400`.
+- Residue left in the project by this proof, not removable without a service-role
+  key: two anonymous users, one session row, one attempt row.
+
+Still required, and the only remaining hosted blocker: a Vercel preview built
+from this checkpoint with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
+set, with the PR-14 backend's `FRONTEND_ORIGIN` pointed at that exact new preview
+origin. Until then the browser half of Phase 2 — anonymous entry, UID-preserving
+Google linking, callback cleanup, and reload survival — is unproven in hosting,
+and the demoable fallback remains Phase 1.
 
 ### Phase 4 — not started
 
