@@ -218,6 +218,51 @@ Google account, so `E2E_GOOGLE_LINK=1` and a headed run remain the owner's step.
 Phase 2 and Phase 3 are therefore passed for the guest path, which is the judge
 path, with optional identity linking unverified end to end.
 
+### Phase 4 — review of recorded gaps
+
+A flashcard is a repackaging of stored data. `frontend/src/flashcards.js` derives
+one card per not-green flag per session, entirely from rows already written in
+Phase 3: the prompt is framed from the flag's source anchor, and the back is the
+learner's own claim, the misconception and refutation when the resolver went red,
+the source anchor, and the revision hint. No model call exists in this path, and
+`e2e/review.local.js` asserts that no `/api/` request is made while reviewing.
+
+- A gap keeps the attempt that first recorded it. If a later attempt turned the
+  same flag green, the card says so rather than disappearing, which is what makes
+  the revision loop legible.
+- Marks are stored in `supabase/migrations/20260730010000_phase4_flag_reviews.sql`
+  as one append-only `flag_reviews` table: owner from `auth.uid()`, `select` and
+  `insert` only, no update or delete path, and an insert policy that also requires
+  the reviewed session to belong to the reviewer. The latest row for a card is its
+  current mark. No spaced-repetition scheduling was built.
+- Ordering puts unreviewed gaps first, then shaky ones, then what the learner has
+  already marked understood.
+- A mark is applied to the visible list before its write resolves; a failed write
+  says so and leaves the recorded gaps unchanged, because the write is
+  append-only and safe to retry.
+
+Deviation from the plan, stated plainly: the plan said to reuse "the marginal-note
+flip animation you already built." No flip animation exists in this codebase —
+the diagnostic disclosure is a reveal, not a flip. The card reuses the existing
+disclosure conventions instead of inventing a new motion family.
+
+#### Phase 4 verification
+
+- 7 new unit tests cover derivation, the resolved-later case, latest-mark-wins
+  ordering, anchor-framed prompts, malformed flag arrays, and the append-only
+  write shape.
+- 2 new browser tests cover the full loop: cards from stored gaps, reveal, both
+  marks written, marks reflected after a reload, ordering, and a revision that
+  closes a gap reporting as resolved.
+- Zero Axe violations on the card face down and revealed, and no horizontal
+  overflow at 390px.
+- Live RLS proof against the real project, 11 checks: owner insert `201` with the
+  server-assigned owner; a second append allowed; owner reads its own marks;
+  another identity reads `[]` and is refused `403` when marking the owner's
+  session; forging `user_id` `403`; update and delete `403` for lack of grant;
+  an empty `prop_id` refused by check constraint `23514`; the publishable key with
+  no user session `401`.
+
 ### Resolved flake
 
 "focus rings and reduced motion disable every representative motion family" in

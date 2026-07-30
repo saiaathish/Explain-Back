@@ -9,6 +9,7 @@ import { calibrationSummary, sentenceRanges } from "./confidence";
 import { diffRuns } from "./diff";
 import FollowUp from "./FollowUp";
 import HistoryView from "./HistoryView";
+import ReviewView from "./ReviewView";
 import LandingPage from "./LandingPage";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
@@ -300,6 +301,7 @@ function Workspace({
   identityLinkError,
   onLinkGoogleIdentity,
   onOpenHistory,
+  onOpenReview,
 }) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
@@ -936,6 +938,13 @@ function Workspace({
           >
             Past sessions
           </button>
+          <button
+            className="secondary history-link"
+            onClick={onOpenReview}
+            type="button"
+          >
+            Review gaps
+          </button>
           <IdentityUpgrade
             busy={identityLinkBusy}
             error={identityLinkError}
@@ -1473,7 +1482,7 @@ function AuthSurface() {
 
   return entered ? (
     <>
-      <div hidden={screen === "history"}>
+      <div hidden={screen !== "workspace"}>
         <Workspace
           accessToken={accessToken}
           identityLinkBusy={identityLinkBusy}
@@ -1481,11 +1490,15 @@ function AuthSurface() {
           isAnonymous={isAnonymous}
           onLinkGoogleIdentity={linkGoogleIdentity}
           onOpenHistory={() => setScreen("history")}
+          onOpenReview={() => setScreen("review")}
           refreshAccessToken={refreshAccessToken}
         />
       </div>
       {screen === "history" && (
         <HistoryView onBack={() => setScreen("workspace")} />
+      )}
+      {screen === "review" && (
+        <ReviewView onBack={() => setScreen("workspace")} />
       )}
     </>
   ) : (

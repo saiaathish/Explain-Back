@@ -565,6 +565,133 @@ main {
   line-height: 1.35;
 }
 
+.review-view {
+  width: min(100%, 720px);
+  margin-inline: auto;
+}
+
+.review-progress,
+.review-mark {
+  margin: 24px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.review-mark {
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.review-card {
+  margin-top: 14px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 8px 8px 0 var(--paper-edge);
+}
+
+.review-front {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 26px 26px 24px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.review-card.is-revealed .review-front {
+  border-bottom: 1px solid var(--rule);
+}
+
+.review-prompt {
+  font-family: var(--editorial);
+  font-size: clamp(21px, 2.6vw, 28px);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.review-reveal-hint {
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.review-back {
+  display: grid;
+  gap: 6px;
+  padding: 22px 26px 26px;
+}
+
+.review-label {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.review-back > .review-label:first-child {
+  margin-top: 0;
+}
+
+.review-claim,
+.review-anchor,
+.review-hint,
+.review-misconception,
+.review-refutation {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.review-claim {
+  border-left: 2px solid var(--rule);
+  padding-left: 14px;
+}
+
+.review-misconception {
+  border-left: 2px solid var(--contradicts);
+  padding-left: 14px;
+  color: var(--contradicts);
+}
+
+/* The refutation answers the misconception, so it stays in that column. */
+.review-refutation {
+  padding-left: 16px;
+}
+
+.review-anchor {
+  background: var(--wash-understood);
+  padding: 10px 12px;
+}
+
+.review-status {
+  margin: 14px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
 .history-attempts {
   display: grid;
   gap: 14px;

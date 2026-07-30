@@ -399,6 +399,85 @@ test.describe("hosted Phase 2 authentication gate", () => {
     });
   });
 
+  /*
+   * Phase 4 on the deployed origin. The card is derived from the stored flag, so
+   * the only network calls involved are the project's own reads and writes.
+   */
+  test("a recorded gap becomes a review card and its mark persists", async ({
+    page,
+  }, testInfo) => {
+    const anchor = "Sodium leaves the cell and potassium enters.";
+    const claim = "The pump moves potassium out and sodium in.";
+
+    await page.route(`${API_ORIGIN}/api/analyze`, async (route) => {
+      const body = route.request().postDataJSON();
+      const response = analysisResponse(body.source);
+      response.flags = [
+        {
+          prop_id: "direction",
+          state: "red",
+          start: 0,
+          end: Math.min(claim.length, body.explanation.length),
+          claim,
+          anchor,
+          hint: "Reverse the ion directions.",
+          misconception: "The transport direction is reversed.",
+          refutation: "The pump exports sodium and imports potassium.",
+          similarity: 0.2,
+        },
+      ];
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(response),
+      });
+    });
+
+    const session = await enterAnonymousWorkspace(page);
+    await page.locator("#source").fill(SOURCE);
+    await page.locator("#explanation").fill(claim + " " + EXPLANATION);
+    await page
+      .getByRole("button", { name: "Check my explanation", exact: true })
+      .click();
+    await expect(page.locator(".results")).toBeVisible();
+    await expect(page.locator(".history-save-error")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+    await expect(page.locator(".review-prompt")).toHaveText(`Explain: ${anchor}`);
+    await expect(page.locator(".review-back")).toBeHidden();
+    await page.locator(".review-front").click();
+    await expect(page.locator(".review-back")).toContainText(
+      "The transport direction is reversed.",
+    );
+    await page.getByRole("button", { name: "Still shaky", exact: true }).click();
+
+    await page.reload();
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await expect(page.locator("#source")).toBeFocused();
+    const restored = await waitForStoredAuth(page);
+    expect(restored.userId).toBe(session.userId);
+
+    await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+    await expect(page.locator(".review-prompt")).toHaveText(`Explain: ${anchor}`);
+    await expect(page.locator(".review-mark")).toContainText(
+      "Last marked still shaky",
+    );
+
+    await testInfo.attach("phase4-hosted-review-evidence", {
+      body: JSON.stringify(
+        {
+          frontendOrigin: FRONTEND_ORIGIN,
+          uidHash: uidHash(session.userId),
+          cardDerivedFromStoredFlag: true,
+          markSurvivedReload: true,
+        },
+        null,
+        2,
+      ),
+      contentType: "application/json",
+    });
+  });
+
   test("Google links to the existing anonymous UID and returns cleanly", async ({
     page,
   }, testInfo) => {
