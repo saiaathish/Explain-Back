@@ -2376,3 +2376,127 @@ footer {
     animation: none !important;
   }
 }
+
+/* Past reviews: a floating entry point and a practice list. */
+
+.review-history-toggle {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding-inline: 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 10px 26px rgba(18, 23, 19, 0.14);
+}
+
+.review-history-toggle .button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.review-history-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: 999px;
+  background: var(--understood);
+  color: var(--paper);
+  font-size: 11px;
+}
+
+.review-history {
+  margin-top: 32px;
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+}
+
+.review-history-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.review-history-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--editorial);
+  font-size: clamp(22px, 2.6vw, 28px);
+  letter-spacing: -0.03em;
+}
+
+.review-history-heading p {
+  max-width: 52ch;
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.review-history-list {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-history-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--rule);
+  padding: 15px 16px;
+}
+
+.review-history-entry button,
+.review-history-heading button {
+  white-space: nowrap;
+}
+
+.review-history-source {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.review-history-meta {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 620px) {
+  .review-history-toggle {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  /* The floating button must not sit on top of the last entry. */
+  .review-view {
+    padding-bottom: 84px;
+  }
+
+  .review-history-entry {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

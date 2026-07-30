@@ -299,11 +299,18 @@ describing what they had once tapped. The owner asked for a study deck instead.
   "Still shaky" sends it to the back so it comes around again, and the round is
   finished when the count reaches zero. A stack and a grid layout are offered;
   the stack is the studying interaction and the grid shows everything still owed.
-- The round is held in memory only. Opening the screen rebuilds the deck from the
-  recorded gaps every time, so `12 left` always means twelve gaps, and closing
-  the screen loses nothing worth keeping.
+- Clearing a gap is recorded in `cleared_gaps`, one row per gap. The deck is
+  every recorded gap minus those rows, so a source you finished stops appearing
+  entirely while a gap recorded on it later still shows up on its own. Partial
+  progress survives leaving mid-round because each card is stored separately.
+  "Still shaky" is a move inside a round and is never written down.
+- Past rounds sit behind a floating **Past reviews** button. Studying one from
+  there is practice: it replays cleared cards and writes nothing, so a gap is
+  never reopened by revisiting it.
 - `flag_reviews` is dropped by `20260730020000_drop_flag_reviews.sql`, and the
-  Phase 4 migration that created it was removed. `drop table if exists` keeps
+  Phase 4 migration that created it was removed. `cleared_gaps` replaces it with
+  narrower meaning: it records only that a gap was explained again, never a
+  "still shaky" verdict, and the unique key makes re-clearing harmless. `drop table if exists` keeps
   that safe in both directions: existing projects drop the table, fresh ones
   never create it.
 - `framer-motion` was added at the owner's instruction for the drag, spring and
@@ -328,3 +335,12 @@ Apply the migration at merge, not before.
 - Deck geometry was verified from computed styles rather than by eye after the
   first two attempts looked wrong: `layout`/`layoutId` transforms were fighting
   the stack offsets, and rotation made the cards behind read as slanted lines.
+
+### Why the count is trustworthy now
+
+Three designs were tried. Storing every tap made a gap "understood" forever, so
+the count described what had been tapped rather than what was understood.
+Storing nothing meant a finished deck came back in full on the next visit, and
+new sources piled on top of gaps already explained. Storing only the clearing
+gives the useful half of both: the deck shrinks permanently as gaps are
+explained, and nothing else about a round is kept.

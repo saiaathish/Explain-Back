@@ -85,11 +85,19 @@ export function deriveCards(sessions) {
 }
 
 /*
- * The round itself is deliberately not persisted. Marks used to be written to a
- * `flag_reviews` table, which meant a gap tapped once stayed "understood"
- * forever and the count stopped reflecting what the learner could actually
- * explain. A round now starts from the recorded gaps every time.
+ * The deck owed right now: every recorded gap the learner has not already
+ * explained again. Clearing is stored per gap, so a finished source stops
+ * appearing while a gap recorded on it later still shows up on its own.
  */
+export function outstandingCards(cards, cleared) {
+  const clearedKeys = new Set(
+    (cleared || []).map((row) =>
+      typeof row === "string" ? row : `${row.session_id}:${row.prop_id}`,
+    ),
+  );
+  return (cards || []).filter((card) => !clearedKeys.has(card.id));
+}
+
 export function roundSummary(deck, remaining) {
   const total = deck.length;
   const cleared = Math.max(0, total - remaining);

@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAnalysisHistory } from "./analysisHistory";
-import { deriveCards, roundSummary } from "./flashcards";
+import { getClearedGaps, reviewHistory } from "./clearedGaps";
+import { deriveCards, outstandingCards, roundSummary } from "./flashcards";
 import ReviewCardStack from "./ReviewCardStack";
+import ReviewHistory from "./ReviewHistory";
 
 /*
- * A study round, not a record. The deck is rebuilt from stored gaps every time
- * this screen opens and nothing about the round is written back, so "12 left"
- * always means twelve gaps you have not just explained. Saying you have one
- * removes it from the round; saying you are shaky sends it to the back of the
- * deck to come around again. Closing the screen starts a clean round.
+ * The deck is every recorded gap the learner has not already explained again.
+ * Explaining one clears it for good, so a finished source stops appearing while
+ * a gap recorded on it later still shows up on its own. "Still shaky" only
+ * moves a card to the back of the round; it is never written down.
+ *
+ * Past rounds live behind the history button and are practice only: studying
+ * something from there never returns it to the outstanding deck.
  */
 
 function Brand() {
@@ -30,23 +34,50 @@ function Brand() {
   );
 }
 
+function HistoryIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="button-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+      <path d="M3 4v4h4" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
 export default function ReviewView({ onBack }) {
-  const [deck, setDeck] = useState([]);
+  const [allCards, setAllCards] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [cleared, setCleared] = useState([]);
   const [queue, setQueue] = useState([]);
+  const [practice, setPractice] = useState(null);
   const [layout, setLayout] = useState("stack");
   const [status, setStatus] = useState("loading");
+  const [saveError, setSaveError] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
   const mountedRef = useRef(true);
   const frameRef = useRef(0);
 
   useEffect(() => {
     mountedRef.current = true;
-    getAnalysisHistory()
-      .listSessions()
-      .then((sessions) => {
+    Promise.all([
+      getAnalysisHistory().listSessions(),
+      getClearedGaps().listCleared(),
+    ])
+      .then(([savedSessions, clearedRows]) => {
         if (!mountedRef.current) return;
-        const cards = deriveCards(sessions);
-        setDeck(cards);
-        setQueue(cards);
+        const cards = deriveCards(savedSessions);
+        setSessions(savedSessions);
+        setAllCards(cards);
+        setCleared(clearedRows);
+        setQueue(outstandingCards(cards, clearedRows));
         setStatus("ready");
       })
       .catch(() => {
@@ -58,32 +89,81 @@ export default function ReviewView({ onBack }) {
     };
   }, []);
 
+  const deck = useMemo(
+    () => (practice ? practice.cards : outstandingCards(allCards, cleared)),
+    [allCards, cleared, practice],
+  );
+
   /* The exit direction has to be on the card before it leaves, so the change is
    * made in two steps: mark it, then move it on the next frame. */
-  const act = useCallback((card, direction) => {
-    if (!card) return;
-    setQueue((current) =>
-      current.map((entry) =>
-        entry.id === card.id ? { ...entry, exitDirection: direction } : entry,
-      ),
-    );
-    cancelAnimationFrame(frameRef.current);
-    frameRef.current = requestAnimationFrame(() => {
-      if (!mountedRef.current) return;
-      setQueue((current) => {
-        const index = current.findIndex((entry) => entry.id === card.id);
-        if (index < 0) return current;
-        const remaining = current.filter((entry) => entry.id !== card.id);
-        if (direction === "got") return remaining;
-        return [...remaining, { ...current[index], exitDirection: undefined }];
+  const act = useCallback(
+    (card, direction) => {
+      if (!card) return;
+      setQueue((current) =>
+        current.map((entry) =>
+          entry.id === card.id ? { ...entry, exitDirection: direction } : entry,
+        ),
+      );
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = requestAnimationFrame(() => {
+        if (!mountedRef.current) return;
+        setQueue((current) => {
+          const index = current.findIndex((entry) => entry.id === card.id);
+          if (index < 0) return current;
+          const remaining = current.filter((entry) => entry.id !== card.id);
+          if (direction === "got") return remaining;
+          return [...remaining, { ...current[index], exitDirection: undefined }];
+        });
       });
-    });
-  }, []);
+
+      /* Practice rounds replay cards that are already cleared. */
+      if (direction !== "got" || practice) return;
+      setSaveError("");
+      getClearedGaps()
+        .clearGap({ sessionId: card.sessionId, propId: card.propId })
+        .then(() => {
+          if (!mountedRef.current) return;
+          setCleared((current) => [
+            { session_id: card.sessionId, prop_id: card.propId, created_at: new Date().toISOString() },
+            ...current,
+          ]);
+        })
+        .catch(() => {
+          if (!mountedRef.current) return;
+          /* The card is put back rather than silently lost. */
+          setQueue((current) =>
+            current.some((entry) => entry.id === card.id)
+              ? current
+              : [...current, { ...card, exitDirection: undefined }],
+          );
+          setSaveError(
+            "That card could not be marked as explained, so it stayed in the deck. Check your connection and try again.",
+          );
+        });
+    },
+    [practice],
+  );
 
   const gotIt = useCallback((card) => act(card, "got"), [act]);
   const stillShaky = useCallback((card) => act(card, "shaky"), [act]);
-
   const restart = useCallback(() => setQueue(deck), [deck]);
+
+  const startPractice = useCallback((entry) => {
+    setPractice(entry);
+    setQueue(entry.cards);
+    setHistoryOpen(false);
+    setSaveError("");
+  }, []);
+
+  const leavePractice = useCallback(() => {
+    setPractice(null);
+    setQueue(outstandingCards(allCards, cleared));
+  }, [allCards, cleared]);
+
+  const history = useMemo(
+    () => reviewHistory(sessions, cleared, allCards),
+    [allCards, cleared, sessions],
+  );
 
   const remaining = queue.length;
   const top = queue[0] || null;
@@ -102,13 +182,20 @@ export default function ReviewView({ onBack }) {
         <section className="review-view" aria-labelledby="review-title">
           <div className="history-heading">
             <div>
-              <h2 id="review-title">Review your gaps</h2>
+              <h2 id="review-title">
+                {practice ? "Practising a past review" : "Review your gaps"}
+              </h2>
               <p>
-                Built only from claims your saved attempts left yellow, red, or
-                unresolved. No new analysis runs here, and this round is not
-                saved — every visit starts with the full deck.
+                {practice
+                  ? "These are already explained. Working through them again is practice — they stay cleared."
+                  : "Built only from claims your saved attempts left yellow, red, or unresolved. Explaining a card clears it, so it will not come back."}
               </p>
             </div>
+            {practice && (
+              <button className="secondary" onClick={leavePractice} type="button">
+                Back to my gaps
+              </button>
+            )}
           </div>
 
           {status === "loading" && (
@@ -119,23 +206,32 @@ export default function ReviewView({ onBack }) {
               Your gaps could not be loaded. You can still return to the workspace.
             </p>
           )}
-          {status === "ready" && deck.length === 0 && (
+          {status === "ready" && allCards.length === 0 && (
             <p className="history-message">
               No gaps recorded yet. Analyze an explanation, and anything that does
               not hold up will show up here.
             </p>
           )}
 
-          {status === "ready" && deck.length > 0 && (
+          {status === "ready" && allCards.length > 0 && (
             <>
-              <div className="review-progress-row">
-                <p className="review-progress" aria-live="polite">
-                  {round.label}
+              {/* An empty deck is an outcome, not a round with no progress. */}
+              {deck.length > 0 && (
+                <div className="review-progress-row">
+                  <p className="review-progress" aria-live="polite">
+                    {round.label}
+                  </p>
+                  <p className="review-progress review-progress--muted">
+                    {round.cleared} of {round.total} explained this round
+                  </p>
+                </div>
+              )}
+
+              {saveError && (
+                <p className="history-message history-message--error" role="alert">
+                  {saveError}
                 </p>
-                <p className="review-progress review-progress--muted">
-                  {round.cleared} of {round.total} explained this round
-                </p>
-              </div>
+              )}
 
               {remaining > 0 ? (
                 <>
@@ -167,26 +263,55 @@ export default function ReviewView({ onBack }) {
               ) : (
                 <div className="review-done" role="status">
                   <p className="review-done-count">0</p>
-                  <h3>Deck clear</h3>
+                  <h3>{practice ? "Practice complete" : "Nothing left to explain"}</h3>
                   <p>
-                    You explained all {deck.length}{" "}
-                    {deck.length === 1 ? "gap" : "gaps"} in this round. Nothing was
-                    saved, so they are all waiting whenever you want another pass.
+                    {practice
+                      ? `You went through all ${deck.length} again. They were already cleared, so nothing changed.`
+                      : "Every gap you recorded has been explained again. New gaps will appear here as you analyze more."}
                   </p>
                   <div className="review-actions">
-                    <button className="primary" onClick={restart} type="button">
-                      Study them again
-                    </button>
-                    <button className="secondary" onClick={onBack} type="button">
-                      Back to workspace
+                    {deck.length > 0 && (
+                      <button className="primary" onClick={restart} type="button">
+                        Study them again
+                      </button>
+                    )}
+                    <button
+                      className="secondary"
+                      onClick={practice ? leavePractice : onBack}
+                      type="button"
+                    >
+                      {practice ? "Back to my gaps" : "Back to workspace"}
                     </button>
                   </div>
                 </div>
               )}
             </>
           )}
+
+          {status === "ready" && historyOpen && (
+            <ReviewHistory
+              entries={history}
+              onClose={() => setHistoryOpen(false)}
+              onStudyAgain={startPractice}
+            />
+          )}
         </section>
       </main>
+
+      {status === "ready" && (
+        <button
+          aria-expanded={historyOpen}
+          className="secondary review-history-toggle"
+          onClick={() => setHistoryOpen((open) => !open)}
+          type="button"
+        >
+          <HistoryIcon />
+          Past reviews
+          {history.length > 0 && (
+            <span className="review-history-count">{history.length}</span>
+          )}
+        </button>
+      )}
 
       <footer>
         Formative guidance only. Not a grade. This signed-in session stores source
