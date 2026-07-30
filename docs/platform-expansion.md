@@ -288,6 +288,46 @@ assertion was relaxed. Six consecutive full-suite runs then passed 17/17.
   returns HTTP 200.
 - Render production health returns HTTP 200 for both HEAD and GET.
 
+## Review rounds replace stored review marks
+
+Phase 4 recorded every "Got it now" in a `flag_reviews` row. That made the mark
+permanent: a gap tapped once stayed cleared on every later visit, so the review
+screen stopped describing what the learner could actually explain and started
+describing what they had once tapped. The owner asked for a study deck instead.
+
+- The review screen is now a deck. "Got it now" removes a card from the round,
+  "Still shaky" sends it to the back so it comes around again, and the round is
+  finished when the count reaches zero. A stack and a grid layout are offered;
+  the stack is the studying interaction and the grid shows everything still owed.
+- The round is held in memory only. Opening the screen rebuilds the deck from the
+  recorded gaps every time, so `12 left` always means twelve gaps, and closing
+  the screen loses nothing worth keeping.
+- `flag_reviews` is dropped by `20260730020000_drop_flag_reviews.sql`, and the
+  Phase 4 migration that created it was removed. `drop table if exists` keeps
+  that safe in both directions: existing projects drop the table, fresh ones
+  never create it.
+- `framer-motion` was added at the owner's instruction for the drag, spring and
+  exit animations. It is the project's first animation dependency.
+
+### Sequencing, which matters here
+
+The live table must not be dropped until this change is deployed. Production
+still runs the Phase 4 code, which writes a review mark on every tap; dropping
+the table first would make those writes fail and surface an error to users.
+Apply the migration at merge, not before.
+
+### Verification
+
+- 85 frontend unit tests, 22 browser tests, 160 backend tests, clean build.
+- `e2e/review.local.js` drives a full round: two cards, "Still shaky" leaving the
+  count untouched, "Got it now" dropping it, the shaky card coming back around,
+  the deck reaching zero, and the deck being full again after leaving and after a
+  reload. It also asserts no table other than `sessions` and
+  `explanation_attempts` is ever touched, and that reviewing makes no `/api/`
+  call.
+- Deck geometry was verified from computed styles rather than by eye after the
+  first two attempts looked wrong: `layout`/`layoutId` transforms were fighting
+  the stack offsets, and rotation made the cards behind read as slanted lines.
 ## Required sign-in — supersedes the Phase 0 guest decision
 
 The owner decided that everyone signs in before using Explain-Back. That

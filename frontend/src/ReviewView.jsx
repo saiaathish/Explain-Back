@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAnalysisHistory } from "./analysisHistory";
-import {
-  deriveCards,
-  getFlashcardReviews,
-  reviewProgress,
-} from "./flashcards";
+import { deriveCards, roundSummary } from "./flashcards";
+import ReviewCardStack from "./ReviewCardStack";
+
+/*
+ * A study round, not a record. The deck is rebuilt from stored gaps every time
+ * this screen opens and nothing about the round is written back, so "12 left"
+ * always means twelve gaps you have not just explained. Saying you have one
+ * removes it from the round; saying you are shaky sends it to the back of the
+ * deck to come around again. Closing the screen starts a clean round.
+ */
 
 function Brand() {
   return (
@@ -25,60 +30,23 @@ function Brand() {
   );
 }
 
-function CardBack({ card }) {
-  return (
-    <div className="review-back">
-      <p className="review-label">What you said, attempt {card.attemptNumber}</p>
-      <blockquote className="review-claim">{card.claim}</blockquote>
-
-      {card.misconception && (
-        <>
-          <p className="review-label">The misconception recorded then</p>
-          <p className="review-misconception">{card.misconception}</p>
-          {card.refutation && <p className="review-refutation">{card.refutation}</p>}
-        </>
-      )}
-
-      {card.anchor && (
-        <>
-          <p className="review-label">What the source said</p>
-          <p className="review-anchor">{card.anchor}</p>
-        </>
-      )}
-
-      {card.hint && (
-        <>
-          <p className="review-label">How to close it</p>
-          <p className="review-hint">{card.hint}</p>
-        </>
-      )}
-
-      <p className="review-status">
-        {card.resolvedLater
-          ? "You closed this in a later attempt."
-          : "This was still open at your last attempt."}
-      </p>
-    </div>
-  );
-}
-
 export default function ReviewView({ onBack }) {
-  const [cards, setCards] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const [deck, setDeck] = useState([]);
+  const [queue, setQueue] = useState([]);
+  const [layout, setLayout] = useState("stack");
   const [status, setStatus] = useState("loading");
-  const [markError, setMarkError] = useState("");
   const mountedRef = useRef(true);
+  const frameRef = useRef(0);
 
   useEffect(() => {
     mountedRef.current = true;
-    Promise.all([
-      getAnalysisHistory().listSessions(),
-      getFlashcardReviews().listReviews(),
-    ])
-      .then(([sessions, reviews]) => {
+    getAnalysisHistory()
+      .listSessions()
+      .then((sessions) => {
         if (!mountedRef.current) return;
-        setCards(deriveCards(sessions, reviews));
+        const cards = deriveCards(sessions);
+        setDeck(cards);
+        setQueue(cards);
         setStatus("ready");
       })
       .catch(() => {
@@ -86,47 +54,40 @@ export default function ReviewView({ onBack }) {
       });
     return () => {
       mountedRef.current = false;
+      cancelAnimationFrame(frameRef.current);
     };
   }, []);
 
-  const progress = useMemo(() => reviewProgress(cards), [cards]);
-  const card = cards[index] || null;
+  /* The exit direction has to be on the card before it leaves, so the change is
+   * made in two steps: mark it, then move it on the next frame. */
+  const act = useCallback((card, direction) => {
+    if (!card) return;
+    setQueue((current) =>
+      current.map((entry) =>
+        entry.id === card.id ? { ...entry, exitDirection: direction } : entry,
+      ),
+    );
+    cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      if (!mountedRef.current) return;
+      setQueue((current) => {
+        const index = current.findIndex((entry) => entry.id === card.id);
+        if (index < 0) return current;
+        const remaining = current.filter((entry) => entry.id !== card.id);
+        if (direction === "got") return remaining;
+        return [...remaining, { ...current[index], exitDirection: undefined }];
+      });
+    });
+  }, []);
 
-  const advance = useCallback(() => {
-    setRevealed(false);
-    setIndex((current) => (cards.length ? (current + 1) % cards.length : 0));
-  }, [cards.length]);
+  const gotIt = useCallback((card) => act(card, "got"), [act]);
+  const stillShaky = useCallback((card) => act(card, "shaky"), [act]);
 
-  const mark = useCallback(
-    async (mastered) => {
-      if (!card) return;
-      setMarkError("");
-      /* The card list updates first: a mark must be visible even if the write
-       * is slow, and the write itself is append-only so a retry is harmless. */
-      setCards((current) =>
-        current.map((entry) =>
-          entry.id === card.id
-            ? { ...entry, mastered, lastReviewedAt: new Date().toISOString() }
-            : entry,
-        ),
-      );
-      advance();
-      try {
-        await getFlashcardReviews().markCard({
-          sessionId: card.sessionId,
-          propId: card.propId,
-          mastered,
-        });
-      } catch {
-        if (mountedRef.current) {
-          setMarkError(
-            "That mark was not saved. Your gaps are unchanged — try marking it again.",
-          );
-        }
-      }
-    },
-    [advance, card],
-  );
+  const restart = useCallback(() => setQueue(deck), [deck]);
+
+  const remaining = queue.length;
+  const top = queue[0] || null;
+  const round = useMemo(() => roundSummary(deck, remaining), [deck, remaining]);
 
   return (
     <div className="app-shell">
@@ -144,7 +105,8 @@ export default function ReviewView({ onBack }) {
               <h2 id="review-title">Review your gaps</h2>
               <p>
                 Built only from claims your saved attempts left yellow, red, or
-                unresolved. No new analysis runs here.
+                unresolved. No new analysis runs here, and this round is not
+                saved — every visit starts with the full deck.
               </p>
             </div>
           </div>
@@ -157,78 +119,69 @@ export default function ReviewView({ onBack }) {
               Your gaps could not be loaded. You can still return to the workspace.
             </p>
           )}
-          {status === "ready" && cards.length === 0 && (
+          {status === "ready" && deck.length === 0 && (
             <p className="history-message">
               No gaps recorded yet. Analyze an explanation, and anything that does
               not hold up will show up here.
             </p>
           )}
 
-          {status === "ready" && card && (
+          {status === "ready" && deck.length > 0 && (
             <>
-              <p className="review-progress" aria-live="polite">
-                {progress.label} · card {index + 1} of {cards.length}
-              </p>
-              {markError && (
-                <p className="history-message history-message--error" role="alert">
-                  {markError}
+              <div className="review-progress-row">
+                <p className="review-progress" aria-live="polite">
+                  {round.label}
                 </p>
-              )}
+                <p className="review-progress review-progress--muted">
+                  {round.cleared} of {round.total} explained this round
+                </p>
+              </div>
 
-              <div className={`review-card${revealed ? " is-revealed" : ""}`}>
-                <button
-                  aria-controls="review-card-back"
-                  aria-expanded={revealed}
-                  className="review-front"
-                  onClick={() => setRevealed((current) => !current)}
-                  type="button"
-                >
-                  <span className="review-label">
-                    {card.state === "red"
-                      ? "Contradicted the source"
-                      : card.state === "yellow"
-                        ? "Stated but not explained"
-                        : "Not confident enough to judge"}
-                  </span>
-                  <span className="review-prompt">{card.prompt}</span>
-                  <span className="review-reveal-hint">
-                    {revealed ? "Hide what you said" : "Show what you said"}
-                  </span>
-                </button>
+              {remaining > 0 ? (
+                <>
+                  <ReviewCardStack
+                    cards={queue}
+                    layout={layout}
+                    onGotIt={gotIt}
+                    onLayoutChange={setLayout}
+                    onStillShaky={stillShaky}
+                  />
 
-                <div hidden={!revealed} id="review-card-back">
-                  <CardBack card={card} />
+                  <div className="review-actions">
+                    <button
+                      className="primary"
+                      onClick={() => gotIt(top)}
+                      type="button"
+                    >
+                      Got it now
+                    </button>
+                    <button
+                      className="secondary"
+                      onClick={() => stillShaky(top)}
+                      type="button"
+                    >
+                      Still shaky
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="review-done" role="status">
+                  <p className="review-done-count">0</p>
+                  <h3>Deck clear</h3>
+                  <p>
+                    You explained all {deck.length}{" "}
+                    {deck.length === 1 ? "gap" : "gaps"} in this round. Nothing was
+                    saved, so they are all waiting whenever you want another pass.
+                  </p>
+                  <div className="review-actions">
+                    <button className="primary" onClick={restart} type="button">
+                      Study them again
+                    </button>
+                    <button className="secondary" onClick={onBack} type="button">
+                      Back to workspace
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="review-actions">
-                <button
-                  className="primary"
-                  onClick={() => mark(true)}
-                  type="button"
-                >
-                  Got it now
-                </button>
-                <button
-                  className="secondary"
-                  onClick={() => mark(false)}
-                  type="button"
-                >
-                  Still shaky
-                </button>
-                <button
-                  className="secondary review-skip"
-                  onClick={advance}
-                  type="button"
-                >
-                  Skip for now
-                </button>
-              </div>
-
-              {card.mastered !== null && (
-                <p className="review-mark">
-                  Last marked {card.mastered ? "understood" : "still shaky"}.
-                </p>
               )}
             </>
           )}

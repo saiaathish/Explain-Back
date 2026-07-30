@@ -62,7 +62,15 @@ async function recordGaps(page, authApi) {
   await expect(page.locator(".results")).toBeVisible();
 }
 
-test("review cards come from stored gaps and marks survive a reload", async ({
+
+/* The leaving card stays in the DOM until its exit animation ends, so settle
+ * the deck before reading the top card. */
+async function expectTopPrompt(page, prompt) {
+  await expect(page.locator(".review-card.is-top")).toHaveCount(1);
+  await expect(page.locator(".review-card.is-top .review-prompt")).toHaveText(prompt);
+}
+
+test("a round counts down to zero and never remembers it", async ({
   page,
   authApi,
   restApi,
@@ -77,69 +85,105 @@ test("review cards come from stored gaps and marks survive a reload", async ({
   const callsAfterAnalysis = analysisCalls.length;
 
   await page.getByRole("button", { name: "Review gaps", exact: true }).click();
-  const front = page.locator(".review-front");
-  await expect(front).toBeVisible();
-  await expect(page.locator(".review-progress")).toContainText(
-    "0 of 2 marked as understood",
+  await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
+  /* Red sorts before yellow: a contradiction is worth explaining first. */
+  await expectTopPrompt(page, `Explain: ${ANCHOR}`);
+  await expect(page.locator(".review-card.is-top")).toContainText(
+    "Contradicted the source",
   );
-  /* The red gap sorts first: the prompt is framed from the source anchor. */
-  await expect(page.locator(".review-prompt")).toHaveText(`Explain: ${ANCHOR}`);
-  await expect(front).toContainText("Contradicted the source");
-  await expect(page.locator(".review-back")).toBeHidden();
+  await expect(page.locator(".review-back")).toHaveCount(0);
 
-  await front.click();
-  await expect(front).toHaveAttribute("aria-expanded", "true");
+  await page.locator(".review-card.is-top .review-front").click();
   const back = page.locator(".review-back");
   await expect(back).toContainText("The pump moves potassium out and sodium in");
   await expect(back).toContainText("The transport direction is reversed.");
   await expect(back).toContainText(ANCHOR);
   await expect(back).toContainText("Reverse the ion directions.");
-  await expect(back).toContainText("still open at your last attempt");
+
+  /* Still shaky keeps the card in the round: the count must not move. */
+  await page.getByRole("button", { name: "Still shaky", exact: true }).click();
+  await expectTopPrompt(page, "Explain: Gradients hold the membrane potential.");
+  await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
+  await expect(page.locator(".review-progress--muted")).toHaveText(
+    "0 of 2 explained this round",
+  );
 
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
-  await expect.poll(() => restApi.rows.flag_reviews.length).toBe(1);
-  expect(restApi.rows.flag_reviews[0]).toMatchObject({
-    prop_id: "direction",
-    mastered: true,
-    session_id: restApi.rows.sessions[0].id,
-  });
-  /* The next card appears face down, and no analysis request was made. */
-  await expect(page.locator(".review-prompt")).toHaveText(
-    "Explain: Gradients hold the membrane potential.",
-  );
-  await expect(page.locator(".review-front")).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
+  await expect(page.locator(".review-progress").first()).toHaveText("1 card left");
+  /* The shaky card came back around. */
+  await expectTopPrompt(page, `Explain: ${ANCHOR}`);
 
-  await page.getByRole("button", { name: "Still shaky", exact: true }).click();
-  await expect.poll(() => restApi.rows.flag_reviews.length).toBe(2);
-  expect(restApi.rows.flag_reviews[1]).toMatchObject({
-    prop_id: "gradients",
-    mastered: false,
-  });
+  await page.getByRole("button", { name: "Got it now", exact: true }).click();
+  const done = page.locator(".review-done");
+  await expect(done).toBeVisible();
+  await expect(page.locator(".review-done-count")).toHaveText("0");
+  await expect(done).toContainText("Deck clear");
+  await expect(page.locator(".review-card")).toHaveCount(0);
+
+  /* Nothing about the round was written anywhere. */
+  expect(Object.keys(restApi.rows)).toEqual(["sessions", "explanation_attempts"]);
+  expect(
+    restApi.requests.filter(({ table }) => table !== "sessions" && table !== "explanation_attempts"),
+  ).toEqual([]);
   expect(analysisCalls).toHaveLength(callsAfterAnalysis);
 
+  /* Leaving and coming back starts a clean round with the full deck. */
+  await page.locator("header").getByRole("button", { name: "Back to workspace" }).click();
+  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
+
   await page.reload();
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  await expect(page.locator("#source")).toBeVisible();
   /* The stored session reopens the workspace with no landing page. */
   await expect(page.locator("#source")).toBeVisible();
   await expect(page.locator(".landing-shell")).toHaveCount(0);
   await page.getByRole("button", { name: "Review gaps", exact: true }).click();
-  await expect(page.locator(".review-progress")).toContainText(
-    "1 of 2 marked as understood",
-  );
-  /* What is still shaky comes back before what they already know. */
-  await expect(page.locator(".review-prompt")).toHaveText(
-    "Explain: Gradients hold the membrane potential.",
-  );
-  await expect(page.locator(".review-mark")).toContainText(
-    "Last marked still shaky",
+  await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
+  await expect(page.locator(".review-done")).toHaveCount(0);
+});
+
+test("studying again refills the deck without touching storage", async ({
+  page,
+  authApi,
+  restApi,
+}) => {
+  await recordGaps(page, authApi);
+  await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(1);
+  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+
+  await page.getByRole("button", { name: "Got it now", exact: true }).click();
+  await page.getByRole("button", { name: "Got it now", exact: true }).click();
+  await expect(page.locator(".review-done")).toBeVisible();
+
+  await page.getByRole("button", { name: "Study them again", exact: true }).click();
+  await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
+  await expect(page.locator(".review-card.is-top")).toBeVisible();
+});
+
+test("the grid layout shows the whole deck at once", async ({
+  page,
+  authApi,
+  restApi,
+}) => {
+  await recordGaps(page, authApi);
+  await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(1);
+  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+
+  await expect(page.locator(".review-deck--stack")).toBeVisible();
+  await page.getByRole("button", { name: "Grid", exact: true }).click();
+  await expect(page.locator(".review-deck--grid")).toBeVisible();
+  await expect(page.locator(".review-card")).toHaveCount(2);
+  await expect(page.locator(".review-card.is-top")).toHaveCount(0);
+
+  /* Any card can be opened in grid, not just the top of the stack. */
+  await page.locator(".review-card").nth(1).locator(".review-front").click();
+  await expect(page.locator(".review-back")).toContainText(
+    "Say why the gradient matters.",
   );
 
-  await page
-    .getByRole("button", { name: "Back to workspace", exact: true })
-    .click();
-  await expect(page.locator("#source")).toHaveValue("");
+  await page.getByRole("button", { name: "Stack", exact: true }).click();
+  await expect(page.locator(".review-deck--stack")).toBeVisible();
 });
 
 test("a revision that closes a gap keeps the card and reports it resolved", async ({
@@ -160,6 +204,8 @@ test("a revision that closes a gap keeps the card and reports it resolved", asyn
       body: JSON.stringify(response),
     });
   });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   await signIn(page, "/");
   await page.locator("#source").fill(SOURCE);
   await page.locator("#explanation").fill(EXPLANATION);
@@ -181,8 +227,8 @@ test("a revision that closes a gap keeps the card and reports it resolved", asyn
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
 
   await page.getByRole("button", { name: "Review gaps", exact: true }).click();
-  await expect(page.locator(".review-prompt")).toHaveText(`Explain: ${ANCHOR}`);
-  await page.locator(".review-front").click();
+  await expectTopPrompt(page, `Explain: ${ANCHOR}`);
+  await page.locator(".review-card.is-top .review-front").click();
   const back = page.locator(".review-back");
   await expect(back).toContainText("What you said, attempt 1");
   await expect(back).toContainText("The pump moves potassium out and sodium in");

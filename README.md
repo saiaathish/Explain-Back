@@ -14,6 +14,11 @@ maps formative guidance over the student's own words:
 Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question generated
 from the analyzed gaps. There are no learner-facing scores or account forms.
+Supabase Auth creates a browser-local anonymous identity so the API can verify
+each request. Explain-Back stores exactly two things for that identity: the
+source text you submit and each successful explanation attempt with its concepts
+and flags. What you mark during a review round is never stored. Nothing else is
+written, every row is readable only by its owner, and
 Google sign-in is required before any analysis, and Supabase Auth issues the
 session the API verifies on every request. Explain-Back stores exactly three
 things for that account: the
@@ -38,13 +43,13 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 
 ## Architecture
 
-The browser holds live input and results in React state. Three Supabase tables
-hold saved work: `sessions` and `explanation_attempts` for history, and
-`flag_reviews` for review marks. All three are append-only to the browser, which
-writes them with its own authenticated session, so row-level security — not
-backend code — is what enforces ownership. A failed write never blocks an
-analysis, it only shows a notice. Review cards are derived from stored flags, so
-reviewing makes no model call. A FastAPI process verifies the bearer token, then performs two or three
+The browser holds live input and results in React state. Two Supabase tables
+hold saved work: `sessions` and `explanation_attempts`. Both are append-only to
+the browser, which writes them with its own authenticated session, so row-level
+security — not backend code — is what enforces ownership. A failed write never
+blocks an analysis, it only shows a notice. Review cards are derived from stored
+flags, so reviewing makes no model call, and a review round is held in memory
+only: nothing about what you marked is written down. A FastAPI process verifies the bearer token, then performs two or three
 logical model stages around deterministic validation. Each stage can retry
 malformed output for up to three total attempts:
 
@@ -128,12 +133,11 @@ root, with query strings and fragments discarded.
 ### Saved history schema
 
 Apply both migrations in `supabase/migrations/` in filename order. The first
-creates `sessions` and `explanation_attempts`; the second creates `flag_reviews`
-for review marks. Each grants only `select` and `insert` to the `authenticated`
-role and enables row-level security with owner-scoped policies. There is no
-update or delete path and no service-role access, so history and marks are both
-append-only. Verify after applying that a second identity cannot read the first
-identity's rows.
+creates `sessions` and `explanation_attempts`, granting only `select` and
+`insert` to the `authenticated` role with owner-scoped row-level security. The
+second drops the retired `flag_reviews` table. There is no update or delete path
+and no service-role access, so saved history is append-only. Verify after
+applying that a second identity cannot read the first identity's rows.
 
 Local and deployed frontends also need `VITE_SUPABASE_URL` and
 `VITE_SUPABASE_PUBLISHABLE_KEY`; the backend needs the matching

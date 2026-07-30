@@ -23,6 +23,12 @@ where their explanation is supported, incomplete, or contradicted by the source.
 
 Other things worth knowing about, not required to try:
 - **Past sessions** — the source and every attempt from that loop are saved to
+  the anonymous session, readable only by it, and still there after a reload
+- **Review gaps** — every claim that did not hold up becomes a card in a deck you
+  work down to zero. "Got it now" removes a card, "Still shaky" sends it to the
+  back to come around again. No new model call happens here; it is your own
+  recorded data played back, and the round is never saved, so the count always
+  reflects what you can explain right now
   your account, readable only by you, and still there after a reload
 - **Review gaps** — every claim that did not hold up becomes a card: the source
   anchor as the prompt, what you said, and why it fell short. Mark it understood
