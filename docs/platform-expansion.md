@@ -163,12 +163,39 @@ Two findings from probing the hosted auth surface:
 - The Google client id is `1066507771736-…apps.googleusercontent.com`, and its
   authorized redirect URI must remain the project's `/auth/v1/callback`.
 
-Still required, and the only remaining hosted blocker: a Vercel preview built
-from this checkpoint with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
-set, with the PR-14 backend's `FRONTEND_ORIGIN` pointed at that exact new preview
-origin. Until then the browser half of Phase 2 — anonymous entry, UID-preserving
-Google linking, callback cleanup, and reload survival — is unproven in hosting,
-and the demoable fallback remains Phase 1.
+### Hosted preview — verified from the deployed origin
+
+Vercel deployment `GW4ZNTwwu12ayW6mDWkyJQWaZrmk` is READY from exactly
+`b0d5595`, served at
+`https://explain-back-git-feat-platform-sai-aathish-karthiks-projects.vercel.app`
+and `https://explain-back-nbof7sf1a-…`. Its preview environment variables were
+already configured, and the built bundle inlines the correct values: Supabase
+`mkdshmetakgizbseqpkt`, the publishable key, and the PR-14 backend. The bundle
+contains no `sb_secret_` value; the only `service_role` occurrences are the
+refusal strings in `supabase.js`.
+
+Confirmed in a real browser against that origin:
+
+- One **Try it** click created a live anonymous Supabase session issued by
+  `mkdshmetakgizbseqpkt`, with the token subject equal to the user id, and opened
+  the workspace.
+- Cross-origin bearer requests to the same-SHA PR-14 backend succeed from this
+  origin with no CORS failure: a valid token reaches validation (`422`), while a
+  malformed token and a missing token are both `401`. The backend's allowlist
+  already contained this branch alias, so no Render change was needed — and the
+  exact-SHA origin `…-nbof7sf1a-…` is correctly refused with `400`.
+- A session and attempt written from this origin were then read back by the
+  running app: after a reload, the restored anonymous session's **Past sessions**
+  screen listed the saved loop with its attempt and coverage indicator.
+- Zero console errors, and at 390px the history screen has no horizontal
+  overflow (`scrollWidth` equals `innerWidth`).
+
+Remaining before Phase 2 can be called passed: the scripted matrix in
+`frontend/e2e/auth.hosted.js` has not been run against this deployment, because
+it needs the project's automation bypass secret and reading that secret is the
+owner's to do. Until that suite passes, the demoable fallback remains Phase 1.
+The Google identity link was deliberately not completed — that requires signing
+in to a Google account, which is also the owner's to do.
 
 ### Phase 4 — not started
 
