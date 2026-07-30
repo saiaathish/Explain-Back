@@ -133,6 +133,36 @@ and configured by the repository owner. Verified directly against it:
 - Residue left in the project by this proof, not removable without a service-role
   key: two anonymous users, one session row, one attempt row.
 
+### Phase 2 — browser half proven against the real project
+
+`frontend/playwright.supabase.config.js` and `frontend/e2e/auth.supabase.js`
+drive a real Chromium against project `mkdshmetakgizbseqpkt` with the analysis
+service stubbed, because a preview backend admits only its own Vercel origin.
+Both tests pass:
+
+- No auth request is made until **Try it** is clicked; that click produces
+  exactly one `/signup`, and the stored session is anonymous with the access
+  token's `sub` equal to the user id.
+- A completed analysis writes one session owned by that user and one attempt; a
+  revision adds attempt 2 to the same session; no save error appears.
+- After a reload the same user id is restored with no second `/signup`, and
+  **Past sessions** lists the loop with both attempts read back from the hosted
+  database.
+- Identity linking issues exactly one authorization request with
+  `provider=google`, `redirect_to` equal to the app's own origin, and no
+  attacker-supplied `next`.
+
+Two findings from probing the hosted auth surface:
+
+- Supabase does **not** validate `redirect_to` when authorization begins — it
+  accepted `https://evil.example/` there. Enforcement happens at the callback,
+  which without valid state redirects to the configured site URL instead. The
+  app's real defense is `safeOAuthRedirectTo()` pinning the destination to its
+  own origin with query and fragment stripped, which both this suite and the
+  local suite assert.
+- The Google client id is `1066507771736-…apps.googleusercontent.com`, and its
+  authorized redirect URI must remain the project's `/auth/v1/callback`.
+
 Still required, and the only remaining hosted blocker: a Vercel preview built
 from this checkpoint with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
 set, with the PR-14 backend's `FRONTEND_ORIGIN` pointed at that exact new preview
