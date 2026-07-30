@@ -1472,19 +1472,22 @@ function AuthSurface() {
   }, [entered]);
 
   return entered ? (
-    screen === "history" ? (
-      <HistoryView onBack={() => setScreen("workspace")} />
-    ) : (
-      <Workspace
-        accessToken={accessToken}
-        identityLinkBusy={identityLinkBusy}
-        identityLinkError={identityLinkError}
-        isAnonymous={isAnonymous}
-        onLinkGoogleIdentity={linkGoogleIdentity}
-        onOpenHistory={() => setScreen("history")}
-        refreshAccessToken={refreshAccessToken}
-      />
-    )
+    <>
+      <div hidden={screen === "history"}>
+        <Workspace
+          accessToken={accessToken}
+          identityLinkBusy={identityLinkBusy}
+          identityLinkError={identityLinkError}
+          isAnonymous={isAnonymous}
+          onLinkGoogleIdentity={linkGoogleIdentity}
+          onOpenHistory={() => setScreen("history")}
+          refreshAccessToken={refreshAccessToken}
+        />
+      </div>
+      {screen === "history" && (
+        <HistoryView onBack={() => setScreen("workspace")} />
+      )}
+    </>
   ) : (
     <LandingPage
       authError={authError}
