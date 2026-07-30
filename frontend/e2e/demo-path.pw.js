@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, signIn } from "./fixtures/local-auth.js";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.resolve(E2E_DIR, "..");
@@ -70,8 +70,7 @@ test.describe("production demo path", () => {
 
     if (paceMs > 0) await page.waitForTimeout(paceMs);
 
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     await expect(page.getByRole("button", { name: "Biology", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Biology", exact: true }).click();
     await expect(page.locator(".source-textarea")).toHaveValue(/sodium/i);

@@ -287,3 +287,41 @@ assertion was relaxed. Six consecutive full-suite runs then passed 17/17.
 - Vercel production metadata points to that exact SHA and the production site
   returns HTTP 200.
 - Render production health returns HTTP 200 for both HEAD and GET.
+
+## Required sign-in — supersedes the Phase 0 guest decision
+
+The owner decided that everyone signs in before using Explain-Back. That
+reverses the Phase 0 judge-path decision recorded above, so the earlier text
+stands as history rather than as the current contract.
+
+- Flow: landing → login → Google → workspace. Returning from the provider must
+  never pass through the landing page again. `e2e/login.local.js` installs a
+  mutation observer before the redirect and asserts the landing shell is not
+  painted once between Google and the workspace.
+- Anonymous sign-in is gone, not hidden. `signInAnonymously` and `linkIdentity`
+  were removed from the auth adapter, along with the identity-upgrade UI and the
+  whole class of "identity is already linked" failures that came with linking.
+- The app no longer strips the returned `?code=`. An earlier version cleaned the
+  URL on mount and stranded the learner on the login screen, because the
+  Supabase client needs that code to exchange for a session. Only a failed
+  return is cleaned now.
+- Sign-out is available in the workspace header and returns to the landing page
+  with the workspace unreachable.
+
+### Cost of this decision, stated plainly
+
+The original plan called guest mode "the only auth flow that survives real
+judging conditions" and listed real auth as the first thing to cut. Requiring an
+account adds a Google consent screen to the 90-second walkthrough and makes the
+demo depend on the provider being reachable. `JUDGES.md` now says so. This is a
+product decision the owner made deliberately; it is recorded here so the
+trade-off is not rediscovered later as a bug.
+
+### Verification
+
+- 81 frontend unit tests, 20 browser tests, 160 backend tests, clean build.
+- `e2e/login.local.js` covers the ordered flow, the workspace being unreachable
+  while signed out, session restore without a landing page, a refused sign-in
+  explaining itself, and sign-out presenting the user's own token.
+- Zero Axe violations on the landing page and the login screen, and both fit a
+  390px viewport with a 44px minimum touch target.

@@ -6,6 +6,7 @@ const REST_ROOT = "/__e2e-supabase/rest/v1";
 const USER_ID = "3f501cb4-3783-4b55-9d75-d732f9555b5f";
 const OTHER_USER_ID = "8c1d4a20-6d1f-4c53-9a0e-5b02de0f9d41";
 const REFRESH_TOKEN = "e2e-refresh-token";
+const AUTHORIZATION_CODE = "e2e-authorization-code";
 
 function jsonResponse(status, body, headers = {}) {
   return {
@@ -84,16 +85,6 @@ async function authorizedFixtureRequest(request) {
     (await request.headerValue("apikey")) === LOCAL_PUBLISHABLE_KEY &&
     (await request.headerValue("authorization")) ===
       `Bearer ${LOCAL_PUBLISHABLE_KEY}`
-  );
-}
-
-async function authorizedIdentityLinkRequest(request, accessTokens) {
-  const authorization = await request.headerValue("authorization");
-  return (
-    (await request.headerValue("apikey")) === LOCAL_PUBLISHABLE_KEY &&
-    accessTokens.some(
-      (accessToken) => authorization === `Bearer ${accessToken}`,
-    )
   );
 }
 
@@ -268,9 +259,10 @@ export const test = base.extend({
     async ({ page, baseURL, localAuthFixture }, use) => {
       const state = {
         enabled: localAuthFixture,
-        signupRequests: [],
+        signInRequests: [],
+        codeExchangeRequests: [],
         refreshRequests: [],
-        identityLinkRequests: [],
+        signOutRequests: [],
         accessTokens: [],
       };
 
@@ -312,33 +304,46 @@ export const test = base.extend({
           return;
         }
 
+        /*
+         * Google sign-in, as the browser really performs it: authorize redirects
+         * back to the app with a code, and the app exchanges that code for a
+         * session. Nothing here is anonymous — an account is now required.
+         */
         if (
           request.method() === "GET" &&
-          url.pathname === `${AUTH_ROOT}/user/identities/authorize`
+          url.pathname === `${AUTH_ROOT}/authorize`
         ) {
-          if (
-            !(await authorizedIdentityLinkRequest(
-              request,
-              state.accessTokens,
-            ))
-          ) {
-            await route.fulfill(
-              jsonResponse(401, {
-                error: "local_auth_fixture_access_token_rejected",
-              }),
-            );
-            return;
-          }
-
-          state.identityLinkRequests.push({
-            headers: request.headers(),
+          state.signInRequests.push({
             searchParams: Object.fromEntries(url.searchParams),
           });
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          const redirectTo =
+            url.searchParams.get("redirect_to") || `${allowedOrigin}/`;
+          const back = new URL(redirectTo);
+          back.searchParams.set("code", AUTHORIZATION_CODE);
+          await route.fulfill({
+            status: 303,
+            headers: { location: back.toString(), "cache-control": "no-store" },
+            body: "",
+          });
+          return;
+        }
+
+        /* Sign-out is authorized by the user's own access token, not the key. */
+        if (
+          request.method() === "POST" &&
+          url.pathname === `${AUTH_ROOT}/logout`
+        ) {
+          const authorization = await request.headerValue("authorization");
+          const presented = state.accessTokens.some(
+            (accessToken) => authorization === `Bearer ${accessToken}`,
+          );
+          state.signOutRequests.push({ presentedUserToken: presented });
           await route.fulfill(
-            jsonResponse(200, {
-              url: `${allowedOrigin}/__e2e-google-provider`,
-            }),
+            presented
+              ? { status: 204, body: "" }
+              : jsonResponse(401, {
+                  error: "local_auth_fixture_access_token_rejected",
+                }),
           );
           return;
         }
@@ -352,21 +357,34 @@ export const test = base.extend({
           return;
         }
 
+        /* The PKCE exchange that turns the returned code into a real session. */
         if (
           request.method() === "POST" &&
-          url.pathname === `${AUTH_ROOT}/signup` &&
-          !url.search
+          url.pathname === `${AUTH_ROOT}/token` &&
+          url.searchParams.get("grant_type") === "pkce"
         ) {
           const body = request.postDataJSON();
-          state.signupRequests.push({ body, headers: request.headers() });
+          state.codeExchangeRequests.push({ body });
+          if (body?.auth_code !== AUTHORIZATION_CODE) {
+            await route.fulfill(
+              jsonResponse(400, {
+                error: "invalid_grant",
+                error_description: "Authorization code is invalid.",
+              }),
+            );
+            return;
+          }
           await route.fulfill(
             jsonResponse(
               200,
-              session(issueAccessToken(), REFRESH_TOKEN, Date.now()),
+              session(issueAccessToken(false), REFRESH_TOKEN, Date.now(), {
+                isAnonymous: false,
+              }),
             ),
           );
           return;
         }
+
 
         if (
           request.method() === "POST" &&
@@ -541,5 +559,19 @@ export const test = base.extend({
     { auto: true },
   ],
 });
+
+/*
+ * The only way into the app: landing → login → Google → workspace. Returning
+ * from the provider must land in the workspace, never back on the landing page.
+ */
+export async function signIn(page, path = "/") {
+  await page.goto(path);
+  await page.getByRole("button", { name: "Sign in to start", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Continue with Google", exact: true })
+    .click();
+  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".landing-shell")).toHaveCount(0);
+}
 
 export { expect };

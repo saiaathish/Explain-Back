@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "./fixtures/local-auth.js";
 
-test("landing page explains the product and enters the workspace in one click", async ({
+test("landing page explains the product and leads to the login screen", async ({
   page,
 }) => {
   const browserErrors = [];
@@ -43,7 +43,23 @@ test("landing page explains the product and enters the workspace in one click", 
   const findings = await new AxeBuilder({ page }).analyze();
   expect(findings.violations).toEqual([]);
 
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  /* An account is required, so the landing page hands off to the login screen. */
+  await page.getByRole("button", { name: "Sign in to start", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Sign in to start explaining" }),
+  ).toBeVisible();
+  await expect(page.locator("#source")).toHaveCount(0);
+  const loginFindings = await new AxeBuilder({ page }).analyze();
+  expect(loginFindings.violations).toEqual([]);
+  const loginTypography = await page.evaluate(() => ({
+    title: getComputedStyle(document.querySelector("#login-title")).fontFamily,
+    lede: getComputedStyle(document.querySelector(".login-lede")).fontFamily,
+    eyebrow: getComputedStyle(document.querySelector(".login-eyebrow")).fontFamily,
+  }));
+  expect(loginTypography.lede).toBe(loginTypography.title);
+  expect(loginTypography.eyebrow).not.toBe(loginTypography.title);
+
+  await page.getByRole("button", { name: "Continue with Google", exact: true }).click();
   await expect(page.locator("#source")).toBeFocused();
   await expect(
     page.getByRole("button", { name: "Biology", exact: true }),
@@ -61,9 +77,25 @@ test("landing page stays within a 390px viewport", async ({ page }) => {
   }));
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth);
 
-  const tryButton = page.getByRole("button", { name: "Try it", exact: true });
-  await expect(tryButton).toBeVisible();
-  const box = await tryButton.boundingBox();
+  const signInButton = page.getByRole("button", {
+    name: "Sign in to start",
+    exact: true,
+  });
+  await expect(signInButton).toBeVisible();
+  const box = await signInButton.boundingBox();
   expect(box?.height).toBeGreaterThanOrEqual(44);
   expect(box?.width).toBeGreaterThanOrEqual(44);
+
+  /* The login screen is the next thing a phone sees, so it must fit too. */
+  await signInButton.click();
+  await expect(page.locator(".login-shell")).toBeVisible();
+  const loginMetrics = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth,
+  }));
+  expect(loginMetrics.scrollWidth).toBeLessThanOrEqual(loginMetrics.clientWidth);
+  const googleBox = await page
+    .getByRole("button", { name: "Continue with Google", exact: true })
+    .boundingBox();
+  expect(googleBox?.height).toBeGreaterThanOrEqual(44);
 });

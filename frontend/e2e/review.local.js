@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, signIn } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -53,9 +53,7 @@ async function recordGaps(page, authApi) {
       body: JSON.stringify(analysisResponse(route.request().postDataJSON().explanation)),
     });
   });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
-  await expect.poll(() => authApi.signupRequests.length).toBe(1);
+  await signIn(page, "/");
   await page.locator("#source").fill(SOURCE);
   await page.locator("#explanation").fill(EXPLANATION);
   await page
@@ -123,7 +121,9 @@ test("review cards come from stored gaps and marks survive a reload", async ({
   expect(analysisCalls).toHaveLength(callsAfterAnalysis);
 
   await page.reload();
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
+  /* The stored session reopens the workspace with no landing page. */
+  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".landing-shell")).toHaveCount(0);
   await page.getByRole("button", { name: "Review gaps", exact: true }).click();
   await expect(page.locator(".review-progress")).toContainText(
     "1 of 2 marked as understood",
@@ -160,9 +160,7 @@ test("a revision that closes a gap keeps the card and reports it resolved", asyn
       body: JSON.stringify(response),
     });
   });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Try it", exact: true }).click();
-  await expect.poll(() => authApi.signupRequests.length).toBe(1);
+  await signIn(page, "/");
   await page.locator("#source").fill(SOURCE);
   await page.locator("#explanation").fill(EXPLANATION);
   await page

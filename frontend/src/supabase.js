@@ -89,7 +89,12 @@ export function safeOAuthRedirectTo() {
   return redirectTo.toString();
 }
 
-export function createAnonymousAuth(client) {
+/*
+ * Google is the only way in. Anonymous sign-in was removed deliberately: an
+ * account is now required before any analysis, so there is no guest identity to
+ * create and nothing to link a provider onto later.
+ */
+export function createBrowserAuth(client) {
   return {
     async getSession() {
       const { data, error } = await client.auth.getSession();
@@ -104,14 +109,6 @@ export function createAnonymousAuth(client) {
       return () => data?.subscription?.unsubscribe();
     },
 
-    async signInAnonymously() {
-      const { data, error } = await client.auth.signInAnonymously();
-      if (error) throw error;
-      return data?.session || null;
-    },
-
-    /* Used when the Google identity already belongs to another user: linking is
-     * impossible, but signing in reaches the account that owns it. */
     async signInWithGoogle() {
       const { data, error } = await client.auth.signInWithOAuth({
         provider: "google",
@@ -126,18 +123,9 @@ export function createAnonymousAuth(client) {
       return data.url;
     },
 
-    async linkGoogleIdentity() {
-      const { data, error } = await client.auth.linkIdentity({
-        provider: "google",
-        options: {
-          redirectTo: safeOAuthRedirectTo(),
-        },
-      });
+    async signOut() {
+      const { error } = await client.auth.signOut();
       if (error) throw error;
-      if (!data?.url) {
-        throw new Error("Google identity linking did not return a redirect.");
-      }
-      return data.url;
     },
 
     async refreshAccessToken() {
@@ -149,14 +137,13 @@ export function createAnonymousAuth(client) {
 }
 
 function productionAuth() {
-  return createAnonymousAuth(getSupabaseClient());
+  return createBrowserAuth(getSupabaseClient());
 }
 
-export const anonymousAuth = {
+export const browserAuth = {
   getSession: () => productionAuth().getSession(),
   subscribe: (listener) => productionAuth().subscribe(listener),
-  signInAnonymously: () => productionAuth().signInAnonymously(),
-  linkGoogleIdentity: () => productionAuth().linkGoogleIdentity(),
   signInWithGoogle: () => productionAuth().signInWithGoogle(),
+  signOut: () => productionAuth().signOut(),
   refreshAccessToken: () => productionAuth().refreshAccessToken(),
 };

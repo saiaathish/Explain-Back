@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, signIn } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -568,8 +568,7 @@ test.describe("interactivity pass", () => {
     page,
   }) => {
     const preset = await installPausedBiologyPreset(page);
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
 
     const biology = page.locator(".preset-button").first();
     const economics = page.getByRole("button", { name: "Economics", exact: true });
@@ -609,8 +608,7 @@ test.describe("interactivity pass", () => {
   test("character counters interpolate visually without becoming live regions", async ({
     page,
   }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     const explanation = page.locator("#explanation");
     const counter = page.locator(".field--explanation .character-counter");
     const understood = await resolvedColor(counter, "--understood");
@@ -655,8 +653,7 @@ test.describe("interactivity pass", () => {
   });
 
   test("existing button names remain concise and stable", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     await expect(page.locator(".source-tools button")).toHaveAccessibleName(
       "Add image source",
       { timeout: 3_000 },
@@ -676,8 +673,7 @@ test.describe("interactivity pass", () => {
   }, testInfo) => {
     await installInteractionInstrumentation(page);
     const analysis = await installControlledAnalysis(page);
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     await fillSubmission(page);
 
     for (const name of ["Biology", "Economics", "Photosynthesis", "Check my explanation"]) {
@@ -767,8 +763,7 @@ test.describe("interactivity pass", () => {
   test("focused drill-down reveals immediately", async ({ page }) => {
     await installInteractionInstrumentation(page);
     await installImmediateAnalysis(page);
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     await submitImmediately(page);
     await page.getByRole("button", { name: "Membrane outcome", exact: true }).click();
     await page.locator(".drill-down textarea").fill(FOCUSED_EXPLANATION);
@@ -817,8 +812,7 @@ test.describe("interactivity pass", () => {
     await installFakeRecording(page);
     await installInteractionInstrumentation(page);
     await installImmediateAnalysis(page);
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     /* Entering the workspace moves focus to the source field. Wait for that
      * handoff, or it lands after this test takes focus and steals it back. */
     await expect(page.locator("#source")).toBeFocused();
@@ -862,7 +856,8 @@ test.describe("interactivity pass", () => {
     await expectNoMotion(recordingIndicator);
 
     await page.reload();
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    /* The stored session reopens the workspace directly. */
+    await expect(page.locator("#source")).toBeVisible();
     await fillSubmission(page);
     const reloadedSubmit = page.getByRole("button", {
       name: "Check my explanation",
@@ -910,8 +905,7 @@ test.describe("interactivity pass", () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await installImmediateAnalysis(page);
-    await page.goto("/");
-    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    await signIn(page, "/");
     await submitImmediately(page);
 
     const diagnostic = page
