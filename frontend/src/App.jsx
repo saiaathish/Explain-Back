@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { analyze, normalizeImage, transcribeAudio } from "./api";
+import { AuthProvider, useAuth } from "./AuthContext";
 import CalibrationMap from "./CalibrationMap";
 import ConceptList from "./ConceptList";
 import ConfidencePass from "./ConfidencePass";
@@ -7,8 +8,13 @@ import DiffStrip from "./DiffStrip";
 import { calibrationSummary, sentenceRanges } from "./confidence";
 import { diffRuns } from "./diff";
 import FollowUp from "./FollowUp";
+import HistoryView from "./HistoryView";
+import ReviewView from "./ReviewView";
+import LandingPage from "./LandingPage";
 import Legend from "./Legend";
 import Overlay from "./Overlay";
+import { getAnalysisHistory } from "./analysisHistory";
+import { anonymousAuth } from "./supabase";
 import {
   appendTranscript,
   blobToDataUrl,
@@ -23,9 +29,53 @@ const SUBMIT_STAGES = [
 ];
 const SUBMIT_STAGE_INTERVAL_MS = 800;
 const ANALYSIS_TIMEOUT_MS = 90_000;
+const AUTH_OPERATION_TIMEOUT_MS = 10_000;
 const MAX_RECORDING_MS = 180_000;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+function withTimeout(promise, timeoutMs, message) {
+  return new Promise((resolve, reject) => {
+    const timeout = globalThis.setTimeout(() => {
+      const error = new Error(message);
+      error.name = "AuthTimeoutError";
+      reject(error);
+    }, timeoutMs);
+    Promise.resolve(promise).then(
+      (value) => {
+        globalThis.clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        globalThis.clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
+function singleFlight(ref, owner, task) {
+  if (ref.current?.owner === owner) return ref.current.promise;
+
+  const entry = { owner, promise: null };
+  entry.promise = Promise.resolve()
+    .then(task)
+    .finally(() => {
+      if (ref.current === entry) ref.current = null;
+    });
+  ref.current = entry;
+  return entry.promise;
+}
+
+function boundedSingleFlight(ref, owner, task, timeoutMs, message) {
+  return withTimeout(singleFlight(ref, owner, task), timeoutMs, message);
+}
+
+function shouldOpenWorkspaceOnSessionRestore(session) {
+  return Boolean(
+    session?.access_token && session?.user?.is_anonymous === false,
+  );
+}
 
 const PRESETS = [
   {
@@ -121,9 +171,39 @@ function toDomIdFragment(value) {
 function Footer() {
   return (
     <footer>
-      Formative guidance only. Not a grade. Explain-Back does not persist
-      submissions.
+      Formative guidance only. Not a grade. This signed-in session stores source
+      material and successful explanation attempts.
     </footer>
+  );
+}
+
+function IdentityUpgrade({
+  isAnonymous,
+  busy,
+  error,
+  onLinkGoogleIdentity,
+}) {
+  if (!isAnonymous) return null;
+
+  return (
+    <div className="identity-upgrade">
+      <button
+        aria-busy={busy || undefined}
+        className="secondary identity-link-button"
+        disabled={busy}
+        onClick={onLinkGoogleIdentity}
+        type="button"
+      >
+        {busy
+          ? "Taking you to Google…"
+          : "Continue with Google to keep this session across devices"}
+      </button>
+      {error && (
+        <p className="identity-link-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -213,7 +293,16 @@ function ExplanationField({
   );
 }
 
-export default function App() {
+function Workspace({
+  accessToken,
+  refreshAccessToken,
+  isAnonymous,
+  identityLinkBusy,
+  identityLinkError,
+  onLinkGoogleIdentity,
+  onOpenHistory,
+  onOpenReview,
+}) {
   const [source, setSource] = useState("");
   const [explanation, setExplanation] = useState("");
   /* A run snapshot is `{ result, explanation, confidenceRanges }`: flags carry
@@ -243,6 +332,8 @@ export default function App() {
   const [focusedCurrent, setFocusedCurrent] = useState(null);
   const [focusedLoading, setFocusedLoading] = useState(false);
   const [focusedError, setFocusedError] = useState("");
+  const [savedSession, setSavedSession] = useState(null);
+  const [historySaveError, setHistorySaveError] = useState("");
   const mainRequestRef = useRef(null);
   const focusedRequestRef = useRef(null);
   const selectedConceptRef = useRef(selectedConcept);
@@ -418,6 +509,7 @@ export default function App() {
     setConfidenceRanges([]);
     setRevising(false);
     setError("");
+    setHistorySaveError("");
   }
 
   function resetTransientState() {
@@ -477,7 +569,10 @@ export default function App() {
       const controller = new AbortController();
       request.controller = controller;
       try {
-        const result = await normalizeImage(dataUrl, controller.signal);
+        const result = await normalizeImage(dataUrl, controller.signal, {
+          accessToken,
+          refreshAccessToken,
+        });
         if (!mountedRef.current || imageRequestRef.current !== request) return;
         resetAnalysisState();
         updateSource(result.text || "");
@@ -620,7 +715,10 @@ export default function App() {
       const blob = await recorder.stop();
       const audioDataUrl = await blobToDataUrl(blob);
       if (!mountedRef.current || transcribeRequestRef.current !== request) return;
-      const { text } = await transcribeAudio(audioDataUrl, controller.signal);
+      const { text } = await transcribeAudio(audioDataUrl, controller.signal, {
+        accessToken,
+        refreshAccessToken,
+      });
       if (!mountedRef.current || transcribeRequestRef.current !== request) return;
       const transcript = (text || "").trim();
       if (!transcript) {
@@ -682,7 +780,9 @@ export default function App() {
     try {
       const trimmed = focusedExplanation.trim();
       const result = await analyze(selectedConcept.anchor.trim(), trimmed, controller.signal, {
+        accessToken,
         focused: true,
+        refreshAccessToken,
       });
       if (controller.signal.aborted) {
         throw new DOMException("The request was aborted.", "AbortError");
@@ -722,6 +822,7 @@ export default function App() {
       return;
     }
     setError("");
+    setHistorySaveError("");
     abortMainRequest();
     abortFocusedRequest();
     setLoading(true);
@@ -749,7 +850,11 @@ export default function App() {
     try {
       const trimmed = explanation.trim();
       const runRanges = trimRangeSnapshot(explanation, trimmed, confidenceRanges);
-      const result = await analyze(source.trim(), trimmed, controller.signal);
+      const sourceText = source.trim();
+      const result = await analyze(sourceText, trimmed, controller.signal, {
+        accessToken,
+        refreshAccessToken,
+      });
       if (controller.signal.aborted) {
         throw new DOMException("The request was aborted.", "AbortError");
       }
@@ -761,6 +866,27 @@ export default function App() {
       setResultRunId((runId) => runId + 1);
       setConfidenceRanges(runRanges);
       setRevising(false);
+      try {
+        const saved = await getAnalysisHistory().saveAnalysis({
+          sessionId:
+            savedSession?.sourceText === sourceText ? savedSession.id : undefined,
+          sourceText,
+          explanationText: trimmed,
+          result,
+        });
+        if (mountedRef.current) {
+          setSavedSession({ id: saved.session.id, sourceText });
+        }
+      } catch (saveError) {
+        if (mountedRef.current) {
+          if (saveError?.sessionId) {
+            setSavedSession({ id: saveError.sessionId, sourceText });
+          }
+          setHistorySaveError(
+            "Your analysis is ready, but it could not be saved to history. Try revising once more after checking your connection.",
+          );
+        }
+      }
     } catch (requestError) {
       if (!mountedRef.current || mainRequestRef.current !== request) return;
       setError(
@@ -790,10 +916,42 @@ export default function App() {
   return (
     <div className="app-shell">
       <header>
-        <h1 className="brand">
-          Explain<span className="brand-accent">-</span>Back
-        </h1>
-        <p>Explain it in your own words. See what holds up.</p>
+        <div className="header-intro">
+          <h1 className="brand">
+            <span className="brand-mark" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <span>
+              Explain<span className="brand-accent">-</span>Back
+            </span>
+          </h1>
+          <p>Explain it in your own words. See what holds up.</p>
+        </div>
+        <div className="header-actions">
+          <button
+            className="secondary history-link"
+            onClick={onOpenHistory}
+            type="button"
+          >
+            Past sessions
+          </button>
+          <button
+            className="secondary history-link"
+            onClick={onOpenReview}
+            type="button"
+          >
+            Review gaps
+          </button>
+          <IdentityUpgrade
+            busy={identityLinkBusy}
+            error={identityLinkError}
+            isAnonymous={isAnonymous}
+            onLinkGoogleIdentity={onLinkGoogleIdentity}
+          />
+        </div>
       </header>
 
       <main>
@@ -928,6 +1086,11 @@ export default function App() {
         {error && (
           <p className="error" role="alert">
             {error}
+          </p>
+        )}
+        {historySaveError && (
+          <p className="history-save-error" role="alert">
+            {historySaveError}
           </p>
         )}
 
@@ -1081,4 +1244,290 @@ export default function App() {
   );
 }
 
-export { PRESETS, trimRangeSnapshot, validate };
+function AuthStateProvider({ auth, children }) {
+  const [entered, setEntered] = useState(false);
+  const [accessToken, setAccessToken] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [authStatus, setAuthStatus] = useState("restoring");
+  const [authError, setAuthError] = useState("");
+  const mountedRef = useRef(true);
+  const signInPromiseRef = useRef(null);
+  const signInAttemptRef = useRef(0);
+  const identityLinkPromiseRef = useRef(null);
+  const identityLinkAttemptRef = useRef(0);
+  const authActionRef = useRef(null);
+  const refreshPromiseRef = useRef(null);
+  const [identityLinkBusy, setIdentityLinkBusy] = useState(false);
+  const [identityLinkError, setIdentityLinkError] = useState("");
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      signInAttemptRef.current += 1;
+      identityLinkAttemptRef.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let authEventVersion = 0;
+    let unsubscribe = () => {};
+
+    function applySession(session) {
+      if (!active) return;
+      const token = session?.access_token || "";
+      setAccessToken(token);
+      setIsAnonymous(Boolean(token && session?.user?.is_anonymous === true));
+      setAuthError("");
+      setAuthStatus(token ? "authenticated" : "unauthenticated");
+      if (!token) setEntered(false);
+      else if (shouldOpenWorkspaceOnSessionRestore(session)) setEntered(true);
+    }
+
+    function failRestore(error) {
+      if (!active) return;
+      setAccessToken("");
+      setIsAnonymous(false);
+      setEntered(false);
+      setAuthStatus("error");
+      setAuthError(
+        error?.message ||
+          "Anonymous access could not be restored. Check your connection and try again.",
+      );
+    }
+
+    try {
+      unsubscribe = auth.subscribe((session) => {
+        authEventVersion += 1;
+        applySession(session);
+      });
+      const restoreVersion = authEventVersion;
+      withTimeout(
+        Promise.resolve().then(() => auth.getSession()),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Restoring anonymous access timed out. Check your connection and try again.",
+      )
+        .then((session) => {
+          if (authEventVersion === restoreVersion) applySession(session);
+        })
+        .catch((error) => {
+          if (authEventVersion === restoreVersion) failRestore(error);
+        });
+    } catch (error) {
+      failRestore(error);
+    }
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [auth]);
+
+  async function start() {
+    if (
+      authActionRef.current ||
+      identityLinkBusy ||
+      authStatus === "restoring" ||
+      authStatus === "authenticating"
+    ) {
+      return;
+    }
+    if (authStatus === "authenticated" && accessToken) {
+      setEntered(true);
+      return;
+    }
+
+    const action = Symbol("anonymous-sign-in");
+    authActionRef.current = action;
+    setAuthError("");
+    setIdentityLinkError("");
+    setAuthStatus("authenticating");
+    const attempt = ++signInAttemptRef.current;
+    try {
+      const session = await boundedSingleFlight(
+        signInPromiseRef,
+        auth,
+        () => auth.signInAnonymously(),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Anonymous sign-in timed out. Check your connection and try again.",
+      );
+      if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
+      if (!session?.access_token) {
+        throw new Error("Anonymous sign-in did not return a usable session.");
+      }
+      setAccessToken(session.access_token);
+      setIsAnonymous(session?.user?.is_anonymous === true);
+      setAuthStatus("authenticated");
+      setEntered(true);
+    } catch (error) {
+      if (!mountedRef.current || attempt !== signInAttemptRef.current) return;
+      setAccessToken("");
+      setEntered(false);
+      setAuthStatus("error");
+      setAuthError(
+        error?.message ||
+          "Anonymous access could not be started. Check your connection and try again.",
+      );
+    } finally {
+      if (authActionRef.current === action) authActionRef.current = null;
+    }
+  }
+
+  async function linkGoogleIdentity() {
+    if (
+      authActionRef.current ||
+      identityLinkBusy ||
+      !isAnonymous ||
+      authStatus === "restoring" ||
+      authStatus === "authenticating"
+    ) {
+      return;
+    }
+
+    const action = Symbol("google-identity-link");
+    authActionRef.current = action;
+    setAuthError("");
+    setIdentityLinkError("");
+    setIdentityLinkBusy(true);
+    const attempt = ++identityLinkAttemptRef.current;
+    try {
+      await boundedSingleFlight(
+        identityLinkPromiseRef,
+        auth,
+        () => auth.linkGoogleIdentity(),
+        AUTH_OPERATION_TIMEOUT_MS,
+        "Google identity linking timed out. Check your connection and try again.",
+      );
+    } catch (error) {
+      if (
+        !mountedRef.current ||
+        attempt !== identityLinkAttemptRef.current
+      ) {
+        return;
+      }
+      setIdentityLinkBusy(false);
+      setIdentityLinkError(
+        error?.message ||
+          "Google identity linking could not be started. Check your connection and try again.",
+      );
+    } finally {
+      if (authActionRef.current === action) authActionRef.current = null;
+    }
+  }
+
+  async function refreshAccessToken() {
+    const token = await boundedSingleFlight(
+      refreshPromiseRef,
+      auth,
+      () => auth.refreshAccessToken(),
+      AUTH_OPERATION_TIMEOUT_MS,
+      "Refreshing anonymous access timed out. Return to the landing page and try again.",
+    );
+    if (!token) {
+      throw new Error(
+        "Your anonymous session could not be refreshed. Return to the landing page and try again.",
+      );
+    }
+    if (mountedRef.current) setAccessToken(token);
+    return token;
+  }
+
+  useEffect(() => {
+    if (!entered) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector("#source")?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [entered]);
+
+  return (
+    <AuthProvider
+      value={{
+        accessToken,
+        authError,
+        authStatus,
+        entered,
+        identityLinkBusy,
+        identityLinkError,
+        isAnonymous,
+        linkGoogleIdentity,
+        refreshAccessToken,
+        start,
+      }}
+    >
+      {children}
+    </AuthProvider>
+  );
+}
+
+function AuthSurface() {
+  const {
+    accessToken,
+    authError,
+    authStatus,
+    entered,
+    identityLinkBusy,
+    identityLinkError,
+    isAnonymous,
+    linkGoogleIdentity,
+    refreshAccessToken,
+    start,
+  } = useAuth();
+  const [screen, setScreen] = useState("workspace");
+
+  useEffect(() => {
+    if (!entered) setScreen("workspace");
+  }, [entered]);
+
+  return entered ? (
+    <>
+      <div hidden={screen !== "workspace"}>
+        <Workspace
+          accessToken={accessToken}
+          identityLinkBusy={identityLinkBusy}
+          identityLinkError={identityLinkError}
+          isAnonymous={isAnonymous}
+          onLinkGoogleIdentity={linkGoogleIdentity}
+          onOpenHistory={() => setScreen("history")}
+          onOpenReview={() => setScreen("review")}
+          refreshAccessToken={refreshAccessToken}
+        />
+      </div>
+      {screen === "history" && (
+        <HistoryView onBack={() => setScreen("workspace")} />
+      )}
+      {screen === "review" && (
+        <ReviewView onBack={() => setScreen("workspace")} />
+      )}
+    </>
+  ) : (
+    <LandingPage
+      authError={authError}
+      authStatus={authStatus}
+      busy={authStatus === "restoring" || authStatus === "authenticating"}
+      onStart={start}
+    />
+  );
+}
+
+function App({ auth = anonymousAuth }) {
+  return (
+    <AuthStateProvider auth={auth}>
+      <AuthSurface />
+    </AuthStateProvider>
+  );
+}
+
+export default App;
+export {
+  AUTH_OPERATION_TIMEOUT_MS,
+  IdentityUpgrade,
+  PRESETS,
+  boundedSingleFlight,
+  singleFlight,
+  shouldOpenWorkspaceOnSessionRestore,
+  trimRangeSnapshot,
+  validate,
+  withTimeout,
+};

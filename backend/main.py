@@ -11,11 +11,12 @@ from collections import deque
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.align import align, embed_concepts
+from backend.auth import AuthenticatedUser, require_authenticated_user
 from backend.config import (
     MAX_EXPLANATION_CHARS,
     MAX_SOURCE_CHARS,
@@ -184,9 +185,7 @@ app = FastAPI(title="Explain-Back", lifespan=lifespan)
 
 
 @app.middleware("http")
-async def rate_limit_model_calls(request: Request, call_next):
-    global _rate_limit_last_cleanup
-
+async def reject_oversized_model_calls(request: Request, call_next):
     if request.method != "POST" or request.url.path not in RATE_LIMITED_PATHS:
         return await call_next(request)
 
@@ -197,6 +196,12 @@ async def rate_limit_model_calls(request: Request, call_next):
             status_code=413,
             content={"detail": "That upload is too large for this endpoint."},
         )
+
+    return await call_next(request)
+
+
+async def enforce_model_call_rate_limit(request: Request) -> None:
+    global _rate_limit_last_cleanup
 
     forwarded_for = request.headers.get("x-forwarded-for", "")
     client_id = forwarded_for.rsplit(",", 1)[-1].strip()
@@ -223,16 +228,13 @@ async def rate_limit_model_calls(request: Request, call_next):
             1,
             math.ceil(events[0] + RATE_LIMIT_WINDOW_SECONDS - now),
         )
-        return JSONResponse(
+        raise HTTPException(
             status_code=429,
-            content={
-                "detail": "Too many submissions. Please try again shortly."
-            },
+            detail="Too many submissions. Please try again shortly.",
             headers={"Retry-After": str(retry_after)},
         )
 
     events.append(now)
-    return await call_next(request)
 
 
 app.add_middleware(
@@ -243,7 +245,7 @@ app.add_middleware(
         if origin.strip()
     ],
     allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 
@@ -314,6 +316,8 @@ def _validate_image_data_url(image_data_url: str) -> str:
 @app.post("/api/normalize-image", response_model=NormalizeImageResponse)
 async def normalize_image(
     request_body: NormalizeImageRequest,
+    _authenticated_user: AuthenticatedUser = Depends(require_authenticated_user),
+    _rate_limit: None = Depends(enforce_model_call_rate_limit),
 ) -> NormalizeImageResponse:
     image_data_url = _validate_image_data_url(request_body.image_data_url)
     try:
@@ -368,7 +372,11 @@ def _validate_audio_data_url(audio_data_url: str) -> tuple[str, str]:
 
 
 @app.post("/api/transcribe", response_model=TranscribeResponse)
-async def transcribe(request_body: TranscribeRequest) -> TranscribeResponse:
+async def transcribe(
+    request_body: TranscribeRequest,
+    _authenticated_user: AuthenticatedUser = Depends(require_authenticated_user),
+    _rate_limit: None = Depends(enforce_model_call_rate_limit),
+) -> TranscribeResponse:
     audio_base64, audio_format = _validate_audio_data_url(request_body.audio_data_url)
     try:
         text = await call_audio_text(
@@ -394,7 +402,6 @@ async def transcribe(request_body: TranscribeRequest) -> TranscribeResponse:
     return TranscribeResponse(text=text)
 
 
-@app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
     started_at = time.perf_counter()
     source = request_body.source.strip()
@@ -514,3 +521,12 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
     )
     _result_cache[result_key] = response
     return response
+
+
+@app.post("/api/analyze", response_model=AnalyzeResponse)
+async def analyze_route(
+    request_body: AnalyzeRequest,
+    _authenticated_user: AuthenticatedUser = Depends(require_authenticated_user),
+    _rate_limit: None = Depends(enforce_model_call_rate_limit),
+) -> AnalyzeResponse:
+    return await analyze(request_body)

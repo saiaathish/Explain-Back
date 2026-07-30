@@ -13,9 +13,15 @@ maps formative guidance over the student's own words:
 
 Every non-green flag includes an exact contiguous span from the supplied source and
 a short revision hint. The response ends with one follow-up question generated
-from the analyzed gaps. There are no learner-facing scores or accounts.
-Explain-Back does not persist submissions; inputs are sent to the configured
-model provider under that provider's data-handling policy.
+from the analyzed gaps. There are no learner-facing scores or account forms.
+Supabase Auth creates a browser-local anonymous identity so the API can verify
+each request. Explain-Back stores exactly three things for that identity: the
+source text you submit, each successful explanation attempt with its concepts and
+flags, and whether you marked a recorded gap understood or still shaky. Nothing
+else is written, every row is readable only by its owner, and
+those inputs are also sent to the configured model provider under that provider's
+data-handling policy. Clearing browser data, signing out, or changing devices
+can lose the anonymous identity and therefore access to its saved history.
 
 ## Why this design
 
@@ -31,9 +37,15 @@ anchoring must all support a red flag; otherwise the resolver backs off.
 
 ## Architecture
 
-The browser holds input and results in React state. A FastAPI process performs
-two or three logical model stages around deterministic validation. Each stage
-can retry malformed output for up to three total attempts:
+The browser holds live input and results in React state. Three Supabase tables
+hold saved work: `sessions` and `explanation_attempts` for history, and
+`flag_reviews` for review marks. All three are append-only to the browser, which
+writes them with its own authenticated session, so row-level security — not
+backend code — is what enforces ownership. A failed write never blocks an
+analysis, it only shows a notice. Review cards are derived from stored flags, so
+reviewing makes no model call. A FastAPI process verifies the bearer token, then performs two or three
+logical model stages around deterministic validation. Each stage can retry
+malformed output for up to three total attempts:
 
 1. Extract source concepts; cache them by source hash in process memory.
 2. Extract propositions from the student's exact text.
@@ -60,6 +72,8 @@ Requires Python 3.11 and Node.js 20+.
 
 ```bash
 cp .env.example .env
+# Set SUPABASE_URL to the public project URL. Do not use a service-role,
+# sb_secret_, JWT-secret, or private key in backend or frontend config.
 # Set LLM_API_KEY, LLM_MODEL_PROD, LLM_MODEL_CI, and the provider's
 # OpenAI-compatible LLM_BASE_URL in .env. LLM_MODEL is a legacy prod fallback.
 
@@ -78,10 +92,53 @@ In another terminal:
 ```bash
 cd frontend
 npm ci
-VITE_API_URL=http://localhost:8000 npm run dev
+VITE_API_URL=http://localhost:8000 \
+VITE_SUPABASE_URL=https://your-project.supabase.co \
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key \
+npm run dev
 ```
 
 Open `http://localhost:5173`.
+
+### Supabase Auth configuration
+
+Explain-Back starts each new browser with `signInAnonymously()`. An anonymous
+user can then choose **Continue with Google** in the workspace, which calls
+`linkIdentity()` instead of creating a second user. Configure the Supabase
+project before testing either flow:
+
+1. In **Authentication → Providers**, enable **Allow anonymous sign-ins**.
+2. Enable the **Google** provider and enter its client ID and client secret.
+3. In the authentication settings, enable **Manual Linking**. Supabase
+   currently labels manual identity linking as beta.
+4. Set the production site URL to `https://explain-back.vercel.app/` and add
+   these redirect URLs:
+   - `http://localhost:5173/`
+   - `https://explain-back.vercel.app/`
+   - `https://explain-back-*-sai-aathish-karthiks-projects.vercel.app/`
+
+The final entry is intentionally limited to this Vercel project and team; do
+not use a broad `https://*.vercel.app/**` allowlist. In Google Cloud Console,
+set the OAuth client's authorized redirect URI to
+`${SUPABASE_URL}/auth/v1/callback`, where `SUPABASE_URL` is the public URL of
+the Supabase project. The browser callback itself returns to the exact origin
+root, with query strings and fragments discarded.
+
+### Saved history schema
+
+Apply both migrations in `supabase/migrations/` in filename order. The first
+creates `sessions` and `explanation_attempts`; the second creates `flag_reviews`
+for review marks. Each grants only `select` and `insert` to the `authenticated`
+role and enables row-level security with owner-scoped policies. There is no
+update or delete path and no service-role access, so history and marks are both
+append-only. Verify after applying that a second identity cannot read the first
+identity's rows.
+
+Local and deployed frontends also need `VITE_SUPABASE_URL` and
+`VITE_SUPABASE_PUBLISHABLE_KEY`; the backend needs the matching
+`SUPABASE_URL`. This repository does not supply a Supabase project or
+credentials, so hosted authentication is not established by the code or these
+instructions alone.
 
 ## Calibration and gates
 
@@ -106,11 +163,59 @@ than replacing live evidence with fixtures.
 bakes the embedding model into the image so `align.py` makes no runtime
 download. Keep `LLM_ROLE=prod` in Render and set `LLM_API_KEY`,
 `LLM_MODEL_PROD` (or legacy `LLM_MODEL`), `FRONTEND_ORIGIN`, and the provider's
-OpenAI-compatible `LLM_BASE_URL`. `LLM_MODEL_CI` is evaluation-only and must not
-be selected in production.
+OpenAI-compatible `LLM_BASE_URL`. Phase 2 deployments also require the public
+`SUPABASE_URL`; do not provide a service-role or secret key. `LLM_MODEL_CI` is
+evaluation-only and must not be selected in production.
 
 `vercel.json` builds `frontend/`. Set `VITE_API_URL` to the deployed Render
-service before building the Vercel deployment.
+service before building the Vercel deployment. Also set
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for the same Supabase
+project configured above.
+
+Verify Phase 2 against a backend deployed from the same checkpoint SHA, not
+the production fallback backend. Set that backend's `FRONTEND_ORIGIN` to the
+exact Vercel preview origin, then point the preview's `VITE_API_URL` to it.
+This keeps `main` and `https://explain-back.onrender.com` unchanged while the
+authenticated bearer-token and CORS paths are exercised end to end.
+
+### Hosted Phase 2 verification
+
+Run hosted authentication acceptance only against isolated preview URLs:
+
+```bash
+cd frontend
+E2E_BASE_URL=https://your-frontend-preview.vercel.app \
+E2E_API_URL=https://your-backend-preview.onrender.com \
+E2E_VERCEL_BYPASS_SECRET=your-preview-bypass-secret \
+E2E_CONFIRM_NON_PRODUCTION=YES \
+npm run test:e2e:hosted
+```
+
+`E2E_VERCEL_BYPASS_SECRET` is optional when the preview is public. The
+configuration fails closed when either URL is absent, uses HTTP, falls outside
+the project-scoped Vercel or PR-scoped Render hostname patterns, resolves both
+tiers to the same origin, or lacks the explicit non-production confirmation.
+The automated run proves anonymous session creation/restoration, exact preview
+CORS, malformed-token rejection, real JWT acceptance, and one-time 401
+refresh/replay. It disables traces, screenshots, and video for this
+credential-bearing flow and attaches token-free JSON evidence to Playwright's
+temporary output directory.
+
+The Google identity-link gate requires a human OAuth step and must run headed:
+
+```bash
+E2E_BASE_URL=https://your-frontend-preview.vercel.app \
+E2E_API_URL=https://your-backend-preview.onrender.com \
+E2E_VERCEL_BYPASS_SECRET=your-preview-bypass-secret \
+E2E_CONFIRM_NON_PRODUCTION=YES \
+E2E_GOOGLE_LINK=1 \
+npm run test:e2e:hosted -- --headed --grep "Google links"
+```
+
+That gate records only a hash of the user ID and asserts the anonymous UID is
+preserved, `is_anonymous` becomes false, a Google identity exists, the
+malicious `next` input is ignored, callback query/hash data is removed, and
+the linked session survives reload.
 
 ## Feature scope and the recorded demo
 
@@ -153,6 +258,7 @@ because a two-minute feature tour buries the argument:
 - Transcription and image extraction are model-assisted and can misread terms.
   Both surface editable text and ask for review before analysis rather than
   feeding the pipeline silently.
-- Inputs are sent to the configured LLM provider for analysis. Explain-Back
-  does not persist them, but provider handling is governed by that provider's
-  policy. Voice recordings and images go to that same provider and no other.
+- Inputs are sent to the configured LLM provider for analysis, and provider
+  handling is governed by that provider's policy. Voice recordings and images go
+  to that same provider and no other; neither is stored by Explain-Back, which
+  saves only submitted source text and successful explanation attempts.

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 import AxeBuilder from "@axe-core/playwright";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +72,15 @@ async function mockAnalysis(page) {
 
 async function axeState(page, state) {
   try {
+    await page.evaluate(async () => {
+      const animations = document
+        .getAnimations()
+        .filter((animation) => {
+          const endTime = animation.effect?.getComputedTiming().endTime;
+          return animation.playState !== "finished" && Number.isFinite(endTime);
+        });
+      await Promise.allSettled(animations.map((animation) => animation.finished));
+    });
     const result = await new AxeBuilder({ page }).analyze();
     return {
       state,
@@ -154,6 +163,7 @@ async function keyboardWalkthrough(page, record) {
   const steps = [];
   const note = (action, extra = {}) => steps.push({ action, ...extra });
   await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   await page.keyboard.press("Tab");
   let presetFocused = false;
   for (let index = 0; index < 40; index += 1) {
@@ -244,6 +254,7 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   };
   await mockAnalysis(page);
   await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   record.axe.push(await axeState(page, "empty"));
   await page.getByRole("button", { name: "Biology", exact: true }).click();
   await expect(page.locator("#explanation")).not.toHaveValue("");
@@ -266,6 +277,28 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   await page.getByRole("button", { name: "Check my revision", exact: true }).click();
   await expect(page.locator(".diff-strip")).toBeVisible();
   record.contrast.push(...(await contrastState(page, "revised")));
+  await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+  await expect(page.locator(".history-view")).toBeVisible();
+  const history = await axeState(page, "saved-history");
+  record.axe.push(history);
+  expect(history.status).toBe("complete");
+  expect(history.violations).toEqual([]);
+  await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
+  await expect(page.locator(".results")).toBeVisible();
+  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await expect(page.locator(".review-front")).toBeVisible();
+  const reviewFaceDown = await axeState(page, "review-card-face-down");
+  record.axe.push(reviewFaceDown);
+  await page.locator(".review-front").click();
+  await expect(page.locator(".review-back")).toBeVisible();
+  const reviewRevealed = await axeState(page, "review-card-revealed");
+  record.axe.push(reviewRevealed);
+  for (const state of [reviewFaceDown, reviewRevealed]) {
+    expect(state.status).toBe("complete");
+    expect(state.violations).toEqual([]);
+  }
+  await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
+  await expect(page.locator(".results")).toBeVisible();
   if (testInfo.project.name === "desktop-chrome") {
     try {
       await keyboardWalkthrough(page, record);

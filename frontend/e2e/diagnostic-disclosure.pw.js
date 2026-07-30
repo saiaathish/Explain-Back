@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 
 async function mockBiologyAnalysis(page) {
   await page.route("**/api/analyze", async (route) => {
@@ -53,6 +53,7 @@ async function mockBiologyAnalysis(page) {
 test("diagnostic disclosure supports pointer, keyboard, and touch", async ({ page }, testInfo) => {
   await mockBiologyAnalysis(page);
   await page.goto("/");
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   await page.getByRole("button", { name: "Biology", exact: true }).click();
   await expect(page.locator("#explanation")).not.toHaveValue("");
   await page.getByRole("button", { name: "Check my explanation", exact: true }).click();

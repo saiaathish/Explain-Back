@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -569,6 +569,7 @@ test.describe("interactivity pass", () => {
   }) => {
     const preset = await installPausedBiologyPreset(page);
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
 
     const biology = page.locator(".preset-button").first();
     const economics = page.getByRole("button", { name: "Economics", exact: true });
@@ -609,6 +610,7 @@ test.describe("interactivity pass", () => {
     page,
   }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     const explanation = page.locator("#explanation");
     const counter = page.locator(".field--explanation .character-counter");
     const understood = await resolvedColor(counter, "--understood");
@@ -654,6 +656,7 @@ test.describe("interactivity pass", () => {
 
   test("existing button names remain concise and stable", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await expect(page.locator(".source-tools button")).toHaveAccessibleName(
       "Add image source",
       { timeout: 3_000 },
@@ -674,6 +677,7 @@ test.describe("interactivity pass", () => {
     await installInteractionInstrumentation(page);
     const analysis = await installControlledAnalysis(page);
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await fillSubmission(page);
 
     for (const name of ["Biology", "Economics", "Photosynthesis", "Check my explanation"]) {
@@ -720,20 +724,28 @@ test.describe("interactivity pass", () => {
       ".result-region--overlay > .overlay .diagnostic.hl-improved",
     );
     await expect(improved).toHaveCount(1);
-    const settleTimings = await improved.evaluateAll((nodes) =>
-      nodes.map((node) => {
-        const animation = node
-          .getAnimations()
-          .find((candidate) => candidate.animationName === "settle");
-        if (!animation) return null;
-        const timing = animation.effect.getTiming();
+    const settleTimings = await improved.evaluateAll((nodes) => {
+      const toMilliseconds = (value) => {
+        const trimmed = value.trim();
+        return trimmed.endsWith("ms")
+          ? Number.parseFloat(trimmed)
+          : Number.parseFloat(trimmed) * 1_000;
+      };
+
+      return nodes.map((node) => {
+        const style = getComputedStyle(node);
+        const names = style.animationName.split(",");
+        const index = names.findIndex((name) => name.trim() === "settle");
+        if (index < 0) return null;
+        const delays = style.animationDelay.split(",");
+        const durations = style.animationDuration.split(",");
         return {
-          delay: Number(timing.delay),
-          duration: Number(timing.duration),
-          name: animation.animationName,
+          delay: toMilliseconds(delays[index]),
+          duration: toMilliseconds(durations[index]),
+          name: names[index].trim(),
         };
-      }),
-    );
+      });
+    });
     expect(settleTimings.every((timing) => timing?.name === "settle")).toBe(true);
     expect(settleTimings.every(({ delay }) => delay >= 300 && delay <= 700)).toBe(true);
     expect(settleTimings.every(({ duration }) => duration === 600)).toBe(true);
@@ -756,6 +768,7 @@ test.describe("interactivity pass", () => {
     await installInteractionInstrumentation(page);
     await installImmediateAnalysis(page);
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await submitImmediately(page);
     await page.getByRole("button", { name: "Membrane outcome", exact: true }).click();
     await page.locator(".drill-down textarea").fill(FOCUSED_EXPLANATION);
@@ -805,11 +818,16 @@ test.describe("interactivity pass", () => {
     await installInteractionInstrumentation(page);
     await installImmediateAnalysis(page);
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
+    /* Entering the workspace moves focus to the source field. Wait for that
+     * handoff, or it lands after this test takes focus and steals it back. */
+    await expect(page.locator("#source")).toBeFocused();
 
     const submit = page.getByRole("button", {
       name: "Check my explanation",
       exact: true,
     });
+    await page.keyboard.press("Tab");
     await submit.focus();
     await expect(submit).toBeFocused();
     await expect.poll(() => submit.evaluate((element) => element.matches(":focus-visible"))).toBe(
@@ -844,6 +862,7 @@ test.describe("interactivity pass", () => {
     await expectNoMotion(recordingIndicator);
 
     await page.reload();
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await fillSubmission(page);
     const reloadedSubmit = page.getByRole("button", {
       name: "Check my explanation",
@@ -892,6 +911,7 @@ test.describe("interactivity pass", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await installImmediateAnalysis(page);
     await page.goto("/");
+    await page.getByRole("button", { name: "Try it", exact: true }).click();
     await submitImmediately(page);
 
     const diagnostic = page

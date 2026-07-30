@@ -32,25 +32,45 @@ def test_resolver_is_sync_and_model_free() -> None:
     assert "await " not in text
 
 
-def test_no_persistence_or_auth_implementation() -> None:
-    ignored = {"README.md", "test_invariants.py"}
+def test_supabase_auth_boundary_is_backend_only() -> None:
+    auth_text = (ROOT / "backend" / "auth.py").read_text(encoding="utf-8")
+    main_text = (ROOT / "backend" / "main.py").read_text(encoding="utf-8")
+
+    assert "PyJWKClient" in auth_text
+    assert 'algorithms=JWT_ALGORITHMS' in auth_text
+    assert 'audience=JWT_AUDIENCE' in auth_text
+    assert "issuer=settings.issuer" in auth_text
+    assert main_text.count("Depends(require_authenticated_user)") == 3
+    assert '@app.api_route("/api/health", methods=["GET", "HEAD"])' in main_text
+
+    forbidden_frontend_secrets = (
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_SECRET_KEY",
+        "VITE_SUPABASE_SERVICE_ROLE_KEY",
+        "VITE_SUPABASE_SECRET_KEY",
+    )
+    frontend_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "frontend" / "src").rglob("*")
+        if path.is_file() and path.suffix in {".js", ".jsx", ".css"}
+    )
+    assert not any(secret in frontend_text for secret in forbidden_frontend_secrets)
+
+
+def test_no_persistence_implementation() -> None:
     forbidden = (
         "localStorage",
         "sessionStorage",
         "sqlite",
         "sqlalchemy",
         "mongodb",
-        "supabase",
         "firebase",
-        "login",
-        "signup",
     )
     offenders = []
     for directory in (ROOT / "backend", ROOT / "frontend" / "src"):
         for path in directory.rglob("*"):
             if (
                 not path.is_file()
-                or path.name in ignored
                 or path.suffix not in {".py", ".js", ".jsx", ".css"}
             ):
                 continue
@@ -61,8 +81,31 @@ def test_no_persistence_or_auth_implementation() -> None:
 
 
 def test_footer_contract_is_present() -> None:
-    text = (ROOT / "frontend" / "src" / "App.jsx").read_text(encoding="utf-8")
-    assert (
-        "Formative guidance only. Not a grade. Explain-Back does not persist"
-        in text
+    disclosure = (
+        "Formative guidance only. Not a grade. This signed-in session stores source"
     )
+    for name in ("App.jsx", "HistoryView.jsx"):
+        text = (ROOT / "frontend" / "src" / name).read_text(encoding="utf-8")
+        assert disclosure in text
+        assert "successful explanation attempts." in text
+
+
+def test_persistence_is_owner_scoped_by_row_level_security() -> None:
+    migrations = sorted((ROOT / "supabase" / "migrations").glob("*.sql"))
+    assert migrations
+    text = "\n".join(path.read_text(encoding="utf-8") for path in migrations)
+
+    for table in (
+        "public.sessions",
+        "public.explanation_attempts",
+        "public.flag_reviews",
+    ):
+        assert f"alter table {table} enable row level security;" in text
+        assert f"revoke all on table {table} from anon, authenticated;" in text
+        assert f"grant select, insert on table {table} to authenticated;" in text
+
+    assert "(select auth.uid()) = user_id" in text
+    assert "sessions.user_id = (select auth.uid())" in text
+    assert "for update" not in text
+    assert "for delete" not in text
+    assert "service_role" not in text

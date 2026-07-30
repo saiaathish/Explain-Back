@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T14:00:38.446Z",
+  "generatedAt": "2026-07-29T19:30:54.940Z",
   "records": [
     {
       "project": "desktop-chrome",
@@ -8,194 +8,27 @@
         {
           "state": "empty",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "preset-loaded",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "analyzed",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "calibration-map-visible",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "revising",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "drill-down-open",
@@ -219,9 +52,9 @@
           "phase": "initial",
           "state": "red",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
+          "foreground": "rgb(18, 23, 19)",
           "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
@@ -240,9 +73,9 @@
           "phase": "revised",
           "state": "yellow",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
-          "wash": "oklab(0.5305 0.0126782 0.108282 / 0.0792458)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0 0 0 / 0)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
@@ -261,22 +94,6 @@
       "keyboard": {
         "status": "complete",
         "steps": [
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "ADD IMAGE SOURCE"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "TEXTAREA",
-              "id": "",
-              "text": ""
-            }
-          },
           {
             "action": "Tab",
             "focus": {
@@ -306,7 +123,7 @@
             "focus": {
               "tag": "BODY",
               "id": "",
-              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n0 / 6,000 CHARACTERS\nYO"
+              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n0 / 6,000 characters\nYO"
             }
           },
           {
@@ -337,7 +154,7 @@
             "action": "Enter analysis",
             "focus": {
               "tag": "SECTION",
-              "id": "",
+              "id": "analysis-result-1",
               "text": "What this section teaches\nCovered (0)\nPartial (1)\nMissing (0)\nActive transport\nWhere you are now\n\nHover, focus, or tap a"
             }
           },
@@ -370,7 +187,7 @@
             "focus": {
               "tag": "BODY",
               "id": "",
-              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 CHARACTERS"
+              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 characters"
             }
           },
           {
@@ -384,9 +201,9 @@
           {
             "action": "Enter revision",
             "focus": {
-              "tag": "SECTION",
+              "tag": "BODY",
               "id": "",
-              "text": "What this section teaches\nCovered (0)\nPartial (1)\nMissing (0)\nActive transport\nWhere you are now\n\nHover, focus, or tap a"
+              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 characters"
             }
           }
         ],
@@ -401,194 +218,27 @@
         {
           "state": "empty",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "preset-loaded",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "analyzed",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "calibration-map-visible",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "revising",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "drill-down-open",
@@ -612,9 +262,9 @@
           "phase": "initial",
           "state": "red",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
+          "foreground": "rgb(18, 23, 19)",
           "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
@@ -633,9 +283,9 @@
           "phase": "revised",
           "state": "yellow",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
-          "wash": "oklab(0.5305 0.0126782 0.108282 / 0.00927172)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0 0 0 / 0)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
@@ -665,194 +315,27 @@
         {
           "state": "empty",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "preset-loaded",
           "status": "complete",
-          "violations": [
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "analyzed",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "calibration-map-visible",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "revising",
           "status": "complete",
-          "violations": [
-            {
-              "id": "color-contrast",
-              "impact": "serious",
-              "help": "Elements must meet minimum color contrast ratio thresholds",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    ".coverage-chip--partial"
-                  ],
-                  "html": "<span class=\"coverage-chip coverage-chip--partial\">Partial (1)</span>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #8a6500, background color: #ebe5d4, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--solid > small"
-                  ],
-                  "html": "<small>Felt sure + understood</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.36 (foreground color: #6b6862, background color: #dee6df, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                },
-                {
-                  "target": [
-                    ".calibration-cell--danger > small"
-                  ],
-                  "html": "<small>Felt sure + system gap</small>",
-                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.23 (foreground color: #6b6862, background color: #efddda, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
-                }
-              ]
-            },
-            {
-              "id": "page-has-heading-one",
-              "impact": "moderate",
-              "help": "Page should contain a level-one heading",
-              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=playwright",
-              "nodes": [
-                {
-                  "target": [
-                    "html"
-                  ],
-                  "html": "<html lang=\"en\">",
-                  "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-                }
-              ]
-            }
-          ]
+          "violations": []
         },
         {
           "state": "drill-down-open",
@@ -876,9 +359,9 @@
           "phase": "initial",
           "state": "red",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
+          "foreground": "rgb(18, 23, 19)",
           "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
@@ -897,9 +380,9 @@
           "phase": "revised",
           "state": "yellow",
           "available": true,
-          "foreground": "rgb(26, 25, 23)",
-          "wash": "oklab(0.5305 0.0126782 0.108282 / 0.0190573)",
-          "pageBackground": "rgb(251, 250, 247)",
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0 0 0 / 0)",
+          "pageBackground": "rgb(247, 252, 248)",
           "textOnWash": null,
           "textOnPage": null,
           "underThreshold": false
