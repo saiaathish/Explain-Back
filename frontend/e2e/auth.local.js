@@ -90,6 +90,32 @@ for (const clickMode of ["one click", "rapid double-click"]) {
   });
 }
 
+test("a restored linked identity enters the workspace without another Try it click", async ({
+  page,
+  authApi,
+}) => {
+  await enterAnonymousWorkspace(page, authApi);
+  const linkedSession = authApi.createLinkedSession();
+
+  await page.evaluate((session) => {
+    const storageKey = Object.keys(localStorage).find((key) =>
+      key.endsWith("-auth-token"),
+    );
+    if (!storageKey) throw new Error("Expected local Supabase auth storage");
+    localStorage.setItem(storageKey, JSON.stringify(session));
+  }, linkedSession);
+
+  await page.reload();
+  await expect(page.locator("#source")).toBeFocused();
+  await expect(
+    page.getByRole("button", {
+      name: "Continue with Google to keep this session across devices",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(authApi.signupRequests).toHaveLength(1);
+});
+
 test("anonymous auth is deferred, restored, and refreshed once", async ({
   page,
   authApi,

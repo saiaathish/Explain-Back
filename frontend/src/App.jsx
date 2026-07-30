@@ -68,6 +68,12 @@ function boundedSingleFlight(ref, owner, task, timeoutMs, message) {
   return withTimeout(singleFlight(ref, owner, task), timeoutMs, message);
 }
 
+function shouldOpenWorkspaceOnSessionRestore(session) {
+  return Boolean(
+    session?.access_token && session?.user?.is_anonymous === false,
+  );
+}
+
 const PRESETS = [
   {
     id: "biology",
@@ -1224,6 +1230,7 @@ function AuthStateProvider({ auth, children }) {
       setAuthError("");
       setAuthStatus(token ? "authenticated" : "unauthenticated");
       if (!token) setEntered(false);
+      else if (shouldOpenWorkspaceOnSessionRestore(session)) setEntered(true);
     }
 
     function failRestore(error) {
@@ -1450,6 +1457,7 @@ export {
   PRESETS,
   boundedSingleFlight,
   singleFlight,
+  shouldOpenWorkspaceOnSessionRestore,
   trimRangeSnapshot,
   validate,
   withTimeout,

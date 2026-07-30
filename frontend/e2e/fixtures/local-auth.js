@@ -17,7 +17,7 @@ function jsonResponse(status, body, headers = {}) {
   };
 }
 
-function user(now) {
+function user(now, { isAnonymous = true } = {}) {
   const timestamp = new Date(now).toISOString();
   return {
     id: USER_ID,
@@ -25,26 +25,33 @@ function user(now) {
     role: "authenticated",
     email: "",
     phone: "",
-    app_metadata: {
-      provider: "anonymous",
-      providers: ["anonymous"],
-    },
+    app_metadata: isAnonymous
+      ? { provider: "anonymous", providers: ["anonymous"] }
+      : { provider: "google", providers: ["google"] },
     user_metadata: {},
-    identities: [],
+    identities: isAnonymous
+      ? []
+      : [
+          {
+            id: "e2e-google-identity",
+            provider: "google",
+            user_id: USER_ID,
+          },
+        ],
     created_at: timestamp,
     updated_at: timestamp,
-    is_anonymous: true,
+    is_anonymous: isAnonymous,
   };
 }
 
-function session(accessToken, refreshToken, now) {
+function session(accessToken, refreshToken, now, options) {
   return {
     access_token: accessToken,
     token_type: "bearer",
     expires_in: 3600,
     expires_at: Math.floor(now / 1000) + 3600,
     refresh_token: refreshToken,
-    user: user(now),
+    user: user(now, options),
   };
 }
 
@@ -52,7 +59,7 @@ function base64Url(value) {
   return Buffer.from(JSON.stringify(value)).toString("base64url");
 }
 
-function fixtureJwt(sequence, now, issuer) {
+function fixtureJwt(sequence, now, issuer, isAnonymous = true) {
   const issuedAt = Math.floor(now / 1000);
   return [
     base64Url({ alg: "RS256", kid: "e2e-local-only", typ: "JWT" }),
@@ -60,7 +67,7 @@ function fixtureJwt(sequence, now, issuer) {
       sub: USER_ID,
       aud: "authenticated",
       role: "authenticated",
-      is_anonymous: true,
+      is_anonymous: isAnonymous,
       iss: issuer,
       iat: issuedAt,
       exp: issuedAt + 3600,
@@ -111,15 +118,20 @@ export const test = base.extend({
       }
 
       const allowedOrigin = new URL(baseURL).origin;
-      const issueAccessToken = () => {
+      const issueAccessToken = (isAnonymous = true) => {
         const token = fixtureJwt(
           state.accessTokens.length + 1,
           Date.now(),
           `${allowedOrigin}${AUTH_ROOT}`,
+          isAnonymous,
         );
         state.accessTokens.push(token);
         return token;
       };
+      state.createLinkedSession = () =>
+        session(issueAccessToken(false), REFRESH_TOKEN, Date.now(), {
+          isAnonymous: false,
+        });
 
       await page.route(`**${AUTH_ROOT}/**`, async (route) => {
         const request = route.request();

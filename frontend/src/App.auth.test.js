@@ -5,6 +5,7 @@ import {
   boundedSingleFlight,
   IdentityUpgrade,
   singleFlight,
+  shouldOpenWorkspaceOnSessionRestore,
   withTimeout,
 } from "./App";
 
@@ -118,6 +119,33 @@ describe("auth lifecycle helpers", () => {
 });
 
 describe("anonymous identity upgrade", () => {
+  it("opens the workspace after a linked Google session restores", () => {
+    expect(
+      shouldOpenWorkspaceOnSessionRestore({
+        access_token: "linked-session",
+        user: { is_anonymous: false },
+      }),
+    ).toBe(true);
+    expect(
+      shouldOpenWorkspaceOnSessionRestore({
+        access_token: "anonymous-session",
+        user: { is_anonymous: true },
+      }),
+    ).toBe(false);
+    expect(
+      shouldOpenWorkspaceOnSessionRestore({
+        access_token: "incomplete-session",
+        user: {},
+      }),
+    ).toBe(false);
+    expect(
+      shouldOpenWorkspaceOnSessionRestore({
+        access_token: "missing-user-session",
+      }),
+    ).toBe(false);
+    expect(shouldOpenWorkspaceOnSessionRestore(null)).toBe(false);
+  });
+
   it("is hidden after the session is no longer anonymous", () => {
     const markup = renderToStaticMarkup(
       createElement(IdentityUpgrade, {

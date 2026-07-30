@@ -383,10 +383,12 @@ test.describe("hosted Phase 2 authentication gate", () => {
       },
     );
 
+    await expect(page.locator("#source")).toBeVisible();
     const after = await waitForLinkedAuth(page, before.userId);
     expect(page.url()).toBe(`${FRONTEND_ORIGIN}/`);
 
     await page.reload();
+    await expect(page.locator("#source")).toBeVisible();
     const restored = await waitForLinkedAuth(page, before.userId);
 
     await testInfo.attach("phase2-google-link-evidence", {
@@ -397,7 +399,9 @@ test.describe("hosted Phase 2 authentication gate", () => {
           anonymousConverted: !after.isAnonymous,
           googleIdentityPresent: after.providers.includes("google"),
           callbackUrlClean: page.url() === `${FRONTEND_ORIGIN}/`,
+          workspaceAvailableAfterCallback: true,
           reloadStable: restored.userId === before.userId,
+          workspaceAvailableAfterReload: true,
           maliciousNextIgnored: identityLinkRequests[0].next === null,
         },
         null,
