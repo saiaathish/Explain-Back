@@ -63,6 +63,15 @@ same provider as the rest of the pipeline and no other. Image sources follow the
 same shape through `/api/normalize-image`. Both endpoints share the per-client
 rate-limit budget with `/api/analyze`.
 
+Analysis is budgeted per account on top of that per-client backstop: one new
+source a minute, and up to six revisions a minute of the source already being
+worked on. Whether a request is a revision is decided server-side by
+fingerprinting the source text, not by anything the client claims about itself,
+and focused drill-downs always count as work on the current source. Refusals
+return `429` with `Retry-After`, which the browser reads to count the submit
+button down. The counter lives in process memory, so it resets on deploy and is
+not shared between instances — it blunts spam rather than metering usage.
+
 `backend/llm.py` is the only backend boundary to the configured model provider.
 Malformed or incomplete model output raises visibly; unparseable output is
 retried for three total attempts and never becomes an empty result that could
