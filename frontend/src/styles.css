@@ -81,7 +81,7 @@ textarea:focus-visible,
   flex-direction: column;
 }
 
-header {
+.landing-header {
   position: relative;
   min-height: 72px;
   padding: 20px max(24px, calc((100vw - 960px) / 2));
@@ -93,7 +93,7 @@ header {
   backdrop-filter: blur(16px);
 }
 
-header::after {
+.landing-header::after {
   content: "";
   position: absolute;
   right: 0;
@@ -116,7 +116,7 @@ header::after {
   }
 }
 
-header p {
+.landing-header p {
   margin: 0;
   color: var(--ink-soft);
   font-family: var(--ui);
@@ -925,15 +925,24 @@ main {
   text-transform: uppercase;
 }
 
-.field--source {
-  display: grid;
+.field,
+.field--source,
+.field--explanation {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
+textarea,
+.explanation-textarea,
+.source-textarea,
+.field textarea,
 .workspace textarea,
 .revise-panel textarea,
 .drill-down textarea {
   width: 100%;
+  box-sizing: border-box;
   min-height: 210px;
   resize: vertical;
   border: 1px solid var(--rule);
@@ -947,6 +956,7 @@ main {
   transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
+textarea::placeholder,
 .workspace textarea::placeholder,
 .revise-panel textarea::placeholder {
   color: var(--ink-soft);
@@ -959,6 +969,7 @@ main {
   line-height: 1.65;
 }
 
+textarea:focus,
 .workspace textarea:focus,
 .revise-panel textarea:focus,
 .drill-down textarea:focus {
@@ -968,6 +979,7 @@ main {
   background: var(--paper-edge);
 }
 
+textarea:focus-visible,
 .workspace textarea:focus-visible,
 .revise-panel textarea:focus-visible,
 .drill-down textarea:focus-visible {
@@ -2151,7 +2163,7 @@ footer {
     padding-inline: 18px;
   }
 
-  header {
+  .landing-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
@@ -2292,7 +2304,7 @@ footer {
     padding-inline: 20px;
   }
 
-  header {
+  .landing-header {
     padding-inline: 16px;
   }
 
@@ -2366,7 +2378,7 @@ footer {
   .feedback-card > .feedback-refutation,
   .feedback-card > .feedback-hint,
   .hl-improved,
-  header::after,
+  .landing-header::after,
   .result-group--concepts > h2,
   .result-group--concepts .coverage-chip,
   .result-group--concepts > .concept-list,
@@ -3196,6 +3208,11 @@ footer {
 .profile {
   width: min(100%, 760px);
   margin-inline: auto;
+}
+
+.dashboard-heading {
+  display: block;
+  margin-bottom: 28px;
 }
 
 .dashboard-heading h1 {
