@@ -14,3 +14,5 @@ graphify-out/[0-9]*/
 .vercel
 .env*
 .zcode/
+frontend/test-results/
+

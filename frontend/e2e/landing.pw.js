@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "./fixtures/local-auth.js";
+import { expect, test, startSession } from "./fixtures/local-auth.js";
 
 test("landing page explains the product and leads to the login screen", async ({
   page,
@@ -60,6 +60,8 @@ test("landing page explains the product and leads to the login screen", async ({
   expect(loginTypography.eyebrow).not.toBe(loginTypography.title);
 
   await page.getByRole("button", { name: "Continue with Google", exact: true }).click();
+  await expect(page.locator(".dashboard")).toBeVisible();
+  await startSession(page);
   await expect(page.locator("#source")).toBeFocused();
   await expect(
     page.getByRole("button", { name: "Biology", exact: true }),

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterExplanation, submitForAnalysis } from "./fixtures/local-auth.js";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.resolve(E2E_DIR, "..");
@@ -71,13 +71,19 @@ test.describe("production demo path", () => {
     if (paceMs > 0) await page.waitForTimeout(paceMs);
 
     await signIn(page, "/");
+    await startSession(page);
     await expect(page.getByRole("button", { name: "Biology", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Biology", exact: true }).click();
     await expect(page.locator(".source-textarea")).toHaveValue(/sodium/i);
-    await expect(page.locator("#explanation")).not.toHaveValue("");
+
+    await page.getByRole("button", { name: "Next: explain it back", exact: true }).click();
+    await enterExplanation(
+      page,
+      "The pump uses ATP to move sodium out and potassium in, maintaining concentration gradients across the membrane.",
+    );
 
     const initialStart = Date.now();
-    await page.getByRole("button", { name: "Check my explanation", exact: true }).click();
+    await submitForAnalysis(page);
     try {
       await expect(page.locator(".results")).toBeVisible();
       await expect(page.locator(".diagnostic").first()).toBeVisible();
@@ -104,11 +110,10 @@ test.describe("production demo path", () => {
     }
 
     try {
-      await page.getByRole("button", { name: "Revise your explanation", exact: true }).click();
-      await expect(page.locator("#revision-explanation")).toBeVisible();
-      await page.locator("#revision-explanation").fill(REVISED_EXPLANATION);
+      await page.getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false }).click();
+      await enterExplanation(page, REVISED_EXPLANATION);
       const reviseStart = Date.now();
-      await page.getByRole("button", { name: "Check my revision", exact: true }).click();
+      await submitForAnalysis(page);
       await expect(page.locator(".diff-strip")).toBeVisible();
       record.reviseMs = Date.now() - reviseStart;
       record.revisedCounts = await page.locator(".diagnostic").evaluateAll((nodes) =>

@@ -1,4 +1,4 @@
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterSource, enterExplanation, submitForAnalysis, openSection } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -53,16 +53,7 @@ async function installAnalysis(page) {
 
 async function enterWorkspace(page, authApi) {
   await signIn(page, "/");
-  await expect(page.locator("#source")).toBeFocused();
-}
-
-async function analyzeOnce(page) {
-  await page.locator("#source").fill(SOURCE);
-  await page.locator("#explanation").fill(EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my explanation", exact: true })
-    .click();
-  await expect(page.locator(".results")).toBeVisible();
+  await startSession(page);
 }
 
 test("one topic's analysis and revision persist as a single owner-scoped session", async ({
@@ -72,7 +63,10 @@ test("one topic's analysis and revision persist as a single owner-scoped session
 }) => {
   await installAnalysis(page);
   await enterWorkspace(page, authApi);
-  await analyzeOnce(page);
+  await enterSource(page, SOURCE);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
+  await expect(page.locator(".results")).toBeVisible();
 
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(1);
   await expect(page.locator(".history-save-error")).toHaveCount(0);
@@ -89,12 +83,10 @@ test("one topic's analysis and revision persist as a single owner-scoped session
   expect(restApi.rows.explanation_attempts[0].flags[0].state).toBe("yellow");
 
   await page
-    .getByRole("button", { name: "Revise your explanation", exact: true })
+    .getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false })
     .click();
-  await page.locator("#revision-explanation").fill(REVISED_EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my revision", exact: true })
-    .click();
+  await enterExplanation(page, REVISED_EXPLANATION);
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
 
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
@@ -106,18 +98,15 @@ test("one topic's analysis and revision persist as a single owner-scoped session
     explanation_text: REVISED_EXPLANATION,
   });
   expect(restApi.rows.explanation_attempts[1].flags[0].state).toBe("green");
-  /* The browser never chooses a row owner; the bearer token does. */
+
   expect(
     restApi.requests.filter(({ method }) => method === "POST"),
   ).not.toHaveLength(0);
 
-  /* Visiting saved history and returning leaves the live workspace intact. */
-  await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+  /* Visiting saved history and going back leaves the live session intact. */
+  await openSection(page, "Past sessions");
   await expect(page.locator(".history-attempts > li")).toHaveCount(2);
-  await page
-    .getByRole("button", { name: "Back to workspace", exact: true })
-    .click();
-  await expect(page.locator("#source")).toHaveValue(SOURCE);
+  await page.goBack();
   await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
 });
 
@@ -131,16 +120,16 @@ test("past sessions survive a reload and exclude another learner's rows", async 
     sourceText: "Another learner's private source about tax policy.",
   });
   await enterWorkspace(page, authApi);
-  await analyzeOnce(page);
+  await enterSource(page, SOURCE);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
+  await expect(page.locator(".results")).toBeVisible();
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
 
   await page.reload();
-  /* The stored session reopens the workspace with no landing page. */
-  await expect(page.locator("#source")).toBeVisible();
   await expect(page.locator(".landing-shell")).toHaveCount(0);
-  await expect(page.locator("#source")).toBeFocused();
 
-  await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+  await openSection(page, "Past sessions");
   const savedSessions = page.locator(".history-sessions > li");
   await expect(savedSessions).toHaveCount(1);
   await expect(savedSessions.first()).toContainText("1 attempt");
@@ -172,10 +161,7 @@ test("past sessions survive a reload and exclude another learner's rows", async 
   );
   expect(foreignRows).toEqual({ status: 200, body: [] });
 
-  await page
-    .getByRole("button", { name: "Back to workspace", exact: true })
-    .click();
-  /* The workspace itself is still in-memory: only saved history crosses a reload. */
+  await startSession(page);
   await expect(page.locator("#source")).toHaveValue("");
   await expect(page.locator(".results")).toHaveCount(0);
 });

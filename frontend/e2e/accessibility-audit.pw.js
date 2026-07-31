@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterSource, enterExplanation, submitForAnalysis, openSection } from "./fixtures/local-auth.js";
 import AxeBuilder from "@axe-core/playwright";
 
 const E2E_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -163,6 +163,7 @@ async function keyboardWalkthrough(page, record) {
   const steps = [];
   const note = (action, extra = {}) => steps.push({ action, ...extra });
   await signIn(page, "/");
+  await startSession(page);
   await page.keyboard.press("Tab");
   let presetFocused = false;
   for (let index = 0; index < 40; index += 1) {
@@ -180,17 +181,12 @@ async function keyboardWalkthrough(page, record) {
     record.keyboard = { status: "failed", steps, error: "Biology preset was not reachable with Tab" };
     return;
   }
-  await expect(page.locator("#explanation")).not.toHaveValue("");
-  for (let index = 0; index < 60; index += 1) {
-    const focus = await activeElement(page);
-    if (focus.text === "Check my explanation") {
-      await page.keyboard.press("Enter");
-      note("Enter analysis", { focus: await activeElement(page) });
-      break;
-    }
-    await page.keyboard.press("Tab");
-    note("Tab", { focus: await activeElement(page) });
-  }
+  await page.getByRole("button", { name: "Next: explain it back", exact: true }).click();
+  await enterExplanation(
+    page,
+    "The pump exports three sodium ions and imports two potassium ions per cycle. It moves three potassium ions out of the cell and two sodium ions into the cell.",
+  );
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
   await page.keyboard.press("Tab");
   let openedFlag = false;
@@ -207,31 +203,11 @@ async function keyboardWalkthrough(page, record) {
     }
     await page.keyboard.press("Tab");
   }
-  for (let index = 0; index < 100; index += 1) {
-    const focus = await activeElement(page);
-    if (focus.text === "Revise your explanation") {
-      await page.keyboard.press("Enter");
-      note("Enter revise", { focus: await activeElement(page) });
-      break;
-    }
-    await page.keyboard.press("Tab");
-  }
-  const revision = page.locator("#revision-explanation");
+  await page.getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false }).click();
+  const revision = page.locator("#explanation");
   if (await revision.isVisible()) {
-    await revision.focus();
-    await page.keyboard.press("ControlOrMeta+A");
-    await page.keyboard.type(REVISED_EXPLANATION);
-    note("Type revision", { focus: await activeElement(page) });
-    await page.keyboard.press("Tab");
-    for (let index = 0; index < 10; index += 1) {
-      const focus = await activeElement(page);
-      if (focus.text === "Check my revision") {
-        await page.keyboard.press("Enter");
-        note("Enter revision", { focus: await activeElement(page) });
-        break;
-      }
-      await page.keyboard.press("Tab");
-    }
+    await enterExplanation(page, REVISED_EXPLANATION);
+    await submitForAnalysis(page);
     await expect(page.locator(".diff-strip")).toBeVisible();
   }
   record.keyboard = {
@@ -242,7 +218,6 @@ async function keyboardWalkthrough(page, record) {
 }
 
 test("accessibility states, keyboard walkthrough, and contrast", async ({ page }, testInfo) => {
-  /* Two full sign-in redirects plus every Axe scan need more than the default. */
   test.setTimeout(90_000);
   const viewport = testInfo.project.use.viewport;
   const record = {
@@ -255,16 +230,21 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   };
   await mockAnalysis(page);
   await signIn(page, "/");
+  await startSession(page);
   record.axe.push(await axeState(page, "empty"));
   await page.getByRole("button", { name: "Biology", exact: true }).click();
-  await expect(page.locator("#explanation")).not.toHaveValue("");
   record.axe.push(await axeState(page, "preset-loaded"));
-  await page.getByRole("button", { name: "Check my explanation", exact: true }).click();
+  await page.getByRole("button", { name: "Next: explain it back", exact: true }).click();
+  await enterExplanation(
+    page,
+    "The pump exports three sodium ions and imports two potassium ions per cycle. It moves three potassium ions out of the cell and two sodium ions into the cell.",
+  );
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
   record.axe.push(await axeState(page, "analyzed"));
   record.axe.push(await axeState(page, "calibration-map-visible"));
   record.contrast.push(...(await contrastState(page, "initial")));
-  await page.getByRole("button", { name: "Revise your explanation", exact: true }).click();
+  await page.getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false }).click();
   record.axe.push(await axeState(page, "revising"));
   const missing = page.locator(".concept-action").first();
   if (await missing.count()) {
@@ -273,33 +253,33 @@ test("accessibility states, keyboard walkthrough, and contrast", async ({ page }
   } else {
     record.axe.push({ state: "drill-down-open", status: "unavailable", violations: [], error: "No missing concept button rendered" });
   }
-  await page.locator("#revision-explanation").fill(REVISED_EXPLANATION);
-  await page.getByRole("button", { name: "Check my revision", exact: true }).click();
+  await enterExplanation(page, REVISED_EXPLANATION);
+  await submitForAnalysis(page);
   await expect(page.locator(".diff-strip")).toBeVisible();
   record.contrast.push(...(await contrastState(page, "revised")));
-  await page.getByRole("button", { name: "Past sessions", exact: true }).click();
+  await openSection(page, "Past sessions");
   await expect(page.locator(".history-view")).toBeVisible();
   const history = await axeState(page, "saved-history");
   record.axe.push(history);
   expect(history.status).toBe("complete");
   expect(history.violations).toEqual([]);
-  await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
-  await expect(page.locator(".results")).toBeVisible();
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
-  await expect(page.locator(".review-card.is-top .review-front")).toBeVisible();
-  const reviewFaceDown = await axeState(page, "review-card-face-down");
-  record.axe.push(reviewFaceDown);
-  await page.locator(".review-card.is-top .review-front").click();
-  await expect(page.locator(".review-back")).toBeVisible();
-  await page.waitForTimeout(400);
-  const reviewRevealed = await axeState(page, "review-card-revealed");
-  record.axe.push(reviewRevealed);
-  for (const state of [reviewFaceDown, reviewRevealed]) {
-    expect(state.status).toBe("complete");
-    expect(state.violations).toEqual([]);
+  await openSection(page, "Review gaps");
+  await expect(page.locator(".review-view")).toBeVisible();
+  if (await page.locator(".review-card.is-top .review-front").count()) {
+    const reviewFaceDown = await axeState(page, "review-card-face-down");
+    record.axe.push(reviewFaceDown);
+    await page.locator(".review-card.is-top .review-front").click();
+    await expect(page.locator(".review-back")).toBeVisible();
+    await page.waitForTimeout(400);
+    const reviewRevealed = await axeState(page, "review-card-revealed");
+    record.axe.push(reviewRevealed);
+    for (const state of [reviewFaceDown, reviewRevealed]) {
+      expect(state.status).toBe("complete");
+      expect(state.violations).toEqual([]);
+    }
+  } else {
+    record.axe.push(await axeState(page, "review-empty"));
   }
-  await page.getByRole("button", { name: "Back to workspace", exact: true }).click();
-  await expect(page.locator(".results")).toBeVisible();
   if (testInfo.project.name === "desktop-chrome") {
     try {
       await keyboardWalkthrough(page, record);

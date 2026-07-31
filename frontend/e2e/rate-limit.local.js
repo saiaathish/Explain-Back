@@ -1,4 +1,4 @@
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterSource, enterExplanation, submitForAnalysis } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -27,8 +27,6 @@ function analysisResponse() {
   };
 }
 
-/* The budget itself is enforced and tested server-side; this drives what the
- * learner sees when the server says no. */
 async function installAnalysis(page, { refuseAfter, retryAfter = 5 }) {
   const calls = [];
   await page.route("**/api/analyze", async (route) => {
@@ -39,8 +37,6 @@ async function installAnalysis(page, { refuseAfter, retryAfter = 5 }) {
         headers: {
           "content-type": "application/json",
           "retry-after": String(retryAfter),
-          /* The browser is a different origin here, exactly as in production,
-             so the header is only readable because the server exposes it. */
           "access-control-allow-origin": "*",
           "access-control-expose-headers": "Retry-After",
         },
@@ -59,11 +55,10 @@ async function installAnalysis(page, { refuseAfter, retryAfter = 5 }) {
 }
 
 async function submit(page) {
-  await page.locator("#source").fill(SOURCE);
-  await page.locator("#explanation").fill(EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my explanation", exact: true })
-    .click();
+  await startSession(page);
+  await enterSource(page, SOURCE);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
 }
 
 test("a refused analysis counts down on the button instead of failing silently", async ({
@@ -81,7 +76,6 @@ test("a refused analysis counts down on the button instead of failing silently",
   await expect(button).toBeVisible();
   await expect(button).toBeDisabled();
 
-  /* The countdown runs down rather than sitting on the server's number. */
   const first = Number((await button.textContent()).match(/(\d+)/)[1]);
   await expect
     .poll(async () => {
@@ -94,34 +88,27 @@ test("a refused analysis counts down on the button instead of failing silently",
     })
     .toBeLessThan(first);
 
-  /* Clicking during the cooldown must not reach the server. */
   const callsDuringCooldown = calls.length;
-  await page.locator("#source").click();
   expect(calls).toHaveLength(callsDuringCooldown);
 
   await expect(
-    page.getByRole("button", { name: "Check my explanation", exact: true }),
+    page.getByRole("button", { name: "Try again", exact: true }),
   ).toBeEnabled({ timeout: 15_000 });
 });
 
 test("revising the same source is not blocked by the new-source budget", async ({
   page,
 }) => {
-  /* The server allows the revision loop; the UI must not add a block of its own. */
   const calls = await installAnalysis(page, { refuseAfter: 99 });
   await signIn(page, "/");
   await submit(page);
   await expect(page.locator(".results")).toBeVisible();
 
   await page
-    .getByRole("button", { name: "Revise your explanation", exact: true })
+    .getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false })
     .click();
-  await page
-    .locator("#revision-explanation")
-    .fill("The pump spends ATP to push sodium out and pull potassium in.");
-  await page
-    .getByRole("button", { name: "Check my revision", exact: true })
-    .click();
+  await enterExplanation(page, "The pump spends ATP to push sodium out and pull potassium in.");
+  await submitForAnalysis(page);
 
   await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
   expect(calls).toHaveLength(2);

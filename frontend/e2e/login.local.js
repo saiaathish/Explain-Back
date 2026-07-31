@@ -15,7 +15,7 @@ test("signing in goes straight from Google into the workspace", async ({
       await page.evaluate(() => ({
         landing: Boolean(document.querySelector(".landing-shell")),
         login: Boolean(document.querySelector(".login-shell")),
-        workspace: Boolean(document.querySelector("#source")),
+        workspace: Boolean(document.querySelector(".dashboard")),
       })),
     );
   };
@@ -23,7 +23,6 @@ test("signing in goes straight from Google into the workspace", async ({
   await page.goto("/");
   await record();
   expect(screens.at(-1)).toMatchObject({ landing: true, workspace: false });
-  /* Nothing is signed in until the learner asks for it. */
   expect(authApi.signInRequests).toHaveLength(0);
 
   await page.getByRole("button", { name: "Sign in to start", exact: true }).click();
@@ -34,10 +33,6 @@ test("signing in goes straight from Google into the workspace", async ({
     page.getByRole("heading", { name: "Sign in to start explaining" }),
   ).toBeVisible();
 
-  /*
-   * The return from Google is a fresh document, so the watcher is installed as
-   * an init script and records every paint on the page the provider returns to.
-   */
   await page.addInitScript(() => {
     window.__landingSeen = false;
     const watch = () => {
@@ -57,14 +52,13 @@ test("signing in goes straight from Google into the workspace", async ({
     .getByRole("button", { name: "Continue with Google", exact: true })
     .click();
 
-  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".dashboard")).toBeVisible();
   await record();
   expect(screens.at(-1)).toMatchObject({
     landing: false,
     login: false,
     workspace: true,
   });
-  /* The landing page never reappeared on the way back from the provider. */
   expect(await page.evaluate(() => window.__landingSeen)).toBe(false);
 
   expect(authApi.signInRequests).toHaveLength(1);
@@ -93,7 +87,7 @@ test("the workspace is unreachable without signing in", async ({
 }) => {
   await page.goto("/");
   await expect(page.locator(".landing-shell")).toBeVisible();
-  await expect(page.locator("#source")).toHaveCount(0);
+  await expect(page.locator(".dashboard")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Try it", exact: true }),
   ).toHaveCount(0);
@@ -113,12 +107,11 @@ test("a stored session reopens the workspace without the landing page", async ({
   await page
     .getByRole("button", { name: "Continue with Google", exact: true })
     .click();
-  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".dashboard")).toBeVisible();
 
   await page.reload();
-  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".dashboard")).toBeVisible();
   await expect(page.locator(".landing-shell")).toHaveCount(0);
-  /* Restoring a session must not ask Google again. */
   expect(authApi.signInRequests).toHaveLength(1);
 });
 
@@ -132,7 +125,7 @@ test("a refused sign-in explains itself on the login screen", async ({
     "The learner cancelled sign-in",
   );
   expect(new URL(page.url()).search).toBe("");
-  await expect(page.locator("#source")).toHaveCount(0);
+  await expect(page.locator(".dashboard")).toHaveCount(0);
 });
 
 test("signing out returns to the landing page and locks the workspace", async ({
@@ -144,11 +137,11 @@ test("signing out returns to the landing page and locks the workspace", async ({
   await page
     .getByRole("button", { name: "Continue with Google", exact: true })
     .click();
-  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".dashboard")).toBeVisible();
 
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page.locator(".landing-shell")).toBeVisible();
-  await expect(page.locator("#source")).toHaveCount(0);
+  await expect(page.locator(".dashboard")).toHaveCount(0);
   await expect.poll(() => authApi.signOutRequests.length).toBe(1);
   expect(authApi.signOutRequests[0].presentedUserToken).toBe(true);
   await expect(

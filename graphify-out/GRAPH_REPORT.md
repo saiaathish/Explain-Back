@@ -1,16 +1,16 @@
-# Graph Report - Explain-Back  (2026-07-29)
+# Graph Report - Explain-Back  (2026-07-30)
 
 ## Corpus Check
-- 81 files · ~61,378 words
+- 137 files · ~88,424 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 673 nodes · 1185 edges · 48 communities (38 shown, 10 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
+- 1027 nodes · 2022 edges · 70 communities (59 shown, 11 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.64)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c27807f8`
+- Built from commit: `5deb2846`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,7 +18,7 @@
 - 11. Five-day schedule
 - 4. The prompts (verbatim, use these)
 - Explain-Back — Complete Build Blueprint
-- main.py
+- Proposition
 - package.json
 - 6. Alignment
 - 7. State resolution
@@ -58,35 +58,57 @@
 - Adversarial Testing — 2026-07-28
 - Design decisions
 - postmortem.md
+- enterExplanation
+- analyze
+- playwright.local.config.js
+- supabase.js
+- analyze
+- auth.hosted.js
+- Platform expansion release contract
+- diagnose_misses.py
+- useSession
+- playwright.hosted.config.js
+- SessionProvider.jsx
+- accessibility-audit.pw.js
+- demo-path.pw.js
+- auth.hosted.js
+- auth.supabase.js
+- confidence.js
+- useAuth
+- ReviewCardStack.jsx
+- history.local.js
+- rate-limit.local.js
+- playwright.supabase.config.js
+- playwright.hosted.config.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `Proposition` - 27 edges
-2. `analyze()` - 25 edges
-3. `Concept` - 23 edges
-4. `LLMResponseError` - 20 edges
+1. `Proposition` - 28 edges
+2. `analyze()` - 27 edges
+3. `Concept` - 25 edges
+4. `LLMResponseError` - 21 edges
 5. `active_model()` - 20 edges
-6. `is_configured()` - 16 edges
-7. `run()` - 16 edges
-8. `locate_spans()` - 15 edges
-9. `call_json()` - 15 edges
-10. `Flag` - 15 edges
+6. `_AccountAnalysisState` - 17 edges
+7. `Flag` - 17 edges
+8. `AnalyzeRequest` - 17 edges
+9. `useSession()` - 17 edges
+10. `is_configured()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_alignment_embeds_student_justification_with_claim()` --indirect_call--> `align()`  [INFERRED]
-  tests/test_align.py → backend/align.py
-- `test_concept_vectors_are_cached_by_digest()` --indirect_call--> `align()`  [INFERRED]
-  tests/test_align.py → backend/align.py
-- `test_find_normalized_missing_returns_minus_one()` --calls--> `find_normalized()`  [EXTRACTED]
-  tests/test_extract.py → backend/extract.py
-- `test_find_normalized_respects_cursor()` --calls--> `find_normalized()`  [EXTRACTED]
-  tests/test_extract.py → backend/extract.py
-- `run()` --calls--> `locate_spans()`  [EXTRACTED]
-  tests/diagnose_misses.py → backend/extract.py
+- `TestAccountAnalysisBudget` --uses--> `AuthenticatedUser`  [INFERRED]
+  tests/test_main.py → backend/auth.py
+- `test_clean_validation_errors()` --calls--> `_validate_lengths()`  [EXTRACTED]
+  tests/test_main.py → backend/main.py
+- `TestAccountAnalysisBudget` --uses--> `Concept`  [INFERRED]
+  tests/test_main.py → backend/schemas.py
+- `TestAccountAnalysisBudget` --uses--> `Proposition`  [INFERRED]
+  tests/test_main.py → backend/schemas.py
+- `TestAccountAnalysisBudget` --uses--> `Verdict`  [INFERRED]
+  tests/test_main.py → backend/schemas.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (48 total, 10 thin omitted)
+## Communities (70 total, 11 thin omitted)
 
 ### Community 0 - "11. Five-day schedule"
 Cohesion: 0.12
@@ -100,21 +122,21 @@ Nodes (6): 4. The prompts (verbatim, use these), 5. Span validation — build th
 Cohesion: 0.40
 Nodes (5): 0. One-paragraph statement of the thing, 1. Architecture, 2. Repo layout, 3. Data model, Explain-Back — Complete Build Blueprint
 
-### Community 3 - "main.py"
-Cohesion: 0.12
-Nodes (37): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), is_specific(), resolve(), Concept (+29 more)
+### Community 3 - "Proposition"
+Cohesion: 0.15
+Nodes (24): align(), _concept_vector_key(), embed(), embed_concepts(), _embedding_model(), Concept, Proposition, _cap_hint() (+16 more)
 
 ### Community 4 - "package.json"
-Cohesion: 0.08
-Nodes (25): @axe-core/playwright, dependencies, react, react-dom, vite, @vitejs/plugin-react, devDependencies, @axe-core/playwright (+17 more)
+Cohesion: 0.06
+Nodes (33): @axe-core/playwright, framer-motion, dependencies, framer-motion, react, react-dom, react-router-dom, @supabase/supabase-js (+25 more)
 
 ### Community 12 - "App.jsx"
-Cohesion: 0.15
-Nodes (16): claimEntries(), classifyTransition(), coverageOf(), diffRuns(), isImprovement(), LABELS, normalizeClaim(), ORDER (+8 more)
+Cohesion: 0.07
+Nodes (28): CalibrationMap(), CELLS, ConceptList(), groupById(), claimEntries(), classifyTransition(), coverageOf(), diffRuns() (+20 more)
 
 ### Community 13 - "llm.py"
-Cohesion: 0.07
-Nodes (64): _audio_client_call(), _audio_configuration(), _audio_generation_config(), _audio_request_payload(), _backoff_seconds(), call_audio_text(), call_json(), call_vision_text() (+56 more)
+Cohesion: 0.06
+Nodes (72): active_model(), _audio_client_call(), _audio_configuration(), _audio_generation_config(), _audio_request_payload(), _backoff_seconds(), call_audio_text(), call_json() (+64 more)
 
 ### Community 14 - "prompts.py"
 Cohesion: 0.10
@@ -125,24 +147,24 @@ Cohesion: 0.14
 Nodes (13): Acceptance tests, Additions and removals are no longer displayed, Correctness of the diff, Demo fixture output, Demo path, Found and not fixed, Functional, Invariants (+5 more)
 
 ### Community 16 - "test_resolve.py"
-Cohesion: 0.10
-Nodes (15): analysisResponse(), anchoredConcept(), durationsAreZero(), expectNoMotion(), fillSubmission(), flagsFor(), FOCUSED_EXPLANATION, INITIAL_EXPLANATION (+7 more)
+Cohesion: 0.15
+Nodes (10): analysisResponse(), anchoredConcept(), flagsFor(), FOCUSED_EXPLANATION, INITIAL_EXPLANATION, installControlledAnalysis(), installImmediateAnalysis(), PRESET_FIXTURES (+2 more)
 
 ### Community 17 - "Explain-Back"
-Cohesion: 0.18
-Nodes (9): For judges — see everything in 90 seconds, Architecture, Calibration and gates, Deployment, Explain-Back, Feature scope and the recorded demo, Limitations, Local setup (+1 more)
+Cohesion: 0.13
+Nodes (13): For judges — see everything in 90 seconds, Hosted authentication requirement, Architecture, Calibration and gates, Deployment, Explain-Back, Feature scope and the recorded demo, Hosted Phase 2 verification (+5 more)
 
 ### Community 19 - "vercel.json"
-Cohesion: 0.33
-Nodes (5): buildCommand, framework, installCommand, outputDirectory, $schema
+Cohesion: 0.29
+Nodes (6): buildCommand, framework, installCommand, outputDirectory, rewrites, $schema
 
 ### Community 22 - "test_golden_fixture.py"
 Cohesion: 0.14
 Nodes (13): `01_fluent_unjustified.txt`, `02_reversed_stoich.txt`, `06_correct.txt`, `09_mixed_partial.txt`, `10_mixed_justification.txt`, Baseline and method, Class 1: propositions that receive no matching diagnostic, Class 2: valid justification is never selected (+5 more)
 
 ### Community 24 - "embed"
-Cohesion: 0.07
-Nodes (32): _validate_lengths(), _agreement(), best_flag(), characterize(), _determinism(), main(), _model_header(), overlap() (+24 more)
+Cohesion: 0.06
+Nodes (33): _agreement(), best_flag(), characterize(), _determinism(), main(), _model_header(), overlap(), parse_args() (+25 more)
 
 ### Community 25 - "extract.py"
 Cohesion: 0.10
@@ -181,8 +203,8 @@ Cohesion: 0.12
 Nodes (14): E2E_DIR, formatSeconds(), FRONTEND_DIR, paceMs, percentile(), projects, records, REPO_ROOT (+6 more)
 
 ### Community 35 - "diagnose_misses.py"
-Cohesion: 0.07
-Nodes (66): extract_concepts(), extract_propositions(), active_model(), active_role(), is_configured(), Return the model selected by the centralized role/call registry., analyze(), _base64_envelope_bytes() (+58 more)
+Cohesion: 0.11
+Nodes (35): AuthenticatedUser, _AccountAnalysisState, analyze_route(), _base64_envelope_bytes(), enforce_account_analysis_budget(), enforce_model_call_rate_limit(), lifespan(), normalize_image() (+27 more)
 
 ### Community 36 - "Pre-submission fix run"
 Cohesion: 0.40
@@ -193,12 +215,12 @@ Cohesion: 0.14
 Nodes (13): Automated browser timing sweep, desktop-chrome (1280x800), Execution note, Failures, Initial analysis, Initial analysis, Initial analysis, ipad (768x1024) (+5 more)
 
 ### Community 38 - "App.jsx"
-Cohesion: 0.07
-Nodes (30): analyze(), API_BASE, normalizeImage(), transcribeAudio(), App(), IMAGE_TYPES, PRESETS, SUBMIT_STAGES (+22 more)
+Cohesion: 0.36
+Nodes (7): appendTranscript(), blobToDataUrl(), CANDIDATE_MIME_TYPES, preferredMimeType(), startRecorder(), stopStream(), supportsRecording()
 
 ### Community 39 - "Accessibility audit"
-Cohesion: 0.18
-Nodes (9): activeElement(), E2E_DIR, FRONTEND_DIR, keyboardWalkthrough(), readReport(), REPO_ROOT, REPORT_PATH, REVISED_EXPLANATION (+1 more)
+Cohesion: 0.15
+Nodes (12): activeElement(), E2E_DIR, FRONTEND_DIR, keyboardWalkthrough(), mockAnalysis(), readReport(), REPO_ROOT, REPORT_PATH (+4 more)
 
 ### Community 40 - "accessibility-audit.pw.js"
 Cohesion: 0.22
@@ -220,25 +242,109 @@ Nodes (3): Adversarial Testing — 2026-07-28, Job 4 note, Stop sign — Job 1
 Cohesion: 0.50
 Nodes (3): Design decisions, Why there is a fourth grey state, Why these similarity thresholds
 
+### Community 46 - "enterExplanation"
+Cohesion: 0.28
+Nodes (11): analyzeOnce(), enterExplanation(), enterSource(), reviseWith(), startSession(), submitForAnalysis(), fillSubmission(), submitImmediately() (+3 more)
+
+### Community 48 - "analyze"
+Cohesion: 0.06
+Nodes (54): attemptSummary(), createAnalysisHistory(), getAnalysisHistory(), sourcePreview(), historyClient(), latestAttempt(), successfulSingle(), createClearedGaps() (+46 more)
+
+### Community 49 - "playwright.local.config.js"
+Cohesion: 0.10
+Nodes (53): _AuthConfigurationError, _AuthSettings, _bearer_token(), _get_signing_key(), _InvalidAuthenticationToken, _jwks_client(), _JWKSRefreshState, _JWKSUnavailable (+45 more)
+
+### Community 50 - "supabase.js"
+Cohesion: 0.07
+Nodes (27): A bug this caught before it shipped, Analysis rate limiting, Cost of this decision, stated plainly, Current gate evidence — July 29, 2026, Fallback — verified, Hard fallback, Hosted preview — verified from the deployed origin, Independent stop points (+19 more)
+
+### Community 51 - "analyze"
+Cohesion: 0.25
+Nodes (18): extract_propositions(), active_role(), is_configured(), analyze(), compute_coverage(), _prewarm(), _result_cache_key(), AnalyzeRequest (+10 more)
+
+### Community 52 - "auth.hosted.js"
+Cohesion: 0.19
+Nodes (11): App(), AuthStateProvider(), boundedSingleFlight(), isOAuthReturn(), readOAuthCallbackError(), shouldOpenWorkspaceOnSessionRestore(), singleFlight(), withTimeout() (+3 more)
+
+### Community 53 - "Platform expansion release contract"
+Cohesion: 0.18
+Nodes (14): AppLayout(), readCollapsed(), CloseIcon(), DashboardIcon(), MenuIcon(), NewSessionIcon(), PanelIcon(), ProfileIcon() (+6 more)
+
+### Community 54 - "diagnose_misses.py"
+Cohesion: 0.20
+Nodes (16): extract_concepts(), _cache_key(), _prewarm_source(), Path, best_flag(), best_proposition(), overlap(), parse_args() (+8 more)
+
+### Community 55 - "useSession"
+Cohesion: 0.18
+Nodes (10): AnalyzingStep(), RecordStep(), SourceStep(), STEPS, StepShell(), CharacterCounter(), PRESETS, ExplanationField() (+2 more)
+
+### Community 56 - "playwright.hosted.config.js"
+Cohesion: 0.41
+Nodes (13): is_specific(), resolve(), Verdict, proposition(), test_categorical_transport_claims_are_specific(), test_hedged_contradiction_is_grey(), test_hedged_entailment_is_grey(), test_low_confidence_entailment_is_grey() (+5 more)
+
+### Community 57 - "SessionProvider.jsx"
+Cohesion: 0.30
+Nodes (12): StepGuard(), furthestStep(), STEP_ORDER, stepIsReachable(), LONG_SOURCE, trimRangeSnapshot(), validateExplanation(), validateFocused() (+4 more)
+
+### Community 58 - "accessibility-audit.pw.js"
+Cohesion: 0.23
+Nodes (5): base64Url(), fixtureJwt(), session(), test, user()
+
+### Community 59 - "demo-path.pw.js"
+Cohesion: 0.32
+Nodes (9): analyze(), API_BASE, modelRequest(), normalizeImage(), rateLimitError(), requestHeaders(), retryAfterSeconds(), modelRequests (+1 more)
+
+### Community 60 - "auth.hosted.js"
+Cohesion: 0.24
+Nodes (7): enterAnonymousWorkspace(), EXPLANATION, readStoredAuth(), SOURCE, VALIDATION_ONLY_BODY, waitForLinkedAuth(), waitForStoredAuth()
+
+### Community 61 - "auth.supabase.js"
+Cohesion: 0.20
+Nodes (5): analysisResponse(), PUBLISHABLE_KEY, SOURCE, stubAnalysis(), SUPABASE_URL
+
+### Community 62 - "confidence.js"
+Cohesion: 0.35
+Nodes (7): calibrationSummary(), isConfident(), rangesOverlap(), sentenceRanges(), trimSentence(), ConfidencePass(), ConfidenceStep()
+
+### Community 63 - "useAuth"
+Cohesion: 0.36
+Nodes (7): EntryRoute(), RequireAuth(), useAuthSettling(), AuthContext, AuthProvider(), AuthConsumer(), useAuth()
+
+### Community 64 - "ReviewCardStack.jsx"
+Cohesion: 0.43
+Nodes (6): CardFace(), GridIcon(), ReviewCardStack(), SPRING, StackIcon(), stateLabel()
+
+### Community 65 - "history.local.js"
+Cohesion: 0.47
+Nodes (5): signIn(), analysisResponse(), enterWorkspace(), installAnalysis(), SOURCE
+
+### Community 66 - "rate-limit.local.js"
+Cohesion: 0.50
+Nodes (3): analysisResponse(), installAnalysis(), SOURCE
+
+### Community 67 - "playwright.supabase.config.js"
+Cohesion: 0.40
+Nodes (3): port, publishableKey, supabaseUrl
+
 ## Knowledge Gaps
-- **199 isolated node(s):** `_GenerationDefaults`, `E2E_DIR`, `FRONTEND_DIR`, `REPO_ROOT`, `REPORT_PATH` (+194 more)
+- **254 isolated node(s):** `_GenerationDefaults`, `E2E_DIR`, `FRONTEND_DIR`, `REPO_ROOT`, `REPORT_PATH` (+249 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Proposition` connect `main.py` to `embed`, `extract.py`, `diagnose_misses.py`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `resolve()` connect `main.py` to `diagnose_misses.py`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `active_model()` connect `diagnose_misses.py` to `embed`, `llm.py`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `session()` connect `accessibility-audit.pw.js` to `analyze`, `auth.hosted.js`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `AuthStateProvider()` connect `auth.hosted.js` to `accessibility-audit.pw.js`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `deriveCards()` connect `analyze` to `accessibility-audit.pw.js`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **Are the 2 inferred relationships involving `Concept` (e.g. with `_AccountAnalysisState` and `TestAccountAnalysisBudget`) actually correct?**
+  _`Concept` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `_GenerationDefaults`, `E2E_DIR`, `FRONTEND_DIR` to the rest of the system?**
-  _199 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _254 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `11. Five-day schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
-- **Should `main.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.11690821256038647 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
-  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.058823529411764705 - nodes in this community are weakly interconnected._

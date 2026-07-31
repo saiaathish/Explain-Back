@@ -572,8 +572,8 @@ export const test = base.extend({
 });
 
 /*
- * The only way into the app: landing → login → Google → workspace. Returning
- * from the provider must land in the workspace, never back on the landing page.
+ * The only way into the app: landing → login → Google → dashboard. Returning
+ * from the provider must land in the app, never back on the landing page.
  */
 export async function signIn(page, path = "/") {
   await page.goto(path);
@@ -581,8 +581,65 @@ export async function signIn(page, path = "/") {
   await page
     .getByRole("button", { name: "Continue with Google", exact: true })
     .click();
-  await expect(page.locator("#source")).toBeVisible();
+  await expect(page.locator(".dashboard")).toBeVisible();
   await expect(page.locator(".landing-shell")).toHaveCount(0);
+}
+
+/* Sidebar navigation. The rail is the only way between top-level sections. */
+export async function openSection(page, name) {
+  await page.locator(".sidebar").getByRole("link", { name, exact: false }).click();
+}
+
+export async function startSession(page) {
+  await page.locator(".sidebar-new").click();
+  await expect(page.locator("#source")).toBeFocused();
+}
+
+/*
+ * The source and the explanation live on separate screens on purpose, so every
+ * spec that used to fill one form now walks the wizard. Anything that reaches
+ * the record step without going through here is not exercising the real path.
+ */
+export async function enterSource(page, source) {
+  await page.locator("#source").fill(source);
+  await page
+    .getByRole("button", { name: "Next: explain it back", exact: true })
+    .click();
+  await expect(page.locator("#explanation")).toBeVisible();
+}
+
+export async function enterExplanation(page, explanation) {
+  await page.locator("#explanation").fill(explanation);
+  await page
+    .getByRole("button", { name: "Next: mark your confidence", exact: true })
+    .click();
+  await expect(page.locator("#review-title, .confidence-pass")).toBeVisible();
+}
+
+export async function submitForAnalysis(page) {
+  await page
+    .getByRole("button", { name: "Check my explanation", exact: true })
+    .click();
+}
+
+/* Sign in, start a session, and walk it through to a rendered analysis. */
+export async function analyzeOnce(page, source, explanation) {
+  await startSession(page);
+  await enterSource(page, source);
+  await enterExplanation(page, explanation);
+  await submitForAnalysis(page);
+  await expect(page.locator(".results")).toBeVisible();
+}
+
+/* A revision returns to the record step with the source out of sight again. */
+export async function reviseWith(page, explanation) {
+  await page
+    .getByRole("button", { name: "Explain it again", exact: true })
+    .click();
+  await expect(page.locator("#explanation")).toBeVisible();
+  await expect(page.locator("#source")).toHaveCount(0);
+  await enterExplanation(page, explanation);
+  await submitForAnalysis(page);
 }
 
 export { expect };

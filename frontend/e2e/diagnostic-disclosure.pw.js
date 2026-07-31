@@ -1,4 +1,4 @@
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterSource, enterExplanation, submitForAnalysis } from "./fixtures/local-auth.js";
 
 async function mockBiologyAnalysis(page) {
   await page.route("**/api/analyze", async (route) => {
@@ -53,9 +53,14 @@ async function mockBiologyAnalysis(page) {
 test("diagnostic disclosure supports pointer, keyboard, and touch", async ({ page }, testInfo) => {
   await mockBiologyAnalysis(page);
   await signIn(page, "/");
+  await startSession(page);
   await page.getByRole("button", { name: "Biology", exact: true }).click();
-  await expect(page.locator("#explanation")).not.toHaveValue("");
-  await page.getByRole("button", { name: "Check my explanation", exact: true }).click();
+  await page.getByRole("button", { name: "Next: explain it back", exact: true }).click();
+  await enterExplanation(
+    page,
+    "The pump maintains different sodium and potassium concentrations across the cell membrane. It moves three potassium ions out of the cell and two sodium ions into the cell.",
+  );
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
 
   const diagnostic = page.locator(".diagnostic:not(.diagnostic--green)").first();

@@ -1,4 +1,4 @@
-import { expect, test, signIn } from "./fixtures/local-auth.js";
+import { expect, test, signIn, startSession, enterSource, enterExplanation, submitForAnalysis, openSection } from "./fixtures/local-auth.js";
 
 const SOURCE = [
   "Cell membranes preserve concentration gradients with active transport proteins.",
@@ -54,17 +54,13 @@ async function recordGaps(page, authApi) {
     });
   });
   await signIn(page, "/");
-  await page.locator("#source").fill(SOURCE);
-  await page.locator("#explanation").fill(EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my explanation", exact: true })
-    .click();
+  await startSession(page);
+  await enterSource(page, SOURCE);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
 }
 
-
-/* The leaving card stays in the DOM until its exit animation ends, so settle
- * the deck before reading the top card. */
 async function expectTopPrompt(page, prompt) {
   await expect(page.locator(".review-card.is-top")).toHaveCount(1);
   await expect(page.locator(".review-card.is-top .review-prompt")).toHaveText(prompt);
@@ -78,10 +74,9 @@ test("a cleared gap never comes back, and later sessions stack on their own", as
   await recordGaps(page, authApi);
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(1);
 
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
 
-  /* Still shaky is a move inside the round, never a stored fact. */
   await page.getByRole("button", { name: "Still shaky", exact: true }).click();
   await expectTopPrompt(page, "Explain: Gradients hold the membrane potential.");
   await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
@@ -95,41 +90,34 @@ test("a cleared gap never comes back, and later sessions stack on their own", as
     session_id: restApi.rows.sessions[0].id,
   });
 
-  /* Leaving mid-round keeps the one already explained explained. */
-  await page.locator("header").getByRole("button", { name: "Back to workspace" }).click();
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await startSession(page);
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-progress").first()).toHaveText("1 card left");
   await expectTopPrompt(page, `Explain: ${ANCHOR}`);
 
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
   await expect(page.locator(".review-done")).toBeVisible();
-  await expect(page.locator(".review-done h3")).toHaveText("Nothing left to explain");
+  await expect(page.locator(".review-done h2")).toHaveText("Nothing left to explain");
   await expect.poll(() => restApi.rows.cleared_gaps.length).toBe(2);
 
-  /* The whole session is done: revisiting shows nothing, not the old cards. */
-  await page.locator("header").getByRole("button", { name: "Back to workspace" }).click();
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await startSession(page);
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-done")).toBeVisible();
   await expect(page.locator(".review-card")).toHaveCount(0);
 
   await page.reload();
-  /* The stored session reopens the workspace with no landing page. */
-  await expect(page.locator("#source")).toBeVisible();
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-done")).toBeVisible();
   await expect(page.locator(".review-card")).toHaveCount(0);
 
-  /* A second source contributes only its own gaps. */
-  await page.locator("header").getByRole("button", { name: "Back to workspace" }).click();
-  await page.locator("#source").fill(`${SOURCE} Osmosis moves water instead of ions.`);
-  await page.locator("#explanation").fill(EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my explanation", exact: true })
-    .click();
+  await startSession(page);
+  await enterSource(page, `${SOURCE} Osmosis moves water instead of ions.`);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
   await expect.poll(() => restApi.rows.sessions.length).toBe(2);
 
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-progress").first()).toHaveText("2 cards left");
   await expect(page.locator(".review-progress--muted")).toHaveText(
     "0 of 2 explained this round",
@@ -142,14 +130,13 @@ test("a new gap on a cleared source appears on its own", async ({
   restApi,
 }) => {
   await recordGaps(page, authApi);
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
   await expect(page.locator(".review-done")).toBeVisible();
   await expect.poll(() => restApi.rows.cleared_gaps.length).toBe(2);
 
-  /* A revision on the same source records a gap that was never explained. */
-  await page.locator("header").getByRole("button", { name: "Back to workspace" }).click();
+  await page.goBack();
   await page.unroute("**/api/analyze");
   await page.route("**/api/analyze", async (route) => {
     const explanation = route.request().postDataJSON().explanation;
@@ -172,16 +159,14 @@ test("a new gap on a cleared source appears on its own", async ({
     });
   });
   await page
-    .getByRole("button", { name: "Revise your explanation", exact: true })
+    .getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false })
     .click();
-  await page
-    .locator("#revision-explanation")
-    .fill("The pump moves sodium out and potassium in. ATP is used somehow.");
-  await page.getByRole("button", { name: "Check my revision", exact: true }).click();
+  await enterExplanation(page, "The pump moves sodium out and potassium in. ATP is used somehow.");
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
 
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await expect(page.locator(".review-progress").first()).toHaveText("1 card left");
   await expectTopPrompt(page, "Explain: Each cycle spends one ATP molecule.");
 });
@@ -192,7 +177,7 @@ test("past reviews are practice and never reopen a cleared gap", async ({
   restApi,
 }) => {
   await recordGaps(page, authApi);
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
 
   const historyToggle = page.getByRole("button", { name: /Past reviews/ });
   await historyToggle.click();
@@ -215,8 +200,7 @@ test("past reviews are practice and never reopen a cleared gap", async ({
   const clearedBefore = restApi.rows.cleared_gaps.length;
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
   await page.getByRole("button", { name: "Got it now", exact: true }).click();
-  await expect(page.locator(".review-done h3")).toHaveText("Practice complete");
-  /* Practice writes nothing: those gaps were already cleared. */
+  await expect(page.locator(".review-done h2")).toHaveText("Practice complete");
   expect(restApi.rows.cleared_gaps).toHaveLength(clearedBefore);
 
   await page
@@ -224,7 +208,7 @@ test("past reviews are practice and never reopen a cleared gap", async ({
     .getByRole("button", { name: "Back to my gaps" })
     .click();
   await expect(page.locator("#review-title")).toHaveText("Review your gaps");
-  await expect(page.locator(".review-done h3")).toHaveText("Nothing left to explain");
+  await expect(page.locator(".review-done h2")).toHaveText("Nothing left to explain");
   await expect(page.locator(".review-card")).toHaveCount(0);
 });
 
@@ -235,7 +219,7 @@ test("the grid layout shows the whole deck at once", async ({
 }) => {
   await recordGaps(page, authApi);
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(1);
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
 
   await expect(page.locator(".review-deck--stack")).toBeVisible();
   await page.getByRole("button", { name: "Grid", exact: true }).click();
@@ -243,7 +227,6 @@ test("the grid layout shows the whole deck at once", async ({
   await expect(page.locator(".review-card")).toHaveCount(2);
   await expect(page.locator(".review-card.is-top")).toHaveCount(0);
 
-  /* Any card can be opened in grid, not just the top of the stack. */
   await page.locator(".review-card").nth(1).locator(".review-front").click();
   await expect(page.locator(".review-back")).toContainText(
     "Say why the gradient matters.",
@@ -272,26 +255,21 @@ test("a revision that closes a gap keeps the card and reports it resolved", asyn
     });
   });
   await signIn(page, "/");
-  await page.locator("#source").fill(SOURCE);
-  await page.locator("#explanation").fill(EXPLANATION);
-  await page
-    .getByRole("button", { name: "Check my explanation", exact: true })
-    .click();
+  await startSession(page);
+  await enterSource(page, SOURCE);
+  await enterExplanation(page, EXPLANATION);
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toBeVisible();
 
   await page
-    .getByRole("button", { name: "Revise your explanation", exact: true })
+    .getByRole("button", { name: /Explain it again|Revise your explanation/, exact: false })
     .click();
-  await page
-    .locator("#revision-explanation")
-    .fill("The pump moves sodium out and potassium in. The gradients support the membrane.");
-  await page
-    .getByRole("button", { name: "Check my revision", exact: true })
-    .click();
+  await enterExplanation(page, "The pump moves sodium out and potassium in. The gradients support the membrane.");
+  await submitForAnalysis(page);
   await expect(page.locator(".results")).toHaveAttribute("data-result-run", "2");
   await expect.poll(() => restApi.rows.explanation_attempts.length).toBe(2);
 
-  await page.getByRole("button", { name: "Review gaps", exact: true }).click();
+  await openSection(page, "Review gaps");
   await expectTopPrompt(page, `Explain: ${ANCHOR}`);
   await page.locator(".review-card.is-top .review-front").click();
   const back = page.locator(".review-back");

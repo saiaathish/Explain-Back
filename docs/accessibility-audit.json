@@ -1,216 +1,6 @@
 {
-  "generatedAt": "2026-07-29T19:30:54.940Z",
+  "generatedAt": "2026-07-31T01:32:54.912Z",
   "records": [
-    {
-      "project": "desktop-chrome",
-      "viewport": "1280x800",
-      "axe": [
-        {
-          "state": "empty",
-          "status": "complete",
-          "violations": []
-        },
-        {
-          "state": "preset-loaded",
-          "status": "complete",
-          "violations": []
-        },
-        {
-          "state": "analyzed",
-          "status": "complete",
-          "violations": []
-        },
-        {
-          "state": "calibration-map-visible",
-          "status": "complete",
-          "violations": []
-        },
-        {
-          "state": "revising",
-          "status": "complete",
-          "violations": []
-        },
-        {
-          "state": "drill-down-open",
-          "status": "unavailable",
-          "violations": [],
-          "error": "No missing concept button rendered"
-        }
-      ],
-      "contrast": [
-        {
-          "phase": "initial",
-          "state": "green",
-          "available": false
-        },
-        {
-          "phase": "initial",
-          "state": "yellow",
-          "available": false
-        },
-        {
-          "phase": "initial",
-          "state": "red",
-          "available": true,
-          "foreground": "rgb(18, 23, 19)",
-          "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
-          "pageBackground": "rgb(247, 252, 248)",
-          "textOnWash": null,
-          "textOnPage": null,
-          "underThreshold": false
-        },
-        {
-          "phase": "initial",
-          "state": "grey",
-          "available": false
-        },
-        {
-          "phase": "revised",
-          "state": "green",
-          "available": false
-        },
-        {
-          "phase": "revised",
-          "state": "yellow",
-          "available": true,
-          "foreground": "rgb(18, 23, 19)",
-          "wash": "oklab(0 0 0 / 0)",
-          "pageBackground": "rgb(247, 252, 248)",
-          "textOnWash": null,
-          "textOnPage": null,
-          "underThreshold": false
-        },
-        {
-          "phase": "revised",
-          "state": "red",
-          "available": false
-        },
-        {
-          "phase": "revised",
-          "state": "grey",
-          "available": false
-        }
-      ],
-      "keyboard": {
-        "status": "complete",
-        "steps": [
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "RECORD EXPLANATION"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "TEXTAREA",
-              "id": "explanation",
-              "text": ""
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "Biology"
-            }
-          },
-          {
-            "action": "Enter Biology",
-            "focus": {
-              "tag": "BODY",
-              "id": "",
-              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n0 / 6,000 characters\nYO"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "Economics"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "Photosynthesis"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "BUTTON",
-              "id": "",
-              "text": "Check my explanation"
-            }
-          },
-          {
-            "action": "Enter analysis",
-            "focus": {
-              "tag": "SECTION",
-              "id": "analysis-result-1",
-              "text": "What this section teaches\nCovered (0)\nPartial (1)\nMissing (0)\nActive transport\nWhere you are now\n\nHover, focus, or tap a"
-            }
-          },
-          {
-            "action": "Tab",
-            "focus": {
-              "tag": "SPAN",
-              "id": "",
-              "text": "It moves three potassium ions out of the cell and two sodium ions into the cell.\nSOURCE: Three sodium ions leave while t"
-            }
-          },
-          {
-            "action": "Enter diagnostic",
-            "focus": {
-              "tag": "SPAN",
-              "id": "",
-              "text": "It moves three potassium ions out of the cell and two sodium ions into the cell."
-            }
-          },
-          {
-            "action": "Escape diagnostic",
-            "focus": {
-              "tag": "SPAN",
-              "id": "",
-              "text": "It moves three potassium ions out of the cell and two sodium ions into the cell."
-            }
-          },
-          {
-            "action": "Enter revise",
-            "focus": {
-              "tag": "BODY",
-              "id": "",
-              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 characters"
-            }
-          },
-          {
-            "action": "Type revision",
-            "focus": {
-              "tag": "TEXTAREA",
-              "id": "revision-explanation",
-              "text": ""
-            }
-          },
-          {
-            "action": "Enter revision",
-            "focus": {
-              "tag": "BODY",
-              "id": "",
-              "text": "Explain-Back\n\nExplain it in your own words. See what holds up.\n\nSOURCE MATERIAL\nADD IMAGE SOURCE\n1166 / 6,000 characters"
-            }
-          }
-        ],
-        "error": null
-      },
-      "errors": []
-    },
     {
       "project": "iphone-14",
       "viewport": "390x844",
@@ -402,6 +192,124 @@
         "status": "not-run",
         "steps": [],
         "error": "Run on desktop project only"
+      },
+      "errors": []
+    },
+    {
+      "project": "desktop-chrome",
+      "viewport": "1280x800",
+      "axe": [
+        {
+          "state": "empty",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "preset-loaded",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "analyzed",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "calibration-map-visible",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "revising",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "drill-down-open",
+          "status": "unavailable",
+          "violations": [],
+          "error": "No missing concept button rendered"
+        },
+        {
+          "state": "saved-history",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "review-card-face-down",
+          "status": "complete",
+          "violations": []
+        },
+        {
+          "state": "review-card-revealed",
+          "status": "complete",
+          "violations": []
+        }
+      ],
+      "contrast": [
+        {
+          "phase": "initial",
+          "state": "green",
+          "available": false
+        },
+        {
+          "phase": "initial",
+          "state": "yellow",
+          "available": true,
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0.479131 0.0165117 0.0977425 / 0.14)",
+          "pageBackground": "rgb(247, 252, 248)",
+          "textOnWash": null,
+          "textOnPage": null,
+          "underThreshold": false
+        },
+        {
+          "phase": "initial",
+          "state": "red",
+          "available": true,
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0.478137 0.141476 0.067101 / 0.14)",
+          "pageBackground": "rgb(247, 252, 248)",
+          "textOnWash": null,
+          "textOnPage": null,
+          "underThreshold": false
+        },
+        {
+          "phase": "initial",
+          "state": "grey",
+          "available": false
+        },
+        {
+          "phase": "revised",
+          "state": "green",
+          "available": false
+        },
+        {
+          "phase": "revised",
+          "state": "yellow",
+          "available": true,
+          "foreground": "rgb(18, 23, 19)",
+          "wash": "oklab(0 0 0 / 0)",
+          "pageBackground": "rgb(247, 252, 248)",
+          "textOnWash": null,
+          "textOnPage": null,
+          "underThreshold": false
+        },
+        {
+          "phase": "revised",
+          "state": "red",
+          "available": false
+        },
+        {
+          "phase": "revised",
+          "state": "grey",
+          "available": false
+        }
+      ],
+      "keyboard": {
+        "status": "failed",
+        "steps": [],
+        "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Sign in to start', exact: true })\u001b[22m\n"
       },
       "errors": []
     }
