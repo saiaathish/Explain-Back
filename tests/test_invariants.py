@@ -57,7 +57,7 @@ def test_supabase_auth_boundary_is_backend_only() -> None:
     assert not any(secret in frontend_text for secret in forbidden_frontend_secrets)
 
 
-def test_no_persistence_implementation() -> None:
+def test_no_persistence_implementation_except_sidebar_preference() -> None:
     forbidden = (
         "localStorage",
         "sessionStorage",
@@ -66,6 +66,13 @@ def test_no_persistence_implementation() -> None:
         "mongodb",
         "firebase",
     )
+    # The app shell intentionally remembers only the sidebar's collapsed state.
+    allowed_storage_calls_by_path = {
+        Path("frontend/src/layout/AppLayout.jsx"): (
+            "window.localStorage.getItem(COLLAPSED_KEY)",
+            'window.localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0")',
+        ),
+    }
     offenders = []
     for directory in (ROOT / "backend", ROOT / "frontend" / "src"):
         for path in directory.rglob("*"):
@@ -74,20 +81,33 @@ def test_no_persistence_implementation() -> None:
                 or path.suffix not in {".py", ".js", ".jsx", ".css"}
             ):
                 continue
+            relative_path = path.relative_to(ROOT)
             text = path.read_text(encoding="utf-8")
-            if any(token.lower() in text.lower() for token in forbidden):
-                offenders.append(str(path.relative_to(ROOT)))
+            for allowed_call in allowed_storage_calls_by_path.get(relative_path, ()):
+                text = text.replace(allowed_call, "")
+            if any(
+                token.lower() in text.lower()
+                for token in forbidden
+            ):
+                offenders.append(str(relative_path))
     assert offenders == []
 
 
-def test_footer_contract_is_present() -> None:
+def test_app_layout_footer_contract_is_present() -> None:
     disclosure = (
-        "Formative guidance only. Not a grade. This signed-in session stores source"
+        "Formative guidance only. Not a grade. This signed-in session stores "
+        "source material and successful explanation attempts."
     )
-    for name in ("App.jsx", "HistoryView.jsx"):
-        text = (ROOT / "frontend" / "src" / name).read_text(encoding="utf-8")
-        assert disclosure in text
-        assert "successful explanation attempts." in text
+    app_layout_text = (
+        ROOT / "frontend" / "src" / "layout" / "AppLayout.jsx"
+    ).read_text(encoding="utf-8")
+    footer_start = '<footer className="app-footer">'
+    footer_end = "</footer>"
+    assert footer_start in app_layout_text
+    footer_text = app_layout_text.split(footer_start, 1)[1].split(
+        footer_end, 1
+    )[0]
+    assert disclosure in " ".join(footer_text.split())
 
 
 def test_persistence_is_owner_scoped_by_row_level_security() -> None:
