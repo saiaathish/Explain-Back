@@ -40,6 +40,20 @@ async function modelRequest(path, body, signal, options) {
   });
 }
 
+export function retryAfterSeconds(header) {
+  const seconds = Number.parseInt(String(header ?? "").trim(), 10);
+  if (!Number.isFinite(seconds) || seconds <= 0) return 0;
+  /* A minute is the longest window this app applies; ignore anything wilder. */
+  return Math.min(seconds, 300);
+}
+
+function rateLimitError(message, header) {
+  const error = new Error(message);
+  error.name = "RateLimitError";
+  error.retryAfter = retryAfterSeconds(header);
+  return error;
+}
+
 export async function analyze(source, explanation, signal, options = {}) {
   const body = { source, explanation };
   if (options.focused) body.focused = true;
@@ -57,7 +71,12 @@ export async function analyze(source, explanation, signal, options = {}) {
   }
   if (!response.ok) {
     if (response.status === 429) {
-      throw new Error("Too many analyses were submitted. Wait briefly, then try again.");
+      /* The server knows when the budget frees up; the UI counts it down. */
+      throw rateLimitError(
+        payload.detail ||
+          "Too many analyses were submitted. Wait briefly, then try again.",
+        response.headers.get("retry-after"),
+      );
     }
     if (response.status === 503) {
       throw new Error("The analysis service is not configured or available. Try again shortly.");

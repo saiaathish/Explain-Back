@@ -20,10 +20,16 @@ def authenticated_model_routes():
         )
 
     main.app.dependency_overrides[main.require_authenticated_user] = authenticated_user
+    # Every test in this module shares one account id, and the analysis budget
+    # is process-wide, so one test's submissions would otherwise limit the next.
+    main._analysis_state.clear()
+    main._analysis_state_last_cleanup = 0.0
     try:
         yield
     finally:
         main.app.dependency_overrides.pop(main.require_authenticated_user, None)
+        main._analysis_state.clear()
+        main._analysis_state_last_cleanup = 0.0
 
 
 @pytest.mark.parametrize(
@@ -192,7 +198,13 @@ def test_rate_limit_returns_clean_429(monkeypatch) -> None:
     async def no_prewarm() -> None:
         return None
 
+    def unlimited_account(*_args, **_kwargs) -> None:
+        return None
+
     monkeypatch.setattr(main, "_prewarm", no_prewarm)
+    # This test is about the per-client backstop, so the per-account budget is
+    # stood down rather than allowed to answer first with its own 429.
+    monkeypatch.setattr(main, "enforce_account_analysis_budget", unlimited_account)
     main._rate_limit_events.clear()
     main._rate_limit_last_cleanup = 0.0
     payload = {"source": "A" * 120, "explanation": "ATP"}
@@ -217,6 +229,10 @@ def test_rate_limit_returns_clean_429(monkeypatch) -> None:
         }
         assert int(responses[-1].headers["retry-after"]) > 0
         assert responses[-1].headers["access-control-allow-origin"] == origin
+        # The browser is always a different origin, and Retry-After is not
+        # CORS-safelisted: without this the countdown cannot read the wait.
+        exposed = responses[-1].headers["access-control-expose-headers"]
+        assert "Retry-After" in exposed
         assert "real-client" in main._rate_limit_events
         assert "spoofed" not in main._rate_limit_events
     finally:
@@ -498,3 +514,80 @@ def test_normal_sized_upload_still_passes_the_gate(monkeypatch) -> None:
             json={"audio_data_url": "data:audio/webm;base64," + "A" * 40000},
         )
     assert response.status_code == 200
+
+
+class TestAccountAnalysisBudget:
+    """One new source a minute per account; revisions get a looser allowance."""
+
+    def setup_method(self) -> None:
+        main._analysis_state.clear()
+        main._analysis_state_last_cleanup = 0.0
+
+    teardown_method = setup_method
+
+    def test_second_new_source_within_a_minute_is_refused(self) -> None:
+        main.enforce_account_analysis_budget("user-a", "First source text.", False, now=0.0)
+
+        with pytest.raises(HTTPException) as caught:
+            main.enforce_account_analysis_budget(
+                "user-a", "A different source entirely.", False, now=30.0
+            )
+
+        assert caught.value.status_code == 429
+        assert caught.value.headers["Retry-After"] == "30"
+        assert "one new source a minute" in caught.value.detail
+        # The refusal must not consume the caller's next opportunity.
+        main.enforce_account_analysis_budget(
+            "user-a", "A different source entirely.", False, now=61.0
+        )
+
+    def test_revising_the_same_source_is_not_a_new_source(self) -> None:
+        source = "The sodium-potassium pump moves ions across the membrane."
+        main.enforce_account_analysis_budget("user-a", source, False, now=0.0)
+
+        for second in range(1, main.REVISION_MAX_REQUESTS + 1):
+            main.enforce_account_analysis_budget("user-a", source, False, now=float(second))
+
+        with pytest.raises(HTTPException) as caught:
+            main.enforce_account_analysis_budget(
+                "user-a", source, False, now=float(main.REVISION_MAX_REQUESTS + 1)
+            )
+        assert caught.value.status_code == 429
+        assert "revisions" in caught.value.detail
+
+    def test_revision_budget_frees_up_as_its_window_slides(self) -> None:
+        source = "A source worth several passes."
+        main.enforce_account_analysis_budget("user-a", source, False, now=0.0)
+        for second in range(1, main.REVISION_MAX_REQUESTS + 1):
+            main.enforce_account_analysis_budget("user-a", source, False, now=float(second))
+
+        main.enforce_account_analysis_budget(
+            "user-a", source, False, now=main.REVISION_WINDOW_SECONDS + 1.5
+        )
+
+    def test_focused_drill_down_is_work_on_the_current_source(self) -> None:
+        main.enforce_account_analysis_budget("user-a", "Whole source text.", False, now=0.0)
+
+        # A focused request carries a snippet, not the source, and must not read
+        # as a new source and lock the learner out mid-loop.
+        main.enforce_account_analysis_budget("user-a", "Just one anchor.", True, now=2.0)
+
+    def test_whitespace_alone_does_not_make_a_new_source(self) -> None:
+        main.enforce_account_analysis_budget("user-a", "Same words.", False, now=0.0)
+        main.enforce_account_analysis_budget("user-a", "  Same words.  ", False, now=5.0)
+
+    def test_accounts_do_not_share_a_budget(self) -> None:
+        main.enforce_account_analysis_budget("user-a", "Source one.", False, now=0.0)
+        main.enforce_account_analysis_budget("user-b", "Source two.", False, now=1.0)
+
+        with pytest.raises(HTTPException):
+            main.enforce_account_analysis_budget("user-a", "Source three.", False, now=2.0)
+
+    def test_idle_accounts_are_forgotten(self) -> None:
+        main.enforce_account_analysis_budget("user-a", "Source one.", False, now=0.0)
+        assert "user-a" in main._analysis_state
+
+        main.enforce_account_analysis_budget(
+            "user-b", "Source two.", False, now=main.ANALYSIS_STATE_TTL_SECONDS + 1.0
+        )
+        assert "user-a" not in main._analysis_state

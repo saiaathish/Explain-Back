@@ -381,3 +381,32 @@ trade-off is not rediscovered later as a bug.
   explaining itself, and sign-out presenting the user's own token.
 - Zero Axe violations on the landing page and the login screen, and both fit a
   390px viewport with a 44px minimum touch target.
+
+## Analysis rate limiting
+
+One new source a minute per account, six revisions a minute, on top of the
+existing 20-per-minute per-client backstop.
+
+- A revision is identified from a fingerprint of the source text, computed on
+  the server. A client cannot claim "this is a revision" to get a cheaper
+  budget; it would have to keep sending the same source, which is the loop the
+  allowance exists for. Focused drill-downs carry a snippet rather than the
+  source, so they are always treated as work on the current source.
+- The two budgets exist because the product is a revision loop. A flat one a
+  minute would have put a 60-second pause inside the 90-second judge
+  walkthrough, which is the demo and the point of the product.
+- State is per process, keyed by account id, pruned after an idle hour. It
+  resets on deploy and is not shared across instances: this is abuse-blunting,
+  not metering.
+- The learner sees the submit button disable and count down from the server's
+  `Retry-After` rather than hitting an unexplained wall.
+
+### A bug this caught before it shipped
+
+The countdown read `Retry-After` as absent and silently never ran. The browser
+is a different origin in every deployment — Vercel to Render, and localhost to
+localhost:8000 in development — and `Retry-After` is not a CORS-safelisted
+response header, so it was invisible to the page. The fix is
+`expose_headers=["Retry-After"]` on the CORS middleware. Both the backend test
+and the browser test now assert it, because the failure mode is silent: the
+limit still works, the explanation just disappears.

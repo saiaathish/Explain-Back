@@ -1,11 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { analyze, normalizeImage, transcribeAudio } from "./api";
+import {
+  analyze,
+  normalizeImage,
+  retryAfterSeconds,
+  transcribeAudio,
+} from "./api";
 
-function response(status, payload = {}) {
+function response(status, payload = {}, headers = {}) {
   return {
     ok: status >= 200 && status < 300,
     status,
     json: async () => payload,
+    headers: { get: (name) => headers[String(name).toLowerCase()] ?? null },
   };
 }
 
@@ -143,5 +149,49 @@ describe("authenticated API requests", () => {
 
     expect(refreshAccessToken).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("rate-limited analysis", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("carries the server's wait and its reason back to the caller", async () => {
+    globalThis.fetch.mockResolvedValue(
+      response(
+        429,
+        { detail: "You can start one new source a minute." },
+        { "retry-after": "42" },
+      ),
+    );
+
+    await expect(analyze("source", "explanation")).rejects.toMatchObject({
+      name: "RateLimitError",
+      retryAfter: 42,
+      message: "You can start one new source a minute.",
+    });
+  });
+
+  it("falls back to a usable message when the server sends no detail", async () => {
+    globalThis.fetch.mockResolvedValue(response(429, {}, {}));
+
+    const failure = await analyze("source", "explanation").catch((error) => error);
+    expect(failure.retryAfter).toBe(0);
+    expect(failure.message).toMatch(/wait briefly/i);
+  });
+
+  it("reads only sane wait values", () => {
+    expect(retryAfterSeconds("30")).toBe(30);
+    expect(retryAfterSeconds(" 7 ")).toBe(7);
+    expect(retryAfterSeconds(null)).toBe(0);
+    expect(retryAfterSeconds("soon")).toBe(0);
+    expect(retryAfterSeconds("-5")).toBe(0);
+    /* A hostile or broken header must not freeze the button for an hour. */
+    expect(retryAfterSeconds("99999")).toBe(300);
   });
 });

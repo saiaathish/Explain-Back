@@ -354,7 +354,11 @@ function Workspace({
   const mountedRef = useRef(true);
   const recordingSupported = supportsRecording();
   const presetIsLoading = loadingPresetId !== null;
+  /* Seconds until the analysis budget frees up, counted down from the 429's
+     Retry-After so nobody submits into a wall they cannot see. */
+  const [cooldown, setCooldown] = useState(0);
   const interactionBusy =
+    cooldown > 0 ||
     loading ||
     focusedLoading ||
     presetIsLoading ||
@@ -410,6 +414,15 @@ function Workspace({
     field.focus();
     field.setSelectionRange(field.value.length, field.value.length);
   }, [revising]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return undefined;
+    const timer = window.setInterval(
+      () => setCooldown((seconds) => Math.max(0, seconds - 1)),
+      1000,
+    );
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -892,6 +905,9 @@ function Workspace({
       }
     } catch (requestError) {
       if (!mountedRef.current || mainRequestRef.current !== request) return;
+      if (requestError.name === "RateLimitError" && requestError.retryAfter) {
+        setCooldown(requestError.retryAfter);
+      }
       setError(
         requestError.name === "AbortError"
           ? "The analysis request timed out. Try again with the same text."
@@ -1059,7 +1075,11 @@ function Workspace({
             ))}
           </div>
           <button className="primary" disabled={interactionBusy} type="submit">
-            {loading ? SUBMIT_STAGES[stage] : "Check my explanation"}
+            {loading
+              ? SUBMIT_STAGES[stage]
+              : cooldown > 0
+                ? `Try again in ${cooldown}s`
+                : "Check my explanation"}
           </button>
         </form>
 
@@ -1221,7 +1241,11 @@ function Workspace({
                     type="submit"
                     form="workspace-form"
                   >
-                    {loading ? SUBMIT_STAGES[stage] : "Check my revision"}
+                    {loading
+                      ? SUBMIT_STAGES[stage]
+                      : cooldown > 0
+                        ? `Try again in ${cooldown}s`
+                        : "Check my revision"}
                   </button>
                 </div>
               )}

@@ -9,6 +9,7 @@ import re
 import time
 from collections import deque
 from contextlib import asynccontextmanager, suppress
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -62,6 +63,29 @@ RATE_LIMIT_WINDOW_SECONDS = 60.0
 RATE_LIMITED_PATHS = frozenset(
     {"/api/analyze", "/api/normalize-image", "/api/transcribe"}
 )
+
+# Per-account analysis budget. Starting a new source is the expensive, spammable
+# action; revising the source you are already working on is the product's whole
+# loop, so it gets its own looser allowance rather than being free.
+_analysis_state: dict[str, "_AccountAnalysisState"] = {}
+_analysis_state_last_cleanup = 0.0
+NEW_SOURCE_WINDOW_SECONDS = 60.0
+REVISION_MAX_REQUESTS = 6
+REVISION_WINDOW_SECONDS = 60.0
+ANALYSIS_STATE_TTL_SECONDS = 3600.0
+
+
+@dataclass
+class _AccountAnalysisState:
+    """What one account has recently analyzed, kept only in this process."""
+
+    source_fingerprint: str = ""
+    # None, not 0.0: a real timestamp can legitimately be falsy.
+    last_new_source_at: float | None = None
+    revisions: deque[float] = field(default_factory=deque)
+    touched_at: float = 0.0
+
+
 PREWARM_SOURCE_FILES = (
     "source_sodium_pump.txt",
     "source_supply_demand.txt",
@@ -200,6 +224,80 @@ async def reject_oversized_model_calls(request: Request, call_next):
     return await call_next(request)
 
 
+def _too_many(detail: str, retry_after: float) -> HTTPException:
+    seconds = max(1, math.ceil(retry_after))
+    return HTTPException(
+        status_code=429,
+        detail=detail,
+        headers={"Retry-After": str(seconds)},
+    )
+
+
+def _prune_analysis_state(now: float) -> None:
+    global _analysis_state_last_cleanup
+
+    if now - _analysis_state_last_cleanup < ANALYSIS_STATE_TTL_SECONDS:
+        return
+    cutoff = now - ANALYSIS_STATE_TTL_SECONDS
+    for account, state in list(_analysis_state.items()):
+        if state.touched_at <= cutoff:
+            del _analysis_state[account]
+    _analysis_state_last_cleanup = now
+
+
+def enforce_account_analysis_budget(
+    account_id: str,
+    source: str,
+    focused: bool,
+    now: float | None = None,
+) -> None:
+    """One new source a minute per account; revisions get a looser budget.
+
+    Whether a request is a revision is decided here, from the source text, not
+    from anything the caller says about itself. A client that wants a free pass
+    would have to keep sending the same source, which is exactly the loop this
+    allowance is for. Focused drill-downs carry a snippet rather than the whole
+    source, so they are always treated as work on the current source.
+    """
+
+    moment = time.monotonic() if now is None else now
+    _prune_analysis_state(moment)
+
+    state = _analysis_state.setdefault(account_id, _AccountAnalysisState())
+    fingerprint = _cache_key(source.strip())
+    is_revision = focused or (
+        bool(state.source_fingerprint) and fingerprint == state.source_fingerprint
+    )
+
+    if is_revision:
+        cutoff = moment - REVISION_WINDOW_SECONDS
+        while state.revisions and state.revisions[0] <= cutoff:
+            state.revisions.popleft()
+        if len(state.revisions) >= REVISION_MAX_REQUESTS:
+            raise _too_many(
+                "That is a lot of revisions in one minute. Take a moment to "
+                "rewrite your explanation, then try again.",
+                state.revisions[0] + REVISION_WINDOW_SECONDS - moment,
+            )
+        state.revisions.append(moment)
+        state.touched_at = moment
+        return
+
+    if state.last_new_source_at is not None:
+        elapsed = moment - state.last_new_source_at
+        if elapsed < NEW_SOURCE_WINDOW_SECONDS:
+            raise _too_many(
+                "You can start one new source a minute. Revising the source you "
+                "are already working on is still available.",
+                NEW_SOURCE_WINDOW_SECONDS - elapsed,
+            )
+
+    state.source_fingerprint = fingerprint
+    state.last_new_source_at = moment
+    state.revisions.clear()
+    state.touched_at = moment
+
+
 async def enforce_model_call_rate_limit(request: Request) -> None:
     global _rate_limit_last_cleanup
 
@@ -246,6 +344,10 @@ app.add_middleware(
     ],
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type", "Authorization"],
+    # The browser is a different origin in every deployment, and Retry-After is
+    # not CORS-safelisted, so without this the countdown cannot read how long
+    # the wait is and the limit becomes an unexplained dead button.
+    expose_headers=["Retry-After"],
 )
 
 
@@ -526,7 +628,12 @@ async def analyze(request_body: AnalyzeRequest) -> AnalyzeResponse:
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze_route(
     request_body: AnalyzeRequest,
-    _authenticated_user: AuthenticatedUser = Depends(require_authenticated_user),
+    authenticated_user: AuthenticatedUser = Depends(require_authenticated_user),
     _rate_limit: None = Depends(enforce_model_call_rate_limit),
 ) -> AnalyzeResponse:
+    enforce_account_analysis_budget(
+        str(authenticated_user.user_id),
+        request_body.source,
+        request_body.focused,
+    )
     return await analyze(request_body)
