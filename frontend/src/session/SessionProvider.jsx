@@ -1,3 +1,10 @@
+/**
+ * Session State Management Provider
+ * 
+ * Manages active session draft state, image OCR scanning, voice recording/transcription,
+ * self-assessed claim confidence passes, and AI evaluation submission triggers.
+ */
+
 import {
   createContext,
   useCallback,

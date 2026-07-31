@@ -1,3 +1,10 @@
+/**
+ * Learner Dashboard View
+ * 
+ * Primary home screen providing single-click session initiation, recent session activity cards,
+ * and review gap callout nudges.
+ */
+
 import { useNavigate } from "react-router-dom";
 import { attemptSummary, sourcePreview } from "../analysisHistory";
 import { useLearningData } from "../learningData";

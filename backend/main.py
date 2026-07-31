@@ -1,3 +1,10 @@
+"""Explain-Back Core FastAPI Application Engine
+
+Provides formative evaluation API endpoints for analyzing learner explanations against
+source material, transcribing audio recordings, normalizing image sources, and managing
+per-client rate limits and caches.
+"""
+
 import asyncio
 import base64
 import binascii

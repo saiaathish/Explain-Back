@@ -1,3 +1,10 @@
+/**
+ * Past Sessions History View
+ * 
+ * Displays historical evaluation attempts, source previews, attempt timelines,
+ * and concept coverage summaries for saved sessions.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { attemptSummary, sourcePreview } from "../analysisHistory";
 import { useLearningData } from "../learningData";

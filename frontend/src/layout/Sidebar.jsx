@@ -1,3 +1,10 @@
+/**
+ * Claude-Style Responsive Navigation Sidebar
+ * 
+ * Provides collapsible rail view navigation, section links (Dashboard, History, Review, Profile),
+ * live gap count badge updates, and pinned account profile block.
+ */
+
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSession } from "../session/SessionProvider";
 import {

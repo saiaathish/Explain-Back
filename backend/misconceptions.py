@@ -1,3 +1,9 @@
+"""Misconception Matching Module
+
+Provides regular expression pattern matching for common domain-specific misconceptions
+and returns targeted refutation guidance.
+"""
+
 import re
 
 MISCONCEPTIONS = [

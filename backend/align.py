@@ -1,3 +1,9 @@
+"""Concept Alignment Module
+
+Computes dense semantic embeddings using SentenceTransformer to align learner propositions
+with extracted source concept anchors.
+"""
+
 import hashlib
 from collections import OrderedDict
 from functools import lru_cache

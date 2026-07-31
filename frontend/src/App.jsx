@@ -1,3 +1,10 @@
+/**
+ * Explain-Back Main React Application & Routing Container
+ * 
+ * Configures top-level React Router routes, authentication provider context,
+ * protected layout shell framing, and multi-step session step guards.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,

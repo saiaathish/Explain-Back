@@ -1,3 +1,10 @@
+/**
+ * Session Step 3 — Sentence Confidence Pass
+ * 
+ * Allows learners to self-assess their confidence per explanation statement
+ * before submitting for AI analysis.
+ */
+
 import { useNavigate } from "react-router-dom";
 import ConfidencePass from "../ConfidencePass";
 import { useSession } from "../session/SessionProvider";

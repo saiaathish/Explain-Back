@@ -1,3 +1,10 @@
+/**
+ * Session Step 4 — Analysis Loading & Progress Screen
+ * 
+ * Drives the background evaluation pipeline and displays staged progress steps
+ * before navigating to formative evaluation results.
+ */
+
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { refreshLearningData } from "../learningData";

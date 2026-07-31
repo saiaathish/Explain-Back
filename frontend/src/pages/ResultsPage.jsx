@@ -1,3 +1,10 @@
+/**
+ * Session Step 5 — Formative Evaluation Results View
+ * 
+ * Renders concept coverage chips, diagnostic explanation overlay, diff revision comparisons,
+ * misconception alerts, and follow-up guidance.
+ */
+
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import CalibrationMap from "../CalibrationMap";

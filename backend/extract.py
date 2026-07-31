@@ -1,3 +1,9 @@
+"""Concept and Proposition Extraction Module
+
+Extracts key concepts from source materials and decomposes learner explanations into
+testable propositions with exact string anchors and character offset spans.
+"""
+
 import re
 from typing import Any
 

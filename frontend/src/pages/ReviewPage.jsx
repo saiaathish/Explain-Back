@@ -1,3 +1,10 @@
+/**
+ * Spaced Review Deck & Flashcards View
+ * 
+ * Manages outstanding concept gap decks, flashcard stack & grid layout toggles,
+ * gap resolution state, and practice session history.
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getClearedGaps, reviewHistory } from "../clearedGaps";

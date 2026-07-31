@@ -1,3 +1,9 @@
+"""Proposition Conflict and Resolution Module
+
+Resolves verification verdicts, similarity metrics, and linguistic specificity/hedging rules
+into final red, yellow, or green diagnostic flags.
+"""
+
 import re
 
 from backend.schemas import Proposition, Verdict

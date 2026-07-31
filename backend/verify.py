@@ -1,3 +1,9 @@
+"""Proposition Verification Module
+
+Evaluates learner propositions against aligned concepts via LLM verification calls to determine
+verdicts, hints, and follow-up guidance questions.
+"""
+
 import asyncio
 import re
 from typing import Any

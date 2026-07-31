@@ -1,3 +1,10 @@
+/**
+ * Learner Profile & Analytics View
+ * 
+ * Displays authenticated user account details, learning statistics (session counts,
+ * accuracy, gain on revision, cleared gaps), and sign-out controls.
+ */
+
 import { useMemo } from "react";
 import { useAuth } from "../AuthContext";
 import { useLearningData } from "../learningData";

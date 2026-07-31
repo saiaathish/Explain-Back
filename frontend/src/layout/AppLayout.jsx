@@ -1,3 +1,10 @@
+/**
+ * Application Shell Layout
+ * 
+ * Frames the primary application UI with the Claude-style collapsible sidebar,
+ * mobile drawer controls, main content region, and footer contract.
+ */
+
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext";

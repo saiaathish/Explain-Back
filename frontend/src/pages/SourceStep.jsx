@@ -1,3 +1,10 @@
+/**
+ * Session Step 1 — Source Material Input
+ * 
+ * Allows learners to input source material via text paste, image OCR scanning,
+ * or curated subject presets (loading source text only).
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CharacterCounter from "../session/CharacterCounter";

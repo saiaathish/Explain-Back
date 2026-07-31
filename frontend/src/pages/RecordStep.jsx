@@ -1,3 +1,10 @@
+/**
+ * Session Step 2 — Explanation Recording & Recall Input
+ * 
+ * Learners explain the concept from memory via speech or text.
+ * Source material is strictly hidden on this screen to prevent visual recall bias.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ExplanationField from "../session/ExplanationField";
